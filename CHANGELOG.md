@@ -4,6 +4,18 @@ Todas las modificaciones relevantes de KODA PLATFORM se documentaran en este arc
 
 El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patch>` hasta la primera version comercial estable.
 
+## [0.0.2] - 2026-07-15
+
+### Added
+
+- Documentada la base funcional aprobada para Sprint 1.
+- Agregado detalle de tenant inicial KODA, roles, permisos y reglas iniciales de stock.
+- Agregado `.gitattributes` para normalizar saltos de linea y archivos binarios.
+
+### Changed
+
+- Actualizado `ROADMAP.md` para reflejar que las decisiones funcionales minimas de Sprint 1 fueron aprobadas.
+- Actualizado `README.md` con referencia al documento de base funcional de Sprint 1.
 ## [0.0.1] - 2026-07-15
 
 ### Added

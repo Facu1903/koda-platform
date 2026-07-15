@@ -62,6 +62,17 @@ Construir el primer incremento ejecutable de plataforma y ERP, con seguridad, mu
 - Auditoria.
 - Tests.
 
+### Base funcional aprobada
+
+La base funcional minima de Sprint 1 fue aprobada por el Product Owner el 2026-07-15 y queda documentada en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
+
+Resumen:
+
+- Tenant inicial KODA: Argentina, `es-AR`, ARS, `America/Argentina/Buenos_Aires`, tema oscuro y color primario `#F6862B`.
+- Roles iniciales: `PLATFORM_SUPER_ADMIN`, `TENANT_OWNER`, `TENANT_ADMIN`, `MANAGER`, `SALES_USER`, `STOCK_USER`, `READ_ONLY`.
+- Permisos iniciales para usuarios, roles, tenants, sucursales, configuracion de empresa, catalogos, stock y auditoria.
+- Stock: movimientos `IN`, `OUT`, `ADJUSTMENT`, sin stock negativo por defecto, auditoria obligatoria y correcciones por movimiento inverso.
+
 ### Hitos tecnicos internos sugeridos
 
 Estos hitos no cambian el alcance aprobado; lo ordenan para no mezclar cimientos con pintura.
@@ -189,16 +200,20 @@ Desde la primera API:
 - Documentar cambios en `CHANGELOG.md`.
 - Separar cambios tecnicos de cambios funcionales.
 
-## 10. Decisiones pendientes para Product Owner
+## 10. Decisiones funcionales aprobadas
 
-Antes de Sprint 1 conviene confirmar:
+El 2026-07-15 el Product Owner aprobo la base funcional minima para Sprint 1:
 
-- Nombre legal y datos iniciales del tenant KODA.
+- Datos iniciales del tenant KODA.
 - Roles iniciales.
 - Permisos iniciales.
 - Moneda inicial.
-- Pais/provincias iniciales.
-- Idioma inicial.
-- Definicion exacta de producto, marca, categoria, presentacion y unidad de medida.
-- Reglas de stock: tipos de movimiento, impacto y permisos.
+- Pais, idioma y zona horaria.
+- Reglas iniciales de stock.
+
+Pendientes de detalle durante Sprint 1:
+
+- Provincias iniciales.
+- Definicion operativa exacta de producto, marca, categoria, presentacion y unidad de medida.
+- Reglas avanzadas de stock por sucursal, deposito, permiso o excepcion comercial.
 

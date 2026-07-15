@@ -19,6 +19,7 @@ Todavia no hay codigo de negocio. Esta decision es intencional: primero se defin
 - [Contributing](CONTRIBUTING.md)
 - [Changelog](CHANGELOG.md)
 - [Agents](AGENTS.md)
+- [Sprint 1 Functional Baseline](docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md)
 
 ## Stack obligatorio
 
@@ -80,5 +81,5 @@ Sprint 1 construira la primera base funcional:
 - Auditoria.
 - Tests.
 
-Antes de iniciar Sprint 1 deben confirmarse decisiones funcionales iniciales indicadas en `ROADMAP.md`.
+La base funcional minima de Sprint 1 fue aprobada el 2026-07-15 y esta documentada en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
 
