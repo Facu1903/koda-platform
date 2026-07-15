@@ -6,7 +6,7 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 0: constitucion del proyecto.
+Sprint 1: Hito 1 - scaffolding tecnico en progreso.
 
 Todavia no hay codigo de negocio. Esta decision es intencional: primero se definen reglas, arquitectura y criterios de calidad; despues se construye. Hacerlo al reves seria rapido, vistoso y peligrosamente caro.
 
@@ -20,6 +20,7 @@ Todavia no hay codigo de negocio. Esta decision es intencional: primero se defin
 - [Changelog](CHANGELOG.md)
 - [Agents](AGENTS.md)
 - [Sprint 1 Functional Baseline](docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md)
+- [Sprint 1 Execution Plan](docs/sprints/SPRINT_1_EXECUTION_PLAN.md)
 
 ## Stack obligatorio
 
@@ -82,4 +83,58 @@ Sprint 1 construira la primera base funcional:
 - Tests.
 
 La base funcional minima de Sprint 1 fue aprobada el 2026-07-15 y esta documentada en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
+## Estructura inicial
 
+```text
+backend/              API Spring Boot 3 + Clean Architecture
+frontend/             Web app React + TypeScript + Vite + Material UI
+docker/               Configuracion auxiliar de infraestructura local
+docs/                 Documentacion tecnica, sprints y decisiones
+docker-compose.yml    PostgreSQL, backend y frontend para desarrollo
+.env.example          Variables locales de ejemplo
+```
+
+## Desarrollo local
+
+### Requisitos
+
+- Java 21.
+- Maven.
+- Node.js 24 o compatible.
+- npm.
+- Docker Desktop.
+
+En PowerShell, si `npm` queda bloqueado por politica de scripts, usar `npm.cmd`.
+
+### Backend
+
+```powershell
+cd backend
+mvn test
+mvn spring-boot:run
+```
+
+### Frontend
+
+```powershell
+cd frontend
+npm.cmd install
+npm.cmd run dev
+```
+
+### Docker Compose
+
+```powershell
+copy .env.example .env
+docker compose up --build
+```
+
+Servicios esperados:
+
+- Frontend: `http://localhost:5173`
+- Backend health: `http://localhost:8080/actuator/health`
+- PostgreSQL: `localhost:5432`
+
+## Nota de entorno
+
+Al crear el scaffolding de Sprint 1, Java 21 y Maven no estaban disponibles en PATH local. Deben instalarse antes de validar backend localmente fuera de Docker. Docker Desktop tambien debe estar iniciado para builds via Docker.

@@ -1,0 +1,2 @@
+-- Baseline migration for Sprint 1 scaffolding.
+-- Business tables are intentionally introduced in later Sprint 1 milestones.

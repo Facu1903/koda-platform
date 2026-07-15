@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: koda-platform-api
+  datasource:
+    url: ${KODA_DB_URL:jdbc:postgresql://localhost:5432/koda_platform}
+    username: ${KODA_DB_USERNAME:koda}
+    password: ${KODA_DB_PASSWORD:koda_dev_password}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: false
+        jdbc:
+          time_zone: UTC
+
+server:
+  port: ${KODA_API_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    root: INFO
+    com.koda.platform: INFO
