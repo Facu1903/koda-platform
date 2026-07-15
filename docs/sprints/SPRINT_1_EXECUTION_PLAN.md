@@ -46,15 +46,16 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Git: disponible.
 - Docker CLI: disponible.
 - Node/npm: disponible usando `npm.cmd` en PowerShell.
-- Java 21: no detectado en PATH.
-- Maven: no detectado en PATH.
-- Docker Desktop daemon: no disponible al momento de validar `docker compose build backend`.
+- Java 21: instalado y verificado con JDK 21.0.10.
+- Maven: instalado y verificado con Apache Maven 3.9.16.
+- Docker Desktop daemon: pendiente de validar; debe estar iniciado para `docker compose build`.
 - Frontend dependencies: `package-lock.json` generado con `npm install --package-lock-only`; instalacion completa de `node_modules` dentro de OneDrive supero el tiempo de espera.
+- Backend tests: `mvn test` ejecutado correctamente con Java 21.0.10 y Maven 3.9.16.
 
 ## Riesgo actual
 
-Sin Java 21 y Maven instalados localmente, la validacion backend fuera de Docker queda bloqueada. Docker podria construir el backend usando imagen Maven, pero Docker Desktop debe estar corriendo. Para desarrollo serio conviene instalar Java 21 y Maven en Windows.
+La validacion backend local ya puede ejecutarse con Java 21 y Maven 3.9.16. Docker podria construir el backend usando imagen Maven, pero Docker Desktop debe estar corriendo.
 
 ## Siguiente decision tecnica
 
-Antes de implementar Hito 2, instalar Java 21 y Maven localmente o aceptar que toda validacion backend se haga via Docker. La recomendacion tecnica es instalar ambos localmente: depender solo de Docker para compilar vuelve mas lenta la iteracion diaria.
+Antes de implementar Hito 2, validar Docker Desktop y mantener Java 21/Maven disponibles para iteracion diaria. Depender solo de Docker para compilar vuelve mas lenta la iteracion diaria.

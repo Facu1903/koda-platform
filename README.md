@@ -137,4 +137,4 @@ Servicios esperados:
 
 ## Nota de entorno
 
-Al crear el scaffolding de Sprint 1, Java 21 y Maven no estaban disponibles en PATH local. Deben instalarse antes de validar backend localmente fuera de Docker. Docker Desktop tambien debe estar iniciado para builds via Docker.
+Java 21 y Maven 3.9.16 fueron verificados para ejecutar tests backend. Docker Desktop debe estar iniciado para builds via Docker.
