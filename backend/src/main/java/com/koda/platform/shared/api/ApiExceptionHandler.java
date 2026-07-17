@@ -1,8 +1,11 @@
 package com.koda.platform.shared.api;
 
+import com.koda.platform.platform.configuration.application.CompanySettingsNotFoundException;
+import com.koda.platform.platform.configuration.application.CompanySettingsVersionConflictException;
 import com.koda.platform.platform.security.application.AuthenticationFailedException;
 import com.koda.platform.platform.security.application.InvalidRefreshTokenException;
 import com.koda.platform.platform.security.application.TenantSelectionRequiredException;
+import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.MissingTenantContextException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -55,6 +58,37 @@ public class ApiExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
         problem.setTitle("Tenant selection required");
         problem.setProperty("code", "TENANT_SELECTION_REQUIRED");
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(PermissionDeniedException.class)
+    ProblemDetail handlePermissionDenied(PermissionDeniedException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
+        problem.setTitle("Permission denied");
+        problem.setProperty("code", "PERMISSION_DENIED");
+        problem.setProperty("requiredPermission", exception.requiredPermission());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(CompanySettingsNotFoundException.class)
+    ProblemDetail handleCompanySettingsNotFound(CompanySettingsNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problem.setTitle("Company settings not found");
+        problem.setProperty("code", "COMPANY_SETTINGS_NOT_FOUND");
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(CompanySettingsVersionConflictException.class)
+    ProblemDetail handleCompanySettingsVersionConflict(CompanySettingsVersionConflictException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Company settings version conflict");
+        problem.setProperty("code", "COMPANY_SETTINGS_VERSION_CONFLICT");
         problem.setProperty("timestamp", Instant.now());
         problem.setProperty("path", request.getRequestURI());
         return problem;

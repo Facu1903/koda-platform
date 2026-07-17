@@ -16,7 +16,7 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 | 2. PostgreSQL y Flyway | Completado | Base local, migraciones iniciales y convenciones de datos. |
 | 3. Tenant context | Completado | Resolucion segura de tenant desde contexto autenticado. |
 | 4. Seguridad JWT | Completado | Login, refresh tokens, usuarios, roles y permisos. |
-| 5. Configuracion de empresa | Pendiente | Configuracion visual/regional por tenant. |
+| 5. Configuracion de empresa | Completado | Configuracion visual/regional por tenant. |
 | 6. Catalogos ERP | Pendiente | Productos, marcas, categorias, unidades y presentaciones. |
 | 7. Stock | Pendiente | Movimientos IN, OUT y ADJUSTMENT sin stock negativo por defecto. |
 | 8. Auditoria | Pendiente | Registro persistente de operaciones sensibles. |
@@ -113,6 +113,30 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Rotacion de llaves/JWKS o firma asimetrica RS256.
 - APIs administrativas de usuarios.
 - Row Level Security PostgreSQL.
+
+## Hito 5 - Configuracion de empresa
+
+### Incluye
+
+- Endpoints tenant-scoped `GET /api/v1/company/settings` y `PUT /api/v1/company/settings`.
+- Resolucion de tenant exclusivamente desde `TenantContext`.
+- Validacion de permisos `company_settings:read` y `company_settings:update`.
+- DTOs de request/response sin exponer entidades.
+- Configuracion visual: logo, favicon, imagen de login, colores y tema.
+- Configuracion regional: locale, moneda, zona horaria, formato de fecha, formato de hora, locale numerico y formato de moneda.
+- Control optimista por `version`.
+- Auditoria persistente de cambios con campos modificados.
+- Documentacion en `docs/configuration/COMPANY_SETTINGS.md`.
+- Tests unitarios de servicio.
+
+### No incluye
+
+- Upload/storage/CDN de assets.
+- UI de configuracion.
+- Cambio de nombre comercial, razon social o pais.
+- Matriz rol-permiso aprobada para roles iniciales.
+- Preferencias por usuario individual.
+
 ## Herramientas locales detectadas
 
 - Git: disponible.
@@ -130,6 +154,8 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Tenant Context runtime: jar backend actual validado contra PostgreSQL 17 con Actuator UP.
 - Seguridad JWT: `mvn test` ejecutado correctamente con 14 tests, 0 fallos.
 - Seguridad JWT runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP` y error estructurado de auth `400`.
+- Configuracion de empresa: `mvn test` ejecutado correctamente con 19 tests, 0 fallos.
+- Configuracion de empresa runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP` y endpoint tenant-scoped protegido con `401` sin autenticacion.
 
 ## Riesgo actual
 
@@ -140,10 +166,11 @@ La base tecnica local esta validada. Los riesgos abiertos son controlados:
 - Mockito emite advertencia por carga dinamica de Java agent; debe revisarse antes de endurecer la matriz de Java futura.
 - `KODA_JWT_SECRET` es obligatorio para ejecutar backend real o Docker Compose; esto es una proteccion deliberada, no una incomodidad accidental.
 - HS256 es suficiente para este hito; antes de multi-nodo productivo debe evaluarse rotacion de llaves y firma asimetrica/JWKS.
+- La matriz rol-permiso para roles iniciales sigue pendiente de aprobacion funcional; el backend ya valida permisos reales y no hardcodea roles.
 
 ## Siguiente paso tecnico
 
-Avanzar al Hito 5: Configuracion de empresa. El objetivo sera exponer y persistir configuracion visual/regional por tenant sin modificar codigo.
+Avanzar al Hito 6: Catalogos ERP. El objetivo sera implementar productos, marcas, categorias, unidades y presentaciones con aislamiento tenant-scoped.
 
 ## Decision tecnica: PostgreSQL 17
 

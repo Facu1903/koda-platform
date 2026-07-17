@@ -25,6 +25,11 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado bootstrap inicial opt-in para owner de tenant sin credenciales hardcodeadas.
 - Agregada documentacion de autenticacion en `docs/security/AUTHENTICATION.md`.
 - Agregados tests unitarios para login, seleccion de tenant, rotacion de refresh token y conversion JWT.
+- Agregada API tenant-scoped de configuracion de empresa en `/api/v1/company/settings`.
+- Agregados servicio, puerto de repositorio y adaptador JDBC para configuracion visual/regional.
+- Agregada auditoria persistente de actualizaciones `company_settings.update`.
+- Agregada documentacion de configuracion de empresa en `docs/configuration/COMPANY_SETTINGS.md`.
+- Agregados tests unitarios para permisos, normalizacion, auditoria y versionado de configuracion de empresa.
 
 ### Changed
 
@@ -37,6 +42,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Spring Security ahora usa sesiones stateless y JWT Bearer tokens.
 - `/api/v1/auth/login`, `/api/v1/auth/refresh` y `/api/v1/auth/logout` quedan como rutas tenant-neutrales.
 - Docker Compose requiere `KODA_JWT_SECRET` para iniciar backend.
+- Agregado error `PERMISSION_DENIED` para permisos backend insuficientes.
+- Agregados errores `COMPANY_SETTINGS_NOT_FOUND` y `COMPANY_SETTINGS_VERSION_CONFLICT`.
 
 ### Verified
 
@@ -51,6 +58,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Jar backend actual empaquetado y validado en runtime local contra PostgreSQL 17 con Actuator UP.
 - `mvn test` ejecutado correctamente con 14 tests: contexto Spring, Tenant Context, AuthService y conversion JWT.
 - Jar backend Hito 4 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP` y error auth `400` estructurado.
+- `mvn test` ejecutado correctamente con 19 tests: contexto Spring, Tenant Context, AuthService, conversion JWT y CompanySettingsService.
+- Jar backend Hito 5 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP` y endpoint company settings protegido con `401` anonimo.
 
 ### Known Issues
 
@@ -58,6 +67,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - El primer build Docker del backend puede tardar varios minutos porque Maven descarga dependencias dentro de la imagen builder.
 - Mockito emite advertencia por carga dinamica de Java agent; no bloquea actualmente, pero debe revisarse antes de endurecer la matriz de Java futura.
 - HS256 se acepta para Sprint 1; antes de produccion multi-nodo debe evaluarse rotacion de llaves, RS256/JWKS y politica operacional de secretos.
+- La matriz rol-permiso inicial todavia requiere aprobacion funcional; el codigo valida permisos desde JWT y evita reglas por nombre de rol.
 
 ## [0.0.2] - 2026-07-15
 

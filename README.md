@@ -6,9 +6,9 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1: Hito 4 - Seguridad JWT completado.
+Sprint 1: Hito 5 - Configuracion de empresa completado.
 
-Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend y autenticacion JWT con refresh tokens. Todavia no hay CRUDs ni reglas de negocio expuestas por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
+Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens y API tenant-scoped de configuracion de empresa. Todavia no hay CRUDs de catalogos ni stock expuestos por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
 
 ## Documentos principales
 
@@ -24,6 +24,7 @@ Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migr
 - [PostgreSQL Conventions](docs/database/POSTGRESQL_CONVENTIONS.md)
 - [Tenant Context](docs/security/TENANT_CONTEXT.md)
 - [Authentication](docs/security/AUTHENTICATION.md)
+- [Company Settings](docs/configuration/COMPANY_SETTINGS.md)
 
 ## Stack obligatorio
 
@@ -175,6 +176,19 @@ El backend ya expone `/api/v1/auth/login`, `/api/v1/auth/refresh` y `/api/v1/aut
 
 Ver detalle en `docs/security/AUTHENTICATION.md`.
 
+
+## Configuracion de empresa
+
+El backend ya expone `/api/v1/company/settings` para consultar y actualizar configuracion visual/regional del tenant autenticado.
+
+- El tenant se resuelve desde JWT/Tenant Context.
+- La lectura requiere `company_settings:read`.
+- La actualizacion requiere `company_settings:update`.
+- Las actualizaciones usan version optimista y registran auditoria.
+
+La matriz rol-permiso para habilitar estos permisos en roles iniciales requiere aprobacion funcional explicita.
+
+Ver detalle en `docs/configuration/COMPANY_SETTINGS.md`.
 ## Nota de entorno
 
 Java 21 y Maven 3.9.16 fueron verificados para ejecutar tests backend. Docker Desktop fue validado con PostgreSQL 17, backend y frontend activos.
