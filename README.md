@@ -6,9 +6,9 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1: Hito 5 - Configuracion de empresa completado.
+Sprint 1: Hito 6 - Catalogos ERP completado.
 
-Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens y API tenant-scoped de configuracion de empresa. Todavia no hay CRUDs de catalogos ni stock expuestos por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
+Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa y CRUD backend de catalogos ERP. Todavia no hay movimientos de stock expuestos por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
 
 ## Documentos principales
 
@@ -25,6 +25,7 @@ Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migr
 - [Tenant Context](docs/security/TENANT_CONTEXT.md)
 - [Authentication](docs/security/AUTHENTICATION.md)
 - [Company Settings](docs/configuration/COMPANY_SETTINGS.md)
+- [ERP Catalogs](docs/catalogs/ERP_CATALOGS.md)
 
 ## Stack obligatorio
 
@@ -144,7 +145,7 @@ Servicios esperados:
 
 ## Base de datos inicial
 
-Flyway deja el esquema en `v202607171520` con:
+Flyway deja el esquema en `v202607171530` con:
 
 - Tenant piloto KODA.
 - Producto `KODA_ERP`.
@@ -189,6 +190,20 @@ El backend ya expone `/api/v1/company/settings` para consultar y actualizar conf
 La matriz rol-permiso para habilitar estos permisos en roles iniciales requiere aprobacion funcional explicita.
 
 Ver detalle en `docs/configuration/COMPANY_SETTINGS.md`.
+
+## Catalogos ERP
+
+El backend ya expone CRUD tenant-scoped bajo `/api/v1/catalog` para:
+
+- marcas,
+- categorias planas,
+- unidades de medida,
+- presentaciones,
+- productos.
+
+Reglas aprobadas: marca opcional, SKU unico por tenant, una presentacion principal por producto, desactivacion permitida con stock y eliminacion por soft delete. La matriz aprobada de catalogos fue aplicada por Flyway para KODA: `TENANT_OWNER`/`TENANT_ADMIN` CRUD completo, `MANAGER` lectura/actualizacion y `READ_ONLY` lectura.
+
+Ver detalle en `docs/catalogs/ERP_CATALOGS.md`.
 ## Nota de entorno
 
 Java 21 y Maven 3.9.16 fueron verificados para ejecutar tests backend. Docker Desktop fue validado con PostgreSQL 17, backend y frontend activos.

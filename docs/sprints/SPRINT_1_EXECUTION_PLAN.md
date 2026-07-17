@@ -17,7 +17,7 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 | 3. Tenant context | Completado | Resolucion segura de tenant desde contexto autenticado. |
 | 4. Seguridad JWT | Completado | Login, refresh tokens, usuarios, roles y permisos. |
 | 5. Configuracion de empresa | Completado | Configuracion visual/regional por tenant. |
-| 6. Catalogos ERP | Pendiente | Productos, marcas, categorias, unidades y presentaciones. |
+| 6. Catalogos ERP | Completado | Productos, marcas, categorias, unidades y presentaciones. |
 | 7. Stock | Pendiente | Movimientos IN, OUT y ADJUSTMENT sin stock negativo por defecto. |
 | 8. Auditoria | Pendiente | Registro persistente de operaciones sensibles. |
 | 9. Tests y hardening | Pendiente | Cobertura minima y validacion de aislamiento multiempresa. |
@@ -47,7 +47,7 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 
 - PostgreSQL 17 como version objetivo local.
 - Extensiones `pgcrypto` y `citext`.
-- Migraciones Flyway versionadas hasta `v202607171520`.
+- Migraciones Flyway versionadas hasta `v202607171530`.
 - Tablas base para tenants, configuracion de empresa, productos/modulos de plataforma, entitlements, sucursales y depositos.
 - Tablas base para usuarios globales, membresias tenant, roles, permisos, asignaciones y refresh tokens.
 - Tablas base para marcas, categorias, unidades, presentaciones, productos, saldos de stock, movimientos de stock y auditoria persistente.
@@ -137,6 +137,33 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Matriz rol-permiso aprobada para roles iniciales.
 - Preferencias por usuario individual.
 
+
+## Hito 6 - Catalogos ERP
+
+### Incluye
+
+- CRUD backend tenant-scoped para marcas, categorias, unidades de medida, presentaciones y productos.
+- Endpoints bajo `/api/v1/catalog`.
+- Marca opcional en productos.
+- Categorias planas en Sprint 1.
+- Un producto tiene una presentacion principal.
+- SKU unico por tenant.
+- Desactivacion de productos permitida con stock.
+- Eliminacion por soft delete.
+- Matriz rol-permiso aprobada para catalogos aplicada por Flyway.
+- Validacion de referencias activas del mismo tenant.
+- Auditoria persistente de creacion, actualizacion y eliminacion.
+- Documentacion en `docs/catalogs/ERP_CATALOGS.md`.
+- Tests unitarios de servicio.
+
+### No incluye
+
+- Busqueda avanzada, paginacion o filtros complejos.
+- Jerarquia de categorias.
+- Multiples presentaciones por producto con reglas comerciales avanzadas.
+- Precios, impuestos o imagenes de producto.
+- Validacion de stock para eliminar/desactivar.
+- UI de catalogos.
 ## Herramientas locales detectadas
 
 - Git: disponible.
@@ -148,14 +175,16 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Frontend dependencies: `package-lock.json` generado con `npm install --package-lock-only`; instalacion completa de `node_modules` dentro de OneDrive supero el tiempo de espera.
 - Backend tests: `mvn test` ejecutado correctamente con Java 21.0.10 y Maven 3.9.16.
 - Docker stack: PostgreSQL 17.10 healthy, backend Actuator `UP` y frontend HTTP 200.
-- Flyway: 7 migraciones validadas y schema actual en `v202607171520`.
-- PostgreSQL seed: 25 tablas, 40 permisos, 7 roles y tenant KODA.
+- Flyway: 8 migraciones validadas y schema actual en `v202607171530`.
+- PostgreSQL seed: 25 tablas, 40 permisos, 7 roles, 55 asignaciones rol-permiso y tenant KODA.
 - Tenant Context tests: mvn test ejecutado correctamente con 9 tests, 0 fallos.
 - Tenant Context runtime: jar backend actual validado contra PostgreSQL 17 con Actuator UP.
 - Seguridad JWT: `mvn test` ejecutado correctamente con 14 tests, 0 fallos.
 - Seguridad JWT runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP` y error estructurado de auth `400`.
 - Configuracion de empresa: `mvn test` ejecutado correctamente con 19 tests, 0 fallos.
 - Configuracion de empresa runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP` y endpoint tenant-scoped protegido con `401` sin autenticacion.
+- Catalogos ERP: `mvn test` ejecutado correctamente con 25 tests, 0 fallos.
+- Catalogos ERP runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171530`, endpoint tenant-scoped protegido con `401` sin autenticacion y matriz rol-permiso aplicada.
 
 ## Riesgo actual
 
@@ -166,11 +195,11 @@ La base tecnica local esta validada. Los riesgos abiertos son controlados:
 - Mockito emite advertencia por carga dinamica de Java agent; debe revisarse antes de endurecer la matriz de Java futura.
 - `KODA_JWT_SECRET` es obligatorio para ejecutar backend real o Docker Compose; esto es una proteccion deliberada, no una incomodidad accidental.
 - HS256 es suficiente para este hito; antes de multi-nodo productivo debe evaluarse rotacion de llaves y firma asimetrica/JWKS.
-- La matriz rol-permiso para roles iniciales sigue pendiente de aprobacion funcional; el backend ya valida permisos reales y no hardcodea roles.
+- La matriz rol-permiso de catalogos fue aprobada y aplicada. Siguen pendientes matrices finas para seguridad, configuracion de empresa, stock y auditoria.
 
 ## Siguiente paso tecnico
 
-Avanzar al Hito 6: Catalogos ERP. El objetivo sera implementar productos, marcas, categorias, unidades y presentaciones con aislamiento tenant-scoped.
+Avanzar al Hito 7: Stock. El objetivo sera implementar movimientos IN, OUT y ADJUSTMENT con regla de no stock negativo por defecto y auditoria.
 
 ## Decision tecnica: PostgreSQL 17
 

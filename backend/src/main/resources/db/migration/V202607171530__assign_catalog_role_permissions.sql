@@ -1,0 +1,66 @@
+WITH catalog_role_permissions(role_code, permission_code) AS (
+    VALUES
+        ('TENANT_OWNER', 'products:read'),
+        ('TENANT_OWNER', 'products:create'),
+        ('TENANT_OWNER', 'products:update'),
+        ('TENANT_OWNER', 'products:delete'),
+        ('TENANT_OWNER', 'brands:read'),
+        ('TENANT_OWNER', 'brands:create'),
+        ('TENANT_OWNER', 'brands:update'),
+        ('TENANT_OWNER', 'brands:delete'),
+        ('TENANT_OWNER', 'categories:read'),
+        ('TENANT_OWNER', 'categories:create'),
+        ('TENANT_OWNER', 'categories:update'),
+        ('TENANT_OWNER', 'categories:delete'),
+        ('TENANT_OWNER', 'units:read'),
+        ('TENANT_OWNER', 'units:create'),
+        ('TENANT_OWNER', 'units:update'),
+        ('TENANT_OWNER', 'units:delete'),
+        ('TENANT_OWNER', 'presentations:read'),
+        ('TENANT_OWNER', 'presentations:create'),
+        ('TENANT_OWNER', 'presentations:update'),
+        ('TENANT_OWNER', 'presentations:delete'),
+        ('TENANT_ADMIN', 'products:read'),
+        ('TENANT_ADMIN', 'products:create'),
+        ('TENANT_ADMIN', 'products:update'),
+        ('TENANT_ADMIN', 'products:delete'),
+        ('TENANT_ADMIN', 'brands:read'),
+        ('TENANT_ADMIN', 'brands:create'),
+        ('TENANT_ADMIN', 'brands:update'),
+        ('TENANT_ADMIN', 'brands:delete'),
+        ('TENANT_ADMIN', 'categories:read'),
+        ('TENANT_ADMIN', 'categories:create'),
+        ('TENANT_ADMIN', 'categories:update'),
+        ('TENANT_ADMIN', 'categories:delete'),
+        ('TENANT_ADMIN', 'units:read'),
+        ('TENANT_ADMIN', 'units:create'),
+        ('TENANT_ADMIN', 'units:update'),
+        ('TENANT_ADMIN', 'units:delete'),
+        ('TENANT_ADMIN', 'presentations:read'),
+        ('TENANT_ADMIN', 'presentations:create'),
+        ('TENANT_ADMIN', 'presentations:update'),
+        ('TENANT_ADMIN', 'presentations:delete'),
+        ('MANAGER', 'products:read'),
+        ('MANAGER', 'products:update'),
+        ('MANAGER', 'brands:read'),
+        ('MANAGER', 'brands:update'),
+        ('MANAGER', 'categories:read'),
+        ('MANAGER', 'categories:update'),
+        ('MANAGER', 'units:read'),
+        ('MANAGER', 'units:update'),
+        ('MANAGER', 'presentations:read'),
+        ('MANAGER', 'presentations:update'),
+        ('READ_ONLY', 'products:read'),
+        ('READ_ONLY', 'brands:read'),
+        ('READ_ONLY', 'categories:read'),
+        ('READ_ONLY', 'units:read'),
+        ('READ_ONLY', 'presentations:read')
+)
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM catalog_role_permissions crp
+JOIN roles r ON r.code = crp.role_code
+JOIN permissions p ON p.code = crp.permission_code
+WHERE r.tenant_id = '00000000-0000-4000-8000-000000000001'
+  AND r.deleted_at IS NULL
+ON CONFLICT DO NOTHING;

@@ -1,5 +1,8 @@
 package com.koda.platform.shared.api;
 
+import com.koda.platform.platform.catalog.application.CatalogItemNotFoundException;
+import com.koda.platform.platform.catalog.application.CatalogReferenceNotFoundException;
+import com.koda.platform.platform.catalog.application.CatalogVersionConflictException;
 import com.koda.platform.platform.configuration.application.CompanySettingsNotFoundException;
 import com.koda.platform.platform.configuration.application.CompanySettingsVersionConflictException;
 import com.koda.platform.platform.security.application.AuthenticationFailedException;
@@ -63,6 +66,40 @@ public class ApiExceptionHandler {
         return problem;
     }
 
+
+    @ExceptionHandler(CatalogItemNotFoundException.class)
+    ProblemDetail handleCatalogItemNotFound(CatalogItemNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problem.setTitle("Catalog item not found");
+        problem.setProperty("code", "CATALOG_ITEM_NOT_FOUND");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(CatalogReferenceNotFoundException.class)
+    ProblemDetail handleCatalogReferenceNotFound(CatalogReferenceNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+        problem.setTitle("Catalog reference not found");
+        problem.setProperty("code", "CATALOG_REFERENCE_NOT_FOUND");
+        problem.setProperty("reference", exception.reference());
+        problem.setProperty("referenceId", exception.referenceId());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(CatalogVersionConflictException.class)
+    ProblemDetail handleCatalogVersionConflict(CatalogVersionConflictException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Catalog version conflict");
+        problem.setProperty("code", "CATALOG_VERSION_CONFLICT");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
     @ExceptionHandler(PermissionDeniedException.class)
     ProblemDetail handlePermissionDenied(PermissionDeniedException exception, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());

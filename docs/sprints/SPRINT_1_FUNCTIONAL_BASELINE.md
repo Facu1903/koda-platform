@@ -50,6 +50,20 @@ Esta base no reemplaza futuras especificaciones detalladas. Funciona como contra
 | `stock_movements` | `read`, `create` |
 | `audit` | `read` |
 
+
+## Decision funcional - Catalogos ERP
+
+Aprobado por Product Owner el 2026-07-17 para Hito 6:
+
+- Marca opcional en productos.
+- Categorias planas para Sprint 1.
+- Un producto tiene una presentacion principal.
+- SKU unico por tenant.
+- Se permite desactivar productos con stock.
+- La eliminacion es soft delete.
+- `TENANT_OWNER` y `TENANT_ADMIN`: CRUD completo de catalogos.
+- `MANAGER`: lectura y actualizacion de catalogos.
+- `READ_ONLY`: solo lectura de catalogos.
 ## Reglas iniciales de stock
 
 - Tipos de movimiento: `IN`, `OUT`, `ADJUSTMENT`.

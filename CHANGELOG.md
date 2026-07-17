@@ -30,6 +30,12 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada auditoria persistente de actualizaciones `company_settings.update`.
 - Agregada documentacion de configuracion de empresa en `docs/configuration/COMPANY_SETTINGS.md`.
 - Agregados tests unitarios para permisos, normalizacion, auditoria y versionado de configuracion de empresa.
+- Agregado CRUD backend tenant-scoped de catalogos ERP bajo `/api/v1/catalog`.
+- Agregados servicio, puerto de repositorio y adaptador JDBC para marcas, categorias, unidades, presentaciones y productos.
+- Agregada migracion `V202607171530__assign_catalog_role_permissions.sql` con matriz rol-permiso aprobada para catalogos.
+- Agregada documentacion de catalogos en `docs/catalogs/ERP_CATALOGS.md`.
+- Agregada decision funcional aprobada de catalogos en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
+- Agregados tests unitarios para permisos, referencias, versionado, soft delete y auditoria de catalogos.
 
 ### Changed
 
@@ -44,6 +50,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Docker Compose requiere `KODA_JWT_SECRET` para iniciar backend.
 - Agregado error `PERMISSION_DENIED` para permisos backend insuficientes.
 - Agregados errores `COMPANY_SETTINGS_NOT_FOUND` y `COMPANY_SETTINGS_VERSION_CONFLICT`.
+- Agregados errores `CATALOG_ITEM_NOT_FOUND`, `CATALOG_REFERENCE_NOT_FOUND` y `CATALOG_VERSION_CONFLICT`.
 
 ### Verified
 
@@ -60,6 +67,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Jar backend Hito 4 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP` y error auth `400` estructurado.
 - `mvn test` ejecutado correctamente con 19 tests: contexto Spring, Tenant Context, AuthService, conversion JWT y CompanySettingsService.
 - Jar backend Hito 5 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP` y endpoint company settings protegido con `401` anonimo.
+- `mvn test` ejecutado correctamente con 25 tests: contexto Spring, Tenant Context, AuthService, conversion JWT, CompanySettingsService y CatalogService.
+- Jar backend Hito 6 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171530`, 55 asignaciones rol-permiso y endpoint catalog products protegido con `401` anonimo.
 
 ### Known Issues
 
@@ -67,7 +76,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - El primer build Docker del backend puede tardar varios minutos porque Maven descarga dependencias dentro de la imagen builder.
 - Mockito emite advertencia por carga dinamica de Java agent; no bloquea actualmente, pero debe revisarse antes de endurecer la matriz de Java futura.
 - HS256 se acepta para Sprint 1; antes de produccion multi-nodo debe evaluarse rotacion de llaves, RS256/JWKS y politica operacional de secretos.
-- La matriz rol-permiso inicial todavia requiere aprobacion funcional; el codigo valida permisos desde JWT y evita reglas por nombre de rol.
+- La matriz rol-permiso de catalogos fue aprobada y aplicada; quedan pendientes matrices finas de seguridad, configuracion de empresa, stock y auditoria.
 
 ## [0.0.2] - 2026-07-15
 
