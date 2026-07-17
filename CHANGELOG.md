@@ -10,6 +10,20 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 
 - Agregado plan inicial propuesto de Sprint 2 en `docs/sprints/SPRINT_2_EXECUTION_PLAN.md`.
 - Agregada y aprobada base funcional de Sprint 2 en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
+- Agregado pipeline minimo de GitHub Actions en `.github/workflows/ci.yml` para backend y frontend.
+- Agregado Maven Failsafe para ejecutar pruebas de integracion durante `mvn verify`.
+- Agregada prueba de persistencia `FlywayPostgresqlIT` con Testcontainers y PostgreSQL 17.
+- Agregada documentacion de CI en `docs/ci/GITHUB_ACTIONS.md`.
+
+### Verified
+
+- `mvn -B verify` ejecutado correctamente en backend con 47 pruebas unitarias y 3 pruebas de integracion.
+- Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607171550`.
+- `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
+
+### Known Issues
+
+- `npm.cmd ci` en carpeta OneDrive supero el tiempo de espera local; no dejo procesos Node activos y el build posterior fue exitoso. GitHub Actions valida `npm ci` en Linux.
 
 ## [0.1.0] - 2026-07-17
 

@@ -32,7 +32,7 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 | Hito | Estado | Resultado esperado |
 | --- | --- | --- |
 | 1. Base funcional Sprint 2 | Completado | Reglas aprobadas para clientes, proveedores, caja, ventas y compras. |
-| 2. CI/CD minimo y tests de persistencia | Pendiente | Validacion automatica en GitHub y pruebas con PostgreSQL real/Testcontainers. |
+| 2. CI/CD minimo y tests de persistencia | Completado | GitHub Actions para backend/frontend y prueba Flyway con PostgreSQL 17/Testcontainers. |
 | 3. Clientes y proveedores | Pendiente | CRUD tenant-scoped con permisos, auditoria y validaciones. |
 | 4. Caja inicial | Pendiente | Apertura/cierre o movimientos basicos de caja segun decision funcional. |
 | 5. Ventas basicas | Pendiente | Registro de venta con estados, cliente, items, impacto en stock/caja segun reglas aprobadas. |
@@ -105,6 +105,17 @@ La base funcional fue aprobada por el Product Owner el 2026-07-17 y esta documen
 - Las reglas de negocio deben vivir en application/domain, no en controladores.
 - Cada hito debe actualizar README, changelog y documentacion especifica.
 
+## Hito 2 completado
+
+El Hito 2 agrego una primera barrera automatica de calidad antes de sumar mas negocio:
+
+- Workflow GitHub Actions en `.github/workflows/ci.yml`.
+- Backend validado con `mvn -B verify`.
+- Maven Failsafe configurado para pruebas de integracion.
+- Prueba `FlywayPostgresqlIT` con PostgreSQL 17 real mediante Testcontainers.
+- Frontend validado con build TypeScript/Vite.
+- Documentacion especifica en `docs/ci/GITHUB_ACTIONS.md`.
+
 ## Fuera de alcance propuesto
 
 - Facturacion fiscal electronica.
@@ -118,6 +129,6 @@ La base funcional fue aprobada por el Product Owner el 2026-07-17 y esta documen
 - App mobile.
 - BI avanzado.
 
-## Primer paso recomendado
+## Siguiente paso recomendado
 
-Avanzar al Hito 2: CI/CD minimo y tests de persistencia. El objetivo es automatizar validaciones en GitHub y empezar a probar persistencia real antes de sumar volumen de negocio.
+Avanzar al Hito 3: clientes y proveedores. Ahora que existe una puerta automatica basica de calidad, se puede empezar a sumar negocio con menor riesgo de romper migraciones, backend o frontend.

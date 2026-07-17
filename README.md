@@ -10,7 +10,7 @@ Sprint 1 cerrado. Sprint 2 en planificacion.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
-Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
+Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers.
 
 ## Documentos principales
 
@@ -27,6 +27,7 @@ Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales f
 - [Sprint 1 Closure Report](docs/sprints/SPRINT_1_CLOSURE_REPORT.md)
 - [Sprint 2 Execution Plan](docs/sprints/SPRINT_2_EXECUTION_PLAN.md)
 - [Sprint 2 Functional Baseline](docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md)
+- [GitHub Actions CI](docs/ci/GITHUB_ACTIONS.md)
 - [PostgreSQL Conventions](docs/database/POSTGRESQL_CONVENTIONS.md)
 - [Tenant Context](docs/security/TENANT_CONTEXT.md)
 - [Authentication](docs/security/AUTHENTICATION.md)
@@ -241,6 +242,16 @@ La matriz aprobada habilita lectura de auditoria para `TENANT_OWNER`, `TENANT_AD
 
 Ver detalle en `docs/audit/AUDIT_EVENTS.md`.
 
+## CI/CD
+
+El repositorio ya incluye un pipeline minimo en `.github/workflows/ci.yml` para validar cambios en `main` y pull requests.
+
+- Backend: `mvn -B verify`, incluyendo pruebas unitarias, empaquetado y pruebas de integracion.
+- Persistencia: Testcontainers levanta PostgreSQL 17 y Flyway aplica todas las migraciones reales.
+- Frontend: `npm ci` y `npm run build` con Node.js 24.
+
+Ver detalle en `docs/ci/GITHUB_ACTIONS.md`.
+
 ## Tests y hardening
 
 El backend ya incorpora hardening tecnico de cierre de Sprint 1:
@@ -251,7 +262,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 47 tests, 0 fallos.
+- Suite backend actual: 47 tests unitarios y 3 tests de integracion, 0 fallos en `mvn -B verify`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
 
