@@ -1,6 +1,7 @@
 package com.koda.platform.platform.security.infrastructure;
 
 import com.koda.platform.platform.security.application.AccessToken;
+import com.koda.platform.platform.security.application.AccessTokenIssuer;
 import com.koda.platform.platform.security.application.TenantAccess;
 import com.koda.platform.platform.security.application.UserAccount;
 import java.time.Instant;
@@ -12,7 +13,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JwtTokenService {
+public class JwtTokenService implements AccessTokenIssuer {
 
     private final JwtEncoder jwtEncoder;
     private final KodaSecurityProperties properties;
@@ -22,6 +23,7 @@ public class JwtTokenService {
         this.properties = properties;
     }
 
+    @Override
     public AccessToken createAccessToken(UserAccount user, TenantAccess tenantAccess, Instant issuedAt) {
         Instant expiresAt = issuedAt.plus(properties.getJwt().getAccessTokenTtl());
         JwtClaimsSet claims = JwtClaimsSet.builder()

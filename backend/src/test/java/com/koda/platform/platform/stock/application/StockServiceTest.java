@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 class StockServiceTest {
 
     private final TenantId tenantId = TenantId.from(UUID.fromString("00000000-0000-4000-8000-000000000001"));
+    private final TenantId otherTenantId = TenantId.from(UUID.fromString("00000000-0000-4000-8000-000000000099"));
     private final UUID userId = UUID.randomUUID();
     private final UUID warehouseId = UUID.randomUUID();
     private final UUID productId = UUID.randomUUID();
@@ -97,6 +98,29 @@ class StockServiceTest {
     }
 
     @Test
+    void listBalancesUsesCurrentTenantOnlyAndCapsLimit() {
+        UUID foreignWarehouseId = UUID.randomUUID();
+        UUID foreignProductId = UUID.randomUUID();
+        seedBalance("2", "0");
+        repository.balances.put(new BalanceKey(foreignWarehouseId, foreignProductId), new StockBalance(
+            UUID.randomUUID(),
+            otherTenantId,
+            foreignWarehouseId,
+            foreignProductId,
+            new BigDecimal("99").setScale(6),
+            BigDecimal.ZERO.setScale(6),
+            0,
+            Instant.parse("2026-07-17T18:00:00Z")
+        ));
+
+        List<StockBalance> balances = service.listBalances(null, null, 900);
+
+        assertThat(repository.lastBalanceLimit).isEqualTo(500);
+        assertThat(balances).extracting(StockBalance::tenantId).containsOnly(tenantId);
+        assertThat(balances).extracting(StockBalance::warehouseId).doesNotContain(foreignWarehouseId);
+    }
+
+    @Test
     void createMovementRejectsMissingPermission() {
         currentTenantProvider.context = Optional.of(new TenantContext(tenantId, userId, Set.of(), Set.of("stock_balances:read"), false));
 
@@ -145,9 +169,11 @@ class StockServiceTest {
         private final Map<BalanceKey, StockBalance> balances = new HashMap<>();
         private final List<StockMovement> movements = new ArrayList<>();
         private final List<String> auditActions = new ArrayList<>();
+        private int lastBalanceLimit;
 
         @Override
         public List<StockBalance> listBalances(TenantId tenantId, UUID warehouseId, UUID productId, int limit) {
+            lastBalanceLimit = limit;
             return balances.values().stream()
                 .filter(balance -> balance.tenantId().equals(tenantId))
                 .filter(balance -> warehouseId == null || balance.warehouseId().equals(warehouseId))

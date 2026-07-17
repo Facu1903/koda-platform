@@ -48,6 +48,12 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada documentacion de auditoria en `docs/audit/AUDIT_EVENTS.md`.
 - Agregada decision funcional aprobada de auditoria en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
 - Agregados tests unitarios para permisos, filtros, limites y validacion temporal de auditoria.
+- Agregadas reglas automatizadas de arquitectura con ArchUnit.
+- Agregados puertos `AccessTokenIssuer`, `RefreshTokenService` y `AuthTokenPolicy` para desacoplar autenticacion de infraestructura concreta.
+- Agregado adaptador `KodaAuthTokenPolicy` para politica de tokens desde configuracion.
+- Agregados tests de seguridad JWT para secreto obligatorio, secreto minimo, issuer esperado e issuer invalido.
+- Agregados tests de aislamiento multiempresa en catalogos y stock.
+- Agregada documentacion de hardening en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
 
 ### Changed
 
@@ -64,6 +70,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregados errores `COMPANY_SETTINGS_NOT_FOUND` y `COMPANY_SETTINGS_VERSION_CONFLICT`.
 - Agregados errores `CATALOG_ITEM_NOT_FOUND`, `CATALOG_REFERENCE_NOT_FOUND` y `CATALOG_VERSION_CONFLICT`.
 - Agregados errores `STOCK_ITEM_NOT_FOUND`, `STOCK_REFERENCE_NOT_FOUND` y `STOCK_MOVEMENT_REJECTED`.
+- `AuthService` ahora depende de puertos de aplicacion en lugar de clases de infraestructura JWT/refresh/configuracion.
+- El decoder JWT ahora valida explicitamente `KODA_JWT_ISSUER`.
+- Actualizado diagrama de capas para reflejar que `api` no depende de `infrastructure`.
 
 ### Verified
 
@@ -87,6 +96,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `mvn test` ejecutado correctamente con 38 tests: contexto Spring, Tenant Context, AuthService, conversion JWT, CompanySettingsService, CatalogService, StockService y AuditService.
 - Jar backend Hito 8 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171550`, 73 asignaciones rol-permiso y endpoint audit events protegido con `401` anonimo.
 - Imagen Docker backend reconstruida y backend Docker validado con Actuator `UP`, Flyway `v202607171550` y endpoint audit events protegido con `401` anonimo.
+- `mvn test` ejecutado correctamente con 47 tests: contexto Spring, Tenant Context, AuthService, conversion JWT, configuracion JWT, CompanySettingsService, CatalogService, StockService, AuditService y reglas ArchUnit.
+- Jar backend Hito 9 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171550`, 73 asignaciones rol-permiso y endpoint audit events protegido con `401` anonimo.
+- Imagen Docker backend Hito 9 reconstruida y backend Docker validado con Actuator `UP`, Flyway `v202607171550` y endpoint audit events protegido con `401` anonimo.
 
 ### Known Issues
 
@@ -97,6 +109,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Las matrices rol-permiso de catalogos, stock y auditoria fueron aprobadas y aplicadas; quedan pendientes matrices finas de seguridad y configuracion de empresa.
 - Stock no incluye transferencias, reservas, lotes, vencimientos, costos promedio ni UI en Hito 7.
 - Auditoria Hito 8 no incluye auditoria global de plataforma, exportacion, retencion, particionamiento ni UI.
+- Hito 9 no incluye Row Level Security, tests Testcontainers de repositorios por defecto, SAST/DAST, pruebas de carga, CI/CD ni rotacion avanzada de llaves.
 
 ## [0.0.2] - 2026-07-15
 

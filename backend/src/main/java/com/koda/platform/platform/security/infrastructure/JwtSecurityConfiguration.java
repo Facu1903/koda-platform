@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
@@ -37,14 +38,24 @@ public class JwtSecurityConfiguration {
     }
 
     @Bean
-    JwtDecoder jwtDecoder(SecretKey jwtSecretKey) {
-        return NimbusJwtDecoder.withSecretKey(jwtSecretKey)
+    JwtDecoder jwtDecoder(SecretKey jwtSecretKey, KodaSecurityProperties properties) {
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withSecretKey(jwtSecretKey)
             .macAlgorithm(MacAlgorithm.HS256)
             .build();
+        decoder.setJwtValidator(JwtValidators.createDefaultWithIssuer(requiredIssuer(properties)));
+        return decoder;
     }
 
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
+    }
+
+    private String requiredIssuer(KodaSecurityProperties properties) {
+        String issuer = properties.getJwt().getIssuer();
+        if (issuer == null || issuer.isBlank()) {
+            throw new IllegalStateException("KODA_JWT_ISSUER is required");
+        }
+        return issuer.trim();
     }
 }

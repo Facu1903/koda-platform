@@ -6,9 +6,9 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1: Hito 8 - Auditoria completado.
+Sprint 1: Hito 9 - Tests y hardening completado.
 
-Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock y consulta controlada de eventos de auditoria. La base ya camina; ahora hay que evitar que corra en ojotas.
+Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
 ## Documentos principales
 
@@ -21,6 +21,7 @@ Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migr
 - [Agents](AGENTS.md)
 - [Sprint 1 Functional Baseline](docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md)
 - [Sprint 1 Execution Plan](docs/sprints/SPRINT_1_EXECUTION_PLAN.md)
+- [Sprint 1 Hardening Report](docs/sprints/SPRINT_1_HARDENING_REPORT.md)
 - [PostgreSQL Conventions](docs/database/POSTGRESQL_CONVENTIONS.md)
 - [Tenant Context](docs/security/TENANT_CONTEXT.md)
 - [Authentication](docs/security/AUTHENTICATION.md)
@@ -234,6 +235,20 @@ El backend ya expone `/api/v1/audit/events` para consultar eventos auditables de
 La matriz aprobada habilita lectura de auditoria para `TENANT_OWNER`, `TENANT_ADMIN` y `MANAGER`. `READ_ONLY`, `SALES_USER` y `STOCK_USER` no acceden a auditoria en Sprint 1.
 
 Ver detalle en `docs/audit/AUDIT_EVENTS.md`.
+
+## Tests y hardening
+
+El backend ya incorpora hardening tecnico de cierre de Sprint 1:
+
+- Reglas automatizadas de arquitectura con ArchUnit.
+- Bloqueo de dependencias `application -> api/infrastructure`.
+- Bloqueo de dependencias `api -> infrastructure`.
+- Validacion de issuer JWT en el decoder.
+- Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
+- Pruebas de aislamiento tenant en catalogos y stock.
+- Suite backend actual: 47 tests, 0 fallos.
+
+Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
 
 ## Nota de entorno
 

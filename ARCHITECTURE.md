@@ -21,6 +21,14 @@ Regla central:
 
 > El dominio no conoce Spring, JPA, HTTP, JWT, PostgreSQL ni React.
 
+Desde Sprint 1 Hito 9 existen reglas automatizadas de arquitectura con ArchUnit:
+
+- `application` no puede depender de `api` ni de `infrastructure`.
+- `api` no puede depender de `infrastructure`.
+- `domain` no puede depender de Spring, Jakarta Persistence ni Hibernate.
+
+Estas reglas no reemplazan criterio tecnico, pero evitan que la arquitectura se oxide en silencio.
+
 ## 3. Estructura propuesta del repositorio
 
 ```text
@@ -141,6 +149,8 @@ Clientes enterprise podran requerir aislamiento dedicado por base o esquema. La 
 - Roles configurables por empresa.
 - Superadministrador de plataforma separado de administradores de tenant.
 - Validacion de permisos en capa de aplicacion, no solo en controladores.
+- Validacion de `issuer` en tokens JWT entrantes.
+- Puertos de aplicacion para emision de tokens y politica de refresh, evitando que casos de uso dependan de infraestructura JWT concreta.
 
 ### Reglas criticas
 
@@ -288,7 +298,6 @@ flowchart TD
   APP --> DOMAIN["Domain - Entities, value objects, rules"]
   INFRA["Infrastructure - JPA, security, external services"] --> APP
   INFRA --> DOMAIN
-  API --> INFRA
 ```
 
 ## 15. Decisiones tecnicas iniciales

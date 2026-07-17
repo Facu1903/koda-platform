@@ -5,9 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.koda.platform.platform.security.infrastructure.JwtTokenService;
-import com.koda.platform.platform.security.infrastructure.KodaSecurityProperties;
-import com.koda.platform.platform.security.infrastructure.RefreshTokenGenerator;
 import com.koda.platform.shared.domain.tenant.TenantId;
 import java.time.Clock;
 import java.time.Duration;
@@ -31,22 +28,21 @@ class AuthServiceTest {
     private final TenantId tenantId = TenantId.from(UUID.fromString("00000000-0000-4000-8000-000000000001"));
     private final UUID userId = UUID.randomUUID();
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(4);
-    private final JwtTokenService jwtTokenService = Mockito.mock(JwtTokenService.class);
-    private final RefreshTokenGenerator refreshTokenGenerator = Mockito.mock(RefreshTokenGenerator.class);
+    private final AccessTokenIssuer accessTokenIssuer = Mockito.mock(AccessTokenIssuer.class);
+    private final RefreshTokenService refreshTokenService = Mockito.mock(RefreshTokenService.class);
     private final FakeAuthRepository authRepository = new FakeAuthRepository();
-    private final KodaSecurityProperties properties = new KodaSecurityProperties();
+    private final AuthTokenPolicy tokenPolicy = () -> Duration.ofDays(30);
     private final RequestMetadata metadata = new RequestMetadata("127.0.0.1", "JUnit");
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        properties.getJwt().setRefreshTokenTtl(Duration.ofDays(30));
         authService = new AuthService(
             authRepository,
             passwordEncoder,
-            jwtTokenService,
-            refreshTokenGenerator,
-            properties,
+            accessTokenIssuer,
+            refreshTokenService,
+            tokenPolicy,
             Clock.fixed(NOW, ZoneOffset.UTC)
         );
         authRepository.user = new UserAccount(
@@ -64,9 +60,10 @@ class AuthServiceTest {
             Set.of("products:read"),
             false
         ));
-        when(jwtTokenService.createAccessToken(any(), any(), any())).thenReturn(new AccessToken("access-token", NOW.plusSeconds(900)));
-        when(refreshTokenGenerator.generate(any())).thenReturn(new RefreshTokenPair(UUID.randomUUID(), "refresh-token", "refresh-hash", NOW.plus(Duration.ofDays(30))));
-        when(refreshTokenGenerator.hash("old-refresh-token")).thenReturn("old-refresh-hash");
+        when(accessTokenIssuer.createAccessToken(any(), any(), any())).thenReturn(new AccessToken("access-token", NOW.plusSeconds(900)));
+        when(refreshTokenService.generate(any()))
+            .thenReturn(new RefreshTokenPair(UUID.randomUUID(), "refresh-token", "refresh-hash", NOW.plus(Duration.ofDays(30))));
+        when(refreshTokenService.hash("old-refresh-token")).thenReturn("old-refresh-hash");
     }
 
     @Test

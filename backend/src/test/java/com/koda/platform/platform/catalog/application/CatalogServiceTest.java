@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 class CatalogServiceTest {
 
     private final TenantId tenantId = TenantId.from(UUID.fromString("00000000-0000-4000-8000-000000000001"));
+    private final TenantId otherTenantId = TenantId.from(UUID.fromString("00000000-0000-4000-8000-000000000099"));
     private final UUID userId = UUID.randomUUID();
     private final UUID unitId = UUID.randomUUID();
     private final UUID presentationId = UUID.randomUUID();
@@ -100,6 +101,20 @@ class CatalogServiceTest {
         assertThat(product.defaultPresentationId()).isEqualTo(presentationId);
         assertThat(product.allowNegativeStock()).isFalse();
         assertThat(repository.auditActions).contains("catalog.product.create:product");
+    }
+
+    @Test
+    void listProductsUsesCurrentTenantOnly() {
+        UUID foreignProductId = UUID.randomUUID();
+        repository.products.add(new Product(foreignProductId, otherTenantId, "FOREIGN", "Foreign", null, null, null, null, unitId,
+            presentationId, "GOOD", "ACTIVE", true, false, 0, Instant.parse("2026-07-17T16:00:00Z")));
+        Product ownProduct = service.createProduct(new CreateProductCommand("SKU-TENANT", "Tenant product", null, null, null, null, unitId,
+            presentationId, "GOOD", "ACTIVE", true), metadata);
+
+        List<Product> products = service.listProducts();
+
+        assertThat(products).extracting(Product::tenantId).containsOnly(tenantId);
+        assertThat(products).extracting(Product::id).contains(ownProduct.id()).doesNotContain(foreignProductId);
     }
 
     @Test

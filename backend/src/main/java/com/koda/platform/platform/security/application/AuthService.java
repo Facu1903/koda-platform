@@ -1,8 +1,5 @@
 package com.koda.platform.platform.security.application;
 
-import com.koda.platform.platform.security.infrastructure.JwtTokenService;
-import com.koda.platform.platform.security.infrastructure.KodaSecurityProperties;
-import com.koda.platform.platform.security.infrastructure.RefreshTokenGenerator;
 import com.koda.platform.shared.domain.tenant.TenantId;
 import java.time.Clock;
 import java.time.Instant;
@@ -19,35 +16,35 @@ public class AuthService {
 
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenService jwtTokenService;
-    private final RefreshTokenGenerator refreshTokenGenerator;
-    private final KodaSecurityProperties properties;
+    private final AccessTokenIssuer accessTokenIssuer;
+    private final RefreshTokenService refreshTokenService;
+    private final AuthTokenPolicy tokenPolicy;
     private final Clock clock;
 
     @Autowired
     public AuthService(
         AuthRepository authRepository,
         PasswordEncoder passwordEncoder,
-        JwtTokenService jwtTokenService,
-        RefreshTokenGenerator refreshTokenGenerator,
-        KodaSecurityProperties properties
+        AccessTokenIssuer accessTokenIssuer,
+        RefreshTokenService refreshTokenService,
+        AuthTokenPolicy tokenPolicy
     ) {
-        this(authRepository, passwordEncoder, jwtTokenService, refreshTokenGenerator, properties, Clock.systemUTC());
+        this(authRepository, passwordEncoder, accessTokenIssuer, refreshTokenService, tokenPolicy, Clock.systemUTC());
     }
 
     AuthService(
         AuthRepository authRepository,
         PasswordEncoder passwordEncoder,
-        JwtTokenService jwtTokenService,
-        RefreshTokenGenerator refreshTokenGenerator,
-        KodaSecurityProperties properties,
+        AccessTokenIssuer accessTokenIssuer,
+        RefreshTokenService refreshTokenService,
+        AuthTokenPolicy tokenPolicy,
         Clock clock
     ) {
         this.authRepository = authRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtTokenService = jwtTokenService;
-        this.refreshTokenGenerator = refreshTokenGenerator;
-        this.properties = properties;
+        this.accessTokenIssuer = accessTokenIssuer;
+        this.refreshTokenService = refreshTokenService;
+        this.tokenPolicy = tokenPolicy;
         this.clock = clock;
     }
 
@@ -71,7 +68,7 @@ public class AuthService {
     @Transactional
     public AuthSession refresh(String refreshToken, RequestMetadata metadata) {
         Instant now = clock.instant();
-        String tokenHash = refreshTokenGenerator.hash(refreshToken);
+        String tokenHash = refreshTokenService.hash(refreshToken);
         StoredRefreshToken storedToken = authRepository.findActiveRefreshToken(tokenHash, now)
             .orElseThrow(InvalidRefreshTokenException::new);
         UserAccount user = authRepository.findUserById(storedToken.userId())
@@ -80,8 +77,8 @@ public class AuthService {
         TenantAccess tenantAccess = authRepository.findActiveTenantAccess(storedToken.userId(), storedToken.tenantId())
             .orElseThrow(InvalidRefreshTokenException::new);
 
-        AccessToken accessToken = jwtTokenService.createAccessToken(user, tenantAccess, now);
-        RefreshTokenPair nextRefreshToken = refreshTokenGenerator.generate(now.plus(properties.getJwt().getRefreshTokenTtl()));
+        AccessToken accessToken = accessTokenIssuer.createAccessToken(user, tenantAccess, now);
+        RefreshTokenPair nextRefreshToken = refreshTokenService.generate(now.plus(tokenPolicy.refreshTokenTtl()));
         authRepository.storeRefreshToken(nextRefreshToken.id(), user.id(), tenantAccess.tenantId(), nextRefreshToken.hash(), now,
             nextRefreshToken.expiresAt(), metadata);
         authRepository.revokeRefreshToken(storedToken.id(), now, nextRefreshToken.id());
@@ -92,15 +89,15 @@ public class AuthService {
 
     @Transactional
     public void logout(String refreshToken, RequestMetadata metadata) {
-        String tokenHash = refreshTokenGenerator.hash(refreshToken);
+        String tokenHash = refreshTokenService.hash(refreshToken);
         authRepository.revokeRefreshTokenByHash(tokenHash, clock.instant());
         authRepository.recordAuditEvent(null, null, "auth.logout", "SUCCESS", metadata, "{}");
     }
 
     private AuthSession issueSession(UserAccount user, TenantAccess tenantAccess, RequestMetadata metadata) {
         Instant now = clock.instant();
-        AccessToken accessToken = jwtTokenService.createAccessToken(user, tenantAccess, now);
-        RefreshTokenPair refreshToken = refreshTokenGenerator.generate(now.plus(properties.getJwt().getRefreshTokenTtl()));
+        AccessToken accessToken = accessTokenIssuer.createAccessToken(user, tenantAccess, now);
+        RefreshTokenPair refreshToken = refreshTokenService.generate(now.plus(tokenPolicy.refreshTokenTtl()));
         authRepository.storeRefreshToken(refreshToken.id(), user.id(), tenantAccess.tenantId(), refreshToken.hash(), now,
             refreshToken.expiresAt(), metadata);
         return toSession(user, tenantAccess, accessToken, refreshToken);

@@ -20,7 +20,7 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 | 6. Catalogos ERP | Completado | Productos, marcas, categorias, unidades y presentaciones. |
 | 7. Stock | Completado | Movimientos IN, OUT y ADJUSTMENT sin stock negativo por defecto. |
 | 8. Auditoria | Completado | Consulta segura de eventos auditables por tenant. |
-| 9. Tests y hardening | Pendiente | Cobertura minima y validacion de aislamiento multiempresa. |
+| 9. Tests y hardening | Completado | Cobertura minima, reglas de arquitectura y validacion de aislamiento multiempresa. |
 
 ## Hito 1 - Scaffolding tecnico
 
@@ -217,6 +217,28 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - UI de auditoria.
 - Busqueda full-text o analitica avanzada.
 
+## Hito 9 - Tests y hardening
+
+### Incluye
+
+- Refactor tecnico de `AuthService` para depender de puertos de aplicacion y no de infraestructura concreta.
+- Puertos `AccessTokenIssuer`, `RefreshTokenService` y `AuthTokenPolicy`.
+- Adaptadores de infraestructura para JWT, refresh tokens y politica de tokens.
+- Validacion explicita de `KODA_JWT_ISSUER` en el decoder JWT.
+- Reglas ArchUnit para proteger Clean Architecture.
+- Tests de seguridad JWT para secreto, issuer esperado e issuer invalido.
+- Tests de aislamiento tenant en catalogos y stock.
+- Documentacion en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
+
+### No incluye
+
+- Row Level Security PostgreSQL.
+- Tests de repositorio con Testcontainers ejecutados por defecto.
+- Analisis SAST/DAST.
+- Pruebas de carga o rendimiento.
+- CI/CD en GitHub Actions.
+- Rotacion de llaves, RS256 o JWKS.
+
 ## Herramientas locales detectadas
 
 - Git: disponible.
@@ -243,6 +265,9 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Auditoria: `mvn test` ejecutado correctamente con 38 tests, 0 fallos.
 - Auditoria runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171550`, endpoint tenant-scoped protegido con `401` sin autenticacion y 73 asignaciones rol-permiso.
 - Auditoria Docker: imagen backend reconstruida, contenedor reiniciado y validado en `http://localhost:8080` con Actuator `UP`, Flyway `v202607171550` y endpoint audit events protegido con `401` sin autenticacion.
+- Hito 9: `mvn test` ejecutado correctamente con 47 tests, 0 fallos.
+- Hito 9 runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171550`, endpoint audit events protegido con `401` sin autenticacion y 73 asignaciones rol-permiso.
+- Hito 9 Docker: imagen backend reconstruida, contenedor reiniciado y validado en `http://localhost:8080` con Actuator `UP`, Flyway `v202607171550` y endpoint audit events protegido con `401` sin autenticacion.
 
 ## Riesgo actual
 
@@ -252,12 +277,14 @@ La base tecnica local esta validada. Los riesgos abiertos son controlados:
 - El primer build Docker del backend tarda varios minutos porque Maven descarga dependencias dentro de la imagen builder.
 - Mockito emite advertencia por carga dinamica de Java agent; debe revisarse antes de endurecer la matriz de Java futura.
 - `KODA_JWT_SECRET` es obligatorio para ejecutar backend real o Docker Compose; esto es una proteccion deliberada, no una incomodidad accidental.
-- HS256 es suficiente para este hito; antes de multi-nodo productivo debe evaluarse rotacion de llaves y firma asimetrica/JWKS.
+- HS256 es suficiente para Sprint 1; antes de multi-nodo productivo debe evaluarse rotacion de llaves y firma asimetrica/JWKS.
 - Las matrices rol-permiso de catalogos, stock y auditoria fueron aprobadas y aplicadas. Siguen pendientes matrices finas para seguridad y configuracion de empresa.
+- Row Level Security PostgreSQL sigue pendiente; la barrera actual es aplicativa y esta cubierta por tests, pero no reemplaza defensa en profundidad.
+- No hay CI/CD todavia; las validaciones existen localmente pero aun dependen de ejecucion manual.
 
 ## Siguiente paso tecnico
 
-Avanzar al Hito 9: Tests y hardening. El objetivo sera endurecer aislamiento multiempresa, ampliar regresiones criticas y revisar riesgos tecnicos antes de cerrar Sprint 1.
+Cerrar Sprint 1 con push a GitHub y preparar el plan de Sprint 2. Antes de seguir agregando negocio, conviene decidir CI/CD minimo, estrategia de usuarios/roles administrativos y profundidad de tests de persistencia.
 
 ## Decision tecnica: PostgreSQL 17
 

@@ -1,6 +1,7 @@
 package com.koda.platform.platform.security.infrastructure;
 
 import com.koda.platform.platform.security.application.RefreshTokenPair;
+import com.koda.platform.platform.security.application.RefreshTokenService;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -11,10 +12,11 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RefreshTokenGenerator {
+public class RefreshTokenGenerator implements RefreshTokenService {
 
     private final SecureRandom secureRandom = new SecureRandom();
 
+    @Override
     public RefreshTokenPair generate(Instant expiresAt) {
         byte[] bytes = new byte[64];
         secureRandom.nextBytes(bytes);
@@ -22,6 +24,7 @@ public class RefreshTokenGenerator {
         return new RefreshTokenPair(UUID.randomUUID(), value, hash(value), expiresAt);
     }
 
+    @Override
     public String hash(String token) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
