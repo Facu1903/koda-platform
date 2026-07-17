@@ -4,7 +4,13 @@ Todas las modificaciones relevantes de KODA PLATFORM se documentaran en este arc
 
 El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patch>` hasta la primera version comercial estable.
 
-## [0.1.0] - Unreleased
+## [0.2.0] - Unreleased
+
+### Added
+
+- Agregado plan inicial propuesto de Sprint 2 en `docs/sprints/SPRINT_2_EXECUTION_PLAN.md`.
+
+## [0.1.0] - 2026-07-17
 
 ### Added
 
@@ -54,6 +60,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregados tests de seguridad JWT para secreto obligatorio, secreto minimo, issuer esperado e issuer invalido.
 - Agregados tests de aislamiento multiempresa en catalogos y stock.
 - Agregada documentacion de hardening en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
+- Agregado cierre formal de Sprint 1 en `docs/sprints/SPRINT_1_CLOSURE_REPORT.md`.
 
 ### Changed
 

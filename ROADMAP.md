@@ -39,6 +39,10 @@ Definir las reglas tecnicas, arquitectonicas y operativas antes de escribir codi
 
 ## 3. Sprint 1 - Base funcional de KODA ERP
 
+### Estado
+
+Cerrado el 2026-07-17. Ver `docs/sprints/SPRINT_1_CLOSURE_REPORT.md`.
+
 ### Objetivo
 
 Construir el primer incremento ejecutable de plataforma y ERP, con seguridad, multi-tenancy, configuracion basica y catalogo/stock inicial.
@@ -106,6 +110,10 @@ El alcance es amplio para un Sprint 1. La forma madura de manejarlo es mantener 
 
 ## 4. Sprint 2 - Operacion comercial inicial
 
+### Estado
+
+Propuesta inicial pendiente de aprobacion del Product Owner. Ver `docs/sprints/SPRINT_2_EXECUTION_PLAN.md`.
+
 ### Objetivo
 
 Extender ERP hacia operaciones comerciales basicas.
@@ -119,8 +127,9 @@ Extender ERP hacia operaciones comerciales basicas.
 - Caja inicial.
 - Reportes operativos simples.
 - Mejoras de dashboard.
+- CI/CD minimo y tests de persistencia como refuerzo tecnico recomendado.
 
-El alcance definitivo requiere aprobacion del Product Owner.
+El alcance definitivo requiere aprobacion del Product Owner antes de escribir codigo de negocio.
 
 ## 5. Sprint 3 - Licenciamiento y modularidad comercial
 

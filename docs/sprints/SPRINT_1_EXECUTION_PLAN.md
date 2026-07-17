@@ -2,7 +2,7 @@
 
 ## Estado
 
-En progreso.
+Cerrado el 2026-07-17.
 
 ## Objetivo del Sprint 1
 
@@ -284,7 +284,7 @@ La base tecnica local esta validada. Los riesgos abiertos son controlados:
 
 ## Siguiente paso tecnico
 
-Cerrar Sprint 1 con push a GitHub y preparar el plan de Sprint 2. Antes de seguir agregando negocio, conviene decidir CI/CD minimo, estrategia de usuarios/roles administrativos y profundidad de tests de persistencia.
+Sprint 1 queda cerrado. El siguiente paso es aprobar la base funcional minima de Sprint 2 documentada en `docs/sprints/SPRINT_2_EXECUTION_PLAN.md` antes de implementar nuevas reglas de negocio.
 
 ## Decision tecnica: PostgreSQL 17
 
