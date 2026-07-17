@@ -12,7 +12,7 @@ Sprint 2 no debe intentar hacer un sistema contable/fiscal completo. El objetivo
 
 ## Principio rector
 
-No se implementara codigo de negocio de Sprint 2 hasta aprobar la base funcional minima.
+No se implementara codigo de negocio de Sprint 2 hasta aprobar la base funcional minima documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
 
 Si se codifica ventas o compras sin definir numeracion, estados, impacto en stock, caja, permisos y anulaciones, el sistema empezara a improvisar reglas. Esa improvisacion despues se convierte en deuda con perfume caro.
 
@@ -31,7 +31,7 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 
 | Hito | Estado | Resultado esperado |
 | --- | --- | --- |
-| 1. Base funcional Sprint 2 | Pendiente | Reglas aprobadas para clientes, proveedores, caja, ventas y compras. |
+| 1. Base funcional Sprint 2 | En revision | Reglas propuestas para clientes, proveedores, caja, ventas y compras. |
 | 2. CI/CD minimo y tests de persistencia | Pendiente | Validacion automatica en GitHub y pruebas con PostgreSQL real/Testcontainers. |
 | 3. Clientes y proveedores | Pendiente | CRUD tenant-scoped con permisos, auditoria y validaciones. |
 | 4. Caja inicial | Pendiente | Apertura/cierre o movimientos basicos de caja segun decision funcional. |
@@ -39,6 +39,10 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 | 6. Compras basicas | Pendiente | Registro de compra con proveedor, items e impacto en stock/caja segun reglas aprobadas. |
 | 7. Reportes y dashboard operativo | Pendiente | Indicadores simples para ventas, compras, stock y caja. |
 | 8. Hardening Sprint 2 | Pendiente | Tests, documentacion, revision de seguridad y cierre del sprint. |
+
+## Base funcional propuesta
+
+La propuesta inicial esta documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md` y queda pendiente de aprobacion del Product Owner.
 
 ## Decisiones funcionales pendientes
 
@@ -116,6 +120,6 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 
 ## Primer paso recomendado
 
-Aprobar la base funcional de Sprint 2 antes de escribir codigo.
+Revisar y aprobar, modificar o rechazar `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
 
-La propuesta tecnica es empezar por Hito 1 y definir reglas minimas para clientes, proveedores, caja, ventas y compras. Despues conviene implementar CI/CD minimo antes de aumentar el volumen de codigo.
+Si la base funcional queda aprobada, el siguiente paso tecnico recomendado es implementar CI/CD minimo y tests de persistencia antes de aumentar el volumen de codigo de negocio.

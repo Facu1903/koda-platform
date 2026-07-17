@@ -9,6 +9,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 ### Added
 
 - Agregado plan inicial propuesto de Sprint 2 en `docs/sprints/SPRINT_2_EXECUTION_PLAN.md`.
+- Agregada base funcional propuesta de Sprint 2 en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
 
 ## [0.1.0] - 2026-07-17
 
