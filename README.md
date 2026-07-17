@@ -6,9 +6,9 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1: Hito 1 - scaffolding tecnico en progreso.
+Sprint 1: Hito 2 - PostgreSQL y Flyway completado.
 
-Todavia no hay codigo de negocio. Esta decision es intencional: primero se definen reglas, arquitectura y criterios de calidad; despues se construye. Hacerlo al reves seria rapido, vistoso y peligrosamente caro.
+Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales y seed minimo aprobado. Todavia no hay CRUDs ni reglas de negocio expuestas por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
 
 ## Documentos principales
 
@@ -21,6 +21,7 @@ Todavia no hay codigo de negocio. Esta decision es intencional: primero se defin
 - [Agents](AGENTS.md)
 - [Sprint 1 Functional Baseline](docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md)
 - [Sprint 1 Execution Plan](docs/sprints/SPRINT_1_EXECUTION_PLAN.md)
+- [PostgreSQL Conventions](docs/database/POSTGRESQL_CONVENTIONS.md)
 
 ## Stack obligatorio
 
@@ -37,7 +38,7 @@ Todavia no hay codigo de negocio. Esta decision es intencional: primero se defin
 
 ### Base de datos
 
-- PostgreSQL
+- PostgreSQL 17
 
 ### Frontend
 
@@ -83,6 +84,7 @@ Sprint 1 construira la primera base funcional:
 - Tests.
 
 La base funcional minima de Sprint 1 fue aprobada el 2026-07-15 y esta documentada en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
+
 ## Estructura inicial
 
 ```text
@@ -90,7 +92,7 @@ backend/              API Spring Boot 3 + Clean Architecture
 frontend/             Web app React + TypeScript + Vite + Material UI
 docker/               Configuracion auxiliar de infraestructura local
 docs/                 Documentacion tecnica, sprints y decisiones
-docker-compose.yml    PostgreSQL, backend y frontend para desarrollo
+docker-compose.yml    PostgreSQL 17, backend y frontend para desarrollo
 .env.example          Variables locales de ejemplo
 ```
 
@@ -135,6 +137,18 @@ Servicios esperados:
 - Backend health: `http://localhost:8080/actuator/health`
 - PostgreSQL: `localhost:5432`
 
+## Base de datos inicial
+
+Flyway deja el esquema en `v202607171520` con:
+
+- Tenant piloto KODA.
+- Producto `KODA_ERP`.
+- Modulos base de Sprint 1.
+- Roles y permisos iniciales aprobados.
+- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock y auditoria.
+
+La matriz rol-permiso y la creacion de usuarios reales se definen en hitos posteriores.
+
 ## Nota de entorno
 
-Java 21 y Maven 3.9.16 fueron verificados para ejecutar tests backend. Docker Desktop debe estar iniciado para builds via Docker.
+Java 21 y Maven 3.9.16 fueron verificados para ejecutar tests backend. Docker Desktop fue validado con PostgreSQL 17, backend y frontend activos.

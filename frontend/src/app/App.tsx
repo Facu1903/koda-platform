@@ -63,7 +63,7 @@ export function App() {
           <Box sx={{ width: 12, height: 28, borderRadius: 1, bgcolor: 'primary.main' }} />
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h2" component="div">KODA PLATFORM</Typography>
-            <Typography variant="caption" color="text.secondary">KODA ERP · Tenant KODA · es-AR · ARS</Typography>
+            <Typography variant="caption" color="text.secondary">KODA ERP - Tenant KODA - es-AR - ARS</Typography>
           </Box>
           <Chip color="primary" label="Sprint 1" size="small" />
           <Tooltip title="Configuracion">
@@ -110,8 +110,8 @@ export function App() {
             {readiness.map((item) => (
               <Paper key={item.label} variant="outlined" sx={{ p: 2, borderColor: 'divider' }}>
                 <Stack spacing={1.5}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center">
-                    <Typography fontWeight={700}>{item.label}</Typography>
+                  <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography sx={{ fontWeight: 700 }}>{item.label}</Typography>
                     <Chip label={item.value} size="small" variant="outlined" />
                   </Stack>
                   <LinearProgress variant="determinate" value={item.progress} color="primary" />
@@ -122,7 +122,7 @@ export function App() {
 
           <Paper variant="outlined" sx={{ p: 0, overflow: 'hidden', borderColor: 'divider' }}>
             <Box sx={{ px: 2, py: 1.5 }}>
-              <Typography variant="h2">Sprint 1 · Hitos</Typography>
+              <Typography variant="h2">Sprint 1 - Hitos</Typography>
             </Box>
             <Divider />
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
@@ -137,7 +137,7 @@ export function App() {
                 'Auditoria transversal',
               ].map((item, index) => (
                 <Box key={item} sx={{ p: 2, borderRight: { md: index % 2 === 0 ? '1px solid' : 0 }, borderBottom: '1px solid', borderColor: 'divider' }}>
-                  <Stack direction="row" alignItems="center" spacing={1.5}>
+                  <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
                     <Chip label={index + 1} color={index === 0 ? 'primary' : 'default'} size="small" />
                     <Typography>{item}</Typography>
                   </Stack>

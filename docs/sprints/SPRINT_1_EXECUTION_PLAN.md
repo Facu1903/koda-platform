@@ -12,8 +12,8 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 
 | Hito | Estado | Resultado esperado |
 | --- | --- | --- |
-| 1. Scaffolding tecnico | En progreso | Backend, frontend, Docker Compose y estructura modular base. |
-| 2. PostgreSQL y Flyway | Pendiente | Base local, migraciones iniciales y convenciones de datos. |
+| 1. Scaffolding tecnico | Completado | Backend, frontend, Docker Compose y estructura modular base. |
+| 2. PostgreSQL y Flyway | Completado | Base local, migraciones iniciales y convenciones de datos. |
 | 3. Tenant context | Pendiente | Resolucion segura de tenant desde contexto autenticado. |
 | 4. Seguridad JWT | Pendiente | Login, refresh tokens, usuarios, roles y permisos. |
 | 5. Configuracion de empresa | Pendiente | Configuracion visual/regional por tenant. |
@@ -28,7 +28,7 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 
 - Backend Spring Boot 3.5.16 con Java 21.
 - Frontend React, TypeScript 6.0.3, Vite y Material UI.
-- Docker Compose con PostgreSQL, backend y frontend.
+- Docker Compose con PostgreSQL 17, backend y frontend.
 - Estructura inicial por capas y modulos.
 - Configuracion base de seguridad, validacion, errores, logs estructurados y Actuator.
 - App shell inicial para KODA ERP.
@@ -41,6 +41,28 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - CRUDs funcionales.
 - Persistencia de auditoria.
 
+## Hito 2 - PostgreSQL y Flyway
+
+### Incluye
+
+- PostgreSQL 17 como version objetivo local.
+- Extensiones `pgcrypto` y `citext`.
+- Migraciones Flyway versionadas hasta `v202607171520`.
+- Tablas base para tenants, configuracion de empresa, productos/modulos de plataforma, entitlements, sucursales y depositos.
+- Tablas base para usuarios globales, membresias tenant, roles, permisos, asignaciones y refresh tokens.
+- Tablas base para marcas, categorias, unidades, presentaciones, productos, saldos de stock, movimientos de stock y auditoria persistente.
+- Seed minimo aprobado: tenant KODA, KODA ERP, modulos base de Sprint 1, roles iniciales y permisos iniciales.
+- Convenciones PostgreSQL documentadas en `docs/database/POSTGRESQL_CONVENTIONS.md`.
+
+### No incluye
+
+- Usuarios reales ni credenciales iniciales.
+- Matriz rol-permiso.
+- JWT productivo.
+- Row Level Security.
+- CRUDs funcionales.
+- Reglas de aplicacion para stock o permisos.
+
 ## Herramientas locales detectadas
 
 - Git: disponible.
@@ -48,14 +70,25 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Node/npm: disponible usando `npm.cmd` en PowerShell.
 - Java 21: instalado y verificado con JDK 21.0.10.
 - Maven: instalado y verificado con Apache Maven 3.9.16.
-- Docker Desktop daemon: pendiente de validar; debe estar iniciado para `docker compose build`.
+- Docker Desktop daemon: validado con `docker compose up -d`.
 - Frontend dependencies: `package-lock.json` generado con `npm install --package-lock-only`; instalacion completa de `node_modules` dentro de OneDrive supero el tiempo de espera.
 - Backend tests: `mvn test` ejecutado correctamente con Java 21.0.10 y Maven 3.9.16.
+- Docker stack: PostgreSQL 17.10 healthy, backend Actuator `UP` y frontend HTTP 200.
+- Flyway: 7 migraciones validadas y schema actual en `v202607171520`.
+- PostgreSQL seed: 25 tablas, 40 permisos, 7 roles y tenant KODA.
 
 ## Riesgo actual
 
-La validacion backend local ya puede ejecutarse con Java 21 y Maven 3.9.16. Docker podria construir el backend usando imagen Maven, pero Docker Desktop debe estar corriendo.
+La base tecnica local esta validada. Los riesgos abiertos son controlados:
 
-## Siguiente decision tecnica
+- La instalacion completa de `node_modules` dentro de OneDrive puede superar el tiempo de espera; Docker build funciona correctamente y queda como camino confiable de validacion.
+- El primer build Docker del backend tarda varios minutos porque Maven descarga dependencias dentro de la imagen builder.
+- Mockito emite advertencia por carga dinamica de Java agent; debe revisarse antes de endurecer la matriz de Java futura.
 
-Antes de implementar Hito 2, validar Docker Desktop y mantener Java 21/Maven disponibles para iteracion diaria. Depender solo de Docker para compilar vuelve mas lenta la iteracion diaria.
+## Siguiente paso tecnico
+
+Avanzar al Hito 3: Tenant context. El objetivo sera resolver el tenant desde el contexto autenticado y preparar la estrategia para impedir fugas cross-tenant en consultas, casos de uso y repositorios.
+
+## Decision tecnica: PostgreSQL 17
+
+Se usa `postgres:17-alpine` en desarrollo local porque Flyway en la version actual del stack declara soporte probado hasta PostgreSQL 17. PostgreSQL 18 se evaluara cuando Flyway lo soporte oficialmente en la linea utilizada por el proyecto.
