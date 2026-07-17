@@ -92,6 +92,20 @@ Aprobado por Product Owner el 2026-07-17 para Hito 7:
 - `READ_ONLY`: lectura de saldos y movimientos.
 - Se crea seed minimo de sucursal/deposito KODA para operar Sprint 1 sin abrir todavia CRUD de sucursales/depositos.
 
+## Decision funcional - Auditoria
+
+Aprobado por Product Owner el 2026-07-17 para Hito 8:
+
+- Se expone consulta read-only de eventos auditables en `/api/v1/audit/events`.
+- El tenant se resuelve desde el contexto autenticado; el frontend no puede elegir tenant.
+- La consulta requiere `audit:read`.
+- Los eventos se devuelven del mas reciente al mas antiguo.
+- Se permiten filtros por usuario actor, tipo de recurso, recurso, accion, resultado y rango de fechas.
+- El limite maximo por request es 500 eventos.
+- `TENANT_OWNER`, `TENANT_ADMIN` y `MANAGER`: lectura de auditoria.
+- `READ_ONLY`, `SALES_USER` y `STOCK_USER`: sin acceso a auditoria en Sprint 1.
+- `PLATFORM_SUPER_ADMIN` tendra auditoria global en un hito futuro, no en Hito 8.
+
 ## Criterios de implementacion
 
 - El tenant se resuelve desde el contexto autenticado.

@@ -6,9 +6,9 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1: Hito 7 - Stock completado.
+Sprint 1: Hito 8 - Auditoria completado.
 
-Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP y API tenant-scoped de stock con saldos y movimientos confirmados. La base ya camina; ahora hay que evitar que corra en ojotas.
+Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock y consulta controlada de eventos de auditoria. La base ya camina; ahora hay que evitar que corra en ojotas.
 
 ## Documentos principales
 
@@ -27,6 +27,7 @@ Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migr
 - [Company Settings](docs/configuration/COMPANY_SETTINGS.md)
 - [ERP Catalogs](docs/catalogs/ERP_CATALOGS.md)
 - [Stock Movements](docs/stock/STOCK_MOVEMENTS.md)
+- [Audit Events](docs/audit/AUDIT_EVENTS.md)
 
 ## Stack obligatorio
 
@@ -146,7 +147,7 @@ Servicios esperados:
 
 ## Base de datos inicial
 
-Flyway deja el esquema en `v202607171540` con:
+Flyway deja el esquema en `v202607171550` con:
 
 - Tenant piloto KODA.
 - Producto `KODA_ERP`.
@@ -217,6 +218,22 @@ El backend ya expone endpoints tenant-scoped bajo `/api/v1/stock` para:
 Reglas aprobadas: no stock negativo, movimientos confirmados inmutables, correcciones mediante nuevos movimientos, productos stockeables solo si son `GOOD`, activos y con seguimiento de stock. El ledger guarda saldo anterior, saldo posterior y delta para trazabilidad real. La matriz aprobada de stock fue aplicada por Flyway para KODA.
 
 Ver detalle en `docs/stock/STOCK_MOVEMENTS.md`.
+
+## Auditoria
+
+El backend ya expone `/api/v1/audit/events` para consultar eventos auditables del tenant autenticado.
+
+- La consulta es solo lectura.
+- El tenant se resuelve desde JWT/Tenant Context.
+- Requiere `audit:read`.
+- Devuelve eventos recientes primero.
+- Permite filtros por usuario actor, recurso, accion, resultado y rango de fechas.
+- El limite maximo aprobado es 500 eventos por request.
+- La auditoria global de plataforma queda fuera del Hito 8.
+
+La matriz aprobada habilita lectura de auditoria para `TENANT_OWNER`, `TENANT_ADMIN` y `MANAGER`. `READ_ONLY`, `SALES_USER` y `STOCK_USER` no acceden a auditoria en Sprint 1.
+
+Ver detalle en `docs/audit/AUDIT_EVENTS.md`.
 
 ## Nota de entorno
 

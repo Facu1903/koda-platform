@@ -42,6 +42,12 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada documentacion de stock en `docs/stock/STOCK_MOVEMENTS.md`.
 - Agregada decision funcional aprobada de stock en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
 - Agregados tests unitarios para permisos, stock negativo, ajustes a cero, reservas, productos no stockeables y auditoria de stock.
+- Agregada API tenant-scoped de auditoria en `/api/v1/audit/events`.
+- Agregados servicio, puerto de repositorio y adaptador JDBC para consulta de eventos auditables.
+- Agregada migracion `V202607171550__assign_audit_role_permissions.sql` con matriz rol-permiso aprobada para auditoria.
+- Agregada documentacion de auditoria en `docs/audit/AUDIT_EVENTS.md`.
+- Agregada decision funcional aprobada de auditoria en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
+- Agregados tests unitarios para permisos, filtros, limites y validacion temporal de auditoria.
 
 ### Changed
 
@@ -78,6 +84,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Jar backend Hito 6 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171530`, 55 asignaciones rol-permiso y endpoint catalog products protegido con `401` anonimo.
 - `mvn test` ejecutado correctamente con 32 tests: contexto Spring, Tenant Context, AuthService, conversion JWT, CompanySettingsService, CatalogService y StockService.
 - Jar backend Hito 7 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171540`, 41 permisos, 70 asignaciones rol-permiso, deposito piloto `PRINCIPAL` y endpoint stock balances protegido con `401` anonimo.
+- `mvn test` ejecutado correctamente con 38 tests: contexto Spring, Tenant Context, AuthService, conversion JWT, CompanySettingsService, CatalogService, StockService y AuditService.
+- Jar backend Hito 8 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171550`, 73 asignaciones rol-permiso y endpoint audit events protegido con `401` anonimo.
+- Imagen Docker backend reconstruida y backend Docker validado con Actuator `UP`, Flyway `v202607171550` y endpoint audit events protegido con `401` anonimo.
 
 ### Known Issues
 
@@ -85,8 +94,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - El primer build Docker del backend puede tardar varios minutos porque Maven descarga dependencias dentro de la imagen builder.
 - Mockito emite advertencia por carga dinamica de Java agent; no bloquea actualmente, pero debe revisarse antes de endurecer la matriz de Java futura.
 - HS256 se acepta para Sprint 1; antes de produccion multi-nodo debe evaluarse rotacion de llaves, RS256/JWKS y politica operacional de secretos.
-- Las matrices rol-permiso de catalogos y stock fueron aprobadas y aplicadas; quedan pendientes matrices finas de seguridad, configuracion de empresa y auditoria.
+- Las matrices rol-permiso de catalogos, stock y auditoria fueron aprobadas y aplicadas; quedan pendientes matrices finas de seguridad y configuracion de empresa.
 - Stock no incluye transferencias, reservas, lotes, vencimientos, costos promedio ni UI en Hito 7.
+- Auditoria Hito 8 no incluye auditoria global de plataforma, exportacion, retencion, particionamiento ni UI.
 
 ## [0.0.2] - 2026-07-15
 

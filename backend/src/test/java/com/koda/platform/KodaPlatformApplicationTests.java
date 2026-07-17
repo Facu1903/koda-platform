@@ -1,5 +1,6 @@
 package com.koda.platform;
 
+import com.koda.platform.platform.audit.application.AuditRepository;
 import com.koda.platform.platform.catalog.application.CatalogRepository;
 import com.koda.platform.platform.configuration.application.CompanySettingsRepository;
 import com.koda.platform.platform.security.application.AuthRepository;
@@ -14,7 +15,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
     "koda.security.auth.jdbc.enabled=false",
     "koda.configuration.company-settings.jdbc.enabled=false",
     "koda.catalogs.jdbc.enabled=false",
-    "koda.stock.jdbc.enabled=false"
+    "koda.stock.jdbc.enabled=false",
+    "koda.audit.jdbc.enabled=false"
 })
 class KodaPlatformApplicationTests {
 
@@ -29,6 +31,9 @@ class KodaPlatformApplicationTests {
 
     @MockitoBean
     private StockRepository stockRepository;
+
+    @MockitoBean
+    private AuditRepository auditRepository;
 
     @Test
     void contextLoads() {
