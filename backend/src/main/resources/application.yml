@@ -41,3 +41,15 @@ logging:
   level:
     root: INFO
     com.koda.platform: INFO
+koda:
+  security:
+    jwt:
+      issuer: ${KODA_JWT_ISSUER:koda-platform}
+      secret: ${KODA_JWT_SECRET}
+      access-token-ttl: ${KODA_ACCESS_TOKEN_TTL:15m}
+      refresh-token-ttl: ${KODA_REFRESH_TOKEN_TTL:30d}
+    bootstrap:
+      owner-email: ${KODA_BOOTSTRAP_OWNER_EMAIL:}
+      owner-password: ${KODA_BOOTSTRAP_OWNER_PASSWORD:}
+      owner-display-name: ${KODA_BOOTSTRAP_OWNER_DISPLAY_NAME:KODA Owner}
+      tenant-id: ${KODA_BOOTSTRAP_TENANT_ID:00000000-0000-4000-8000-000000000001}

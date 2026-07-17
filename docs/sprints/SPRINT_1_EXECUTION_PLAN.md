@@ -15,7 +15,7 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 | 1. Scaffolding tecnico | Completado | Backend, frontend, Docker Compose y estructura modular base. |
 | 2. PostgreSQL y Flyway | Completado | Base local, migraciones iniciales y convenciones de datos. |
 | 3. Tenant context | Completado | Resolucion segura de tenant desde contexto autenticado. |
-| 4. Seguridad JWT | Pendiente | Login, refresh tokens, usuarios, roles y permisos. |
+| 4. Seguridad JWT | Completado | Login, refresh tokens, usuarios, roles y permisos. |
 | 5. Configuracion de empresa | Pendiente | Configuracion visual/regional por tenant. |
 | 6. Catalogos ERP | Pendiente | Productos, marcas, categorias, unidades y presentaciones. |
 | 7. Stock | Pendiente | Movimientos IN, OUT y ADJUSTMENT sin stock negativo por defecto. |
@@ -87,6 +87,32 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Repositorios tenant-scoped.
 - Row Level Security PostgreSQL.
 
+
+## Hito 4 - Seguridad JWT
+
+### Incluye
+
+- Seguridad backend stateless con OAuth2 Resource Server y JWT HS256.
+- Endpoints `/api/v1/auth/login`, `/api/v1/auth/refresh` y `/api/v1/auth/logout`.
+- `AuthService` como capa de aplicacion para login, refresh y logout.
+- `AuthRepository` como puerto y `JdbcAuthRepository` como adaptador PostgreSQL.
+- Refresh tokens opacos, aleatorios, persistidos como hash SHA-256 y rotados en cada refresh.
+- Access tokens con claims de usuario, tenant, roles, permisos y marca `platform_admin`.
+- Conversion de JWT a `KodaAuthenticatedPrincipal` para alimentar Tenant Context.
+- Password hashing con BCrypt.
+- Bootstrap inicial opt-in para owner de tenant, sin credenciales hardcodeadas.
+- Documentacion en `docs/security/AUTHENTICATION.md`.
+- Tests unitarios de login, rechazo de credenciales, seleccion de tenant, rotacion de refresh token y conversion JWT.
+
+### No incluye
+
+- Recuperacion de password.
+- MFA.
+- Bloqueo por intentos fallidos.
+- Politica avanzada de sesiones por dispositivo.
+- Rotacion de llaves/JWKS o firma asimetrica RS256.
+- APIs administrativas de usuarios.
+- Row Level Security PostgreSQL.
 ## Herramientas locales detectadas
 
 - Git: disponible.
@@ -102,6 +128,8 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - PostgreSQL seed: 25 tablas, 40 permisos, 7 roles y tenant KODA.
 - Tenant Context tests: mvn test ejecutado correctamente con 9 tests, 0 fallos.
 - Tenant Context runtime: jar backend actual validado contra PostgreSQL 17 con Actuator UP.
+- Seguridad JWT: `mvn test` ejecutado correctamente con 14 tests, 0 fallos.
+- Seguridad JWT runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP` y error estructurado de auth `400`.
 
 ## Riesgo actual
 
@@ -110,10 +138,12 @@ La base tecnica local esta validada. Los riesgos abiertos son controlados:
 - La instalacion completa de `node_modules` dentro de OneDrive puede superar el tiempo de espera; Docker build funciona correctamente y queda como camino confiable de validacion.
 - El primer build Docker del backend tarda varios minutos porque Maven descarga dependencias dentro de la imagen builder.
 - Mockito emite advertencia por carga dinamica de Java agent; debe revisarse antes de endurecer la matriz de Java futura.
+- `KODA_JWT_SECRET` es obligatorio para ejecutar backend real o Docker Compose; esto es una proteccion deliberada, no una incomodidad accidental.
+- HS256 es suficiente para este hito; antes de multi-nodo productivo debe evaluarse rotacion de llaves y firma asimetrica/JWKS.
 
 ## Siguiente paso tecnico
 
-Avanzar al Hito 4: Seguridad JWT. El objetivo sera reemplazar la autenticacion temporal por login/JWT, construir el principal autenticado de KODA y alimentar el Tenant Context desde tokens emitidos por backend.
+Avanzar al Hito 5: Configuracion de empresa. El objetivo sera exponer y persistir configuracion visual/regional por tenant sin modificar codigo.
 
 ## Decision tecnica: PostgreSQL 17
 

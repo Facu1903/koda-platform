@@ -1,11 +1,15 @@
 package com.koda.platform.shared.api;
 
+import com.koda.platform.platform.security.application.AuthenticationFailedException;
+import com.koda.platform.platform.security.application.InvalidRefreshTokenException;
+import com.koda.platform.platform.security.application.TenantSelectionRequiredException;
 import com.koda.platform.shared.application.tenant.MissingTenantContextException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,11 +30,51 @@ public class ApiExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ProblemDetail handleUnreadableMessage(HttpMessageNotReadableException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Malformed request body");
+        problem.setTitle("Invalid request");
+        problem.setProperty("code", "MALFORMED_REQUEST_BODY");
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler({AuthenticationFailedException.class, InvalidRefreshTokenException.class})
+    ProblemDetail handleAuthenticationFailure(RuntimeException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        problem.setTitle("Authentication failed");
+        problem.setProperty("code", exception instanceof InvalidRefreshTokenException ? "INVALID_REFRESH_TOKEN" : "AUTHENTICATION_FAILED");
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(TenantSelectionRequiredException.class)
+    ProblemDetail handleTenantSelectionRequired(TenantSelectionRequiredException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Tenant selection required");
+        problem.setProperty("code", "TENANT_SELECTION_REQUIRED");
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
     @ExceptionHandler(MissingTenantContextException.class)
     ProblemDetail handleMissingTenantContext(MissingTenantContextException exception, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
         problem.setTitle("Tenant context required");
         problem.setProperty("code", "TENANT_CONTEXT_REQUIRED");
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    ProblemDetail handleIllegalArgument(IllegalArgumentException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid request");
+        problem.setTitle("Invalid request");
+        problem.setProperty("code", "INVALID_REQUEST");
         problem.setProperty("timestamp", Instant.now());
         problem.setProperty("path", request.getRequestURI());
         return problem;

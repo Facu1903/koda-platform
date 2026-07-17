@@ -20,6 +20,11 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado Tenant Context backend con `TenantId`, `TenantContext`, `CurrentTenantProvider`, `TenantAwarePrincipal` y filtro por request.
 - Agregada documentacion de Tenant Context.
 - Agregados tests unitarios para resolucion y limpieza de Tenant Context.
+- Agregada autenticacion JWT stateless con login, refresh y logout.
+- Agregados `AuthService`, puerto `AuthRepository`, adaptador JDBC, generador de refresh tokens, servicio JWT y conversion de JWT a principal KODA.
+- Agregado bootstrap inicial opt-in para owner de tenant sin credenciales hardcodeadas.
+- Agregada documentacion de autenticacion en `docs/security/AUTHENTICATION.md`.
+- Agregados tests unitarios para login, seleccion de tenant, rotacion de refresh token y conversion JWT.
 
 ### Changed
 
@@ -28,6 +33,10 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Actualizado README con estado real de Sprint 1 Hito 2 y base de datos inicial.
 - Conectado `TenantContextAuthenticationFilter` a Spring Security despues de Basic Auth.
 - Agregado manejo de error `TENANT_CONTEXT_REQUIRED` para operaciones que exijan tenant.
+- Agregado manejo de error `MALFORMED_REQUEST_BODY` para JSON invalido o ilegible.
+- Spring Security ahora usa sesiones stateless y JWT Bearer tokens.
+- `/api/v1/auth/login`, `/api/v1/auth/refresh` y `/api/v1/auth/logout` quedan como rutas tenant-neutrales.
+- Docker Compose requiere `KODA_JWT_SECRET` para iniciar backend.
 
 ### Verified
 
@@ -38,14 +47,17 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Backend local empaquetado con Maven y validado contra PostgreSQL 17 aplicando 6 migraciones nuevas.
 - Imagen Docker backend reconstruida y backend Docker validado con schema Flyway en `v202607171520`.
 - Base validada con 25 tablas, 40 permisos, 7 roles y tenant KODA seed.
-- mvn test ejecutado correctamente con 9 tests: contexto Spring, TenantId y filtro Tenant Context.
+- `mvn test` ejecutado correctamente con 9 tests: contexto Spring, TenantId y filtro Tenant Context.
 - Jar backend actual empaquetado y validado en runtime local contra PostgreSQL 17 con Actuator UP.
+- `mvn test` ejecutado correctamente con 14 tests: contexto Spring, Tenant Context, AuthService y conversion JWT.
+- Jar backend Hito 4 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP` y error auth `400` estructurado.
 
 ### Known Issues
 
 - La instalacion completa de dependencias frontend en OneDrive supero el tiempo de espera; se genero `package-lock.json` con resolucion correcta y sin vulnerabilidades reportadas.
 - El primer build Docker del backend puede tardar varios minutos porque Maven descarga dependencias dentro de la imagen builder.
 - Mockito emite advertencia por carga dinamica de Java agent; no bloquea actualmente, pero debe revisarse antes de endurecer la matriz de Java futura.
+- HS256 se acepta para Sprint 1; antes de produccion multi-nodo debe evaluarse rotacion de llaves, RS256/JWKS y politica operacional de secretos.
 
 ## [0.0.2] - 2026-07-15
 

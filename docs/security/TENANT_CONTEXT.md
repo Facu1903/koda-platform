@@ -35,7 +35,7 @@ Incluido:
 - Limpieza obligatoria del contexto por request.
 - Tests unitarios de resolucion y bloqueo.
 
-No incluido:
+No incluido en el Hito 3:
 
 - JWT productivo.
 - Login.
@@ -44,6 +44,6 @@ No incluido:
 - Repositorios tenant-scoped.
 - Row Level Security PostgreSQL.
 
-## Riesgos controlados
+## Integracion con autenticacion
 
-El Hito 3 no implementa la autenticacion final. Eso llega en el Hito 4. El punto importante es que ya queda prohibido el camino facil y peligroso: resolver tenant desde datos enviados libremente por el cliente.
+Desde el Hito 4, los JWT emitidos por backend se convierten a `KodaAuthenticatedPrincipal`. Ese principal alimenta `TenantContextAuthenticationFilter` con tenant, usuario, roles y permisos. El punto importante sigue siendo el mismo: queda prohibido el camino facil y peligroso de resolver tenant desde datos enviados libremente por el cliente.

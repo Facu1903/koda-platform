@@ -6,9 +6,9 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1: Hito 3 - Tenant Context completado.
+Sprint 1: Hito 4 - Seguridad JWT completado.
 
-Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado y Tenant Context backend. Todavia no hay login/JWT productivo, CRUDs ni reglas de negocio expuestas por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
+Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend y autenticacion JWT con refresh tokens. Todavia no hay CRUDs ni reglas de negocio expuestas por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
 
 ## Documentos principales
 
@@ -23,6 +23,7 @@ Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migr
 - [Sprint 1 Execution Plan](docs/sprints/SPRINT_1_EXECUTION_PLAN.md)
 - [PostgreSQL Conventions](docs/database/POSTGRESQL_CONVENTIONS.md)
 - [Tenant Context](docs/security/TENANT_CONTEXT.md)
+- [Authentication](docs/security/AUTHENTICATION.md)
 
 ## Stack obligatorio
 
@@ -113,6 +114,7 @@ En PowerShell, si `npm` queda bloqueado por politica de scripts, usar `npm.cmd`.
 
 ```powershell
 cd backend
+$env:KODA_JWT_SECRET="change-me-with-at-least-32-bytes-local-only"
 mvn test
 mvn spring-boot:run
 ```
@@ -129,6 +131,7 @@ npm.cmd run dev
 
 ```powershell
 copy .env.example .env
+# Editar .env y definir KODA_JWT_SECRET antes de levantar backend.
 docker compose up --build
 ```
 
@@ -148,7 +151,7 @@ Flyway deja el esquema en `v202607171520` con:
 - Roles y permisos iniciales aprobados.
 - Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock y auditoria.
 
-La matriz rol-permiso y la creacion de usuarios reales se definen en hitos posteriores.
+La matriz inicial rol-permiso ya existe para la base del Sprint 1 y se ampliara por modulo. La creacion de usuarios reales se controla por bootstrap opt-in o por APIs futuras de administracion.
 
 ## Tenant Context
 
@@ -159,7 +162,18 @@ El backend ya tiene una base tecnica para resolver tenant desde el principal aut
 - El contexto se limpia al finalizar cada request.
 - Los casos de uso podran depender de `CurrentTenantProvider` para obtener el tenant actual.
 
-JWT, login y matriz rol-permiso se implementaran en hitos posteriores.
+JWT, login y refresh tokens ya alimentan este Tenant Context desde el principal autenticado de KODA.
+
+## Autenticacion JWT
+
+El backend ya expone `/api/v1/auth/login`, `/api/v1/auth/refresh` y `/api/v1/auth/logout`.
+
+- `KODA_JWT_SECRET` es obligatorio y debe tener al menos 32 bytes.
+- El access token es JWT HS256 con TTL corto.
+- El refresh token es opaco, se guarda hasheado y rota en cada refresh.
+- El usuario inicial no se crea por defecto; puede activarse con variables `KODA_BOOTSTRAP_OWNER_*`.
+
+Ver detalle en `docs/security/AUTHENTICATION.md`.
 
 ## Nota de entorno
 

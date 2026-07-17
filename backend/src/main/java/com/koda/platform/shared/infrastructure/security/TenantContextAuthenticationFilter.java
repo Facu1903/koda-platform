@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,7 @@ public class TenantContextAuthenticationFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated()
-                && authentication.getPrincipal() instanceof TenantAwarePrincipal principal) {
+            if (isRealAuthentication(authentication) && authentication.getPrincipal() instanceof TenantAwarePrincipal principal) {
                 TenantContextHolder.set(new TenantContext(
                     principal.tenantId(),
                     principal.userId(),
@@ -31,8 +31,7 @@ public class TenantContextAuthenticationFilter extends OncePerRequestFilter {
                 ));
             }
 
-            if (requiresTenantContext(request) && TenantContextHolder.get().isEmpty()
-                && authentication != null && authentication.isAuthenticated()) {
+            if (requiresTenantContext(request) && TenantContextHolder.get().isEmpty() && isRealAuthentication(authentication)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "Tenant context is required");
                 return;
             }
@@ -41,6 +40,10 @@ public class TenantContextAuthenticationFilter extends OncePerRequestFilter {
         } finally {
             TenantContextHolder.clear();
         }
+    }
+
+    private boolean isRealAuthentication(Authentication authentication) {
+        return authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken);
     }
 
     private boolean requiresTenantContext(HttpServletRequest request) {
