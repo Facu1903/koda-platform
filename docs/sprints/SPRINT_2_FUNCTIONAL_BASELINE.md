@@ -2,7 +2,7 @@
 
 ## Estado
 
-Propuesta pendiente de aprobacion del Product Owner.
+Aprobado por Product Owner el 2026-07-17.
 
 ## Objetivo
 
@@ -20,7 +20,7 @@ Sprint 2 debe entregar un circuito comercial simple, auditable y tenant-scoped. 
 - Toda operacion sensible debe registrar auditoria.
 - El impacto en stock y caja debe ser explicito, no efecto secundario escondido.
 
-## Modulos incluidos propuestos
+## Modulos incluidos aprobados
 
 - Clientes.
 - Proveedores.
@@ -32,7 +32,7 @@ Sprint 2 debe entregar un circuito comercial simple, auditable y tenant-scoped. 
 
 ## Clientes
 
-### Reglas propuestas
+### Reglas aprobadas
 
 - Cada cliente pertenece a un tenant.
 - Campos obligatorios: nombre o razon social, estado.
@@ -51,7 +51,7 @@ Sprint 2 debe entregar un circuito comercial simple, auditable y tenant-scoped. 
 
 ## Proveedores
 
-### Reglas propuestas
+### Reglas aprobadas
 
 - Cada proveedor pertenece a un tenant.
 - Campos obligatorios: nombre o razon social, estado.
@@ -69,13 +69,13 @@ Sprint 2 debe entregar un circuito comercial simple, auditable y tenant-scoped. 
 
 ## Caja inicial
 
-### Enfoque propuesto
+### Enfoque aprobado
 
 Caja se modela como sesion operativa por tenant, sucursal y usuario.
 
 Esto permite auditar quien abrio, quien registro movimientos y quien cerro. Es mas estricto que una caja global y evita el clasico agujero negro de dinero con interfaz bonita.
 
-### Reglas propuestas
+### Reglas aprobadas
 
 - Una caja pertenece a tenant y sucursal.
 - Una sesion de caja pertenece a una caja y a un usuario.
@@ -109,7 +109,7 @@ Esto permite auditar quien abrio, quien registro movimientos y quien cerro. Es m
 
 ## Ventas basicas
 
-### Reglas propuestas
+### Reglas aprobadas
 
 - Cada venta pertenece a un tenant y sucursal.
 - Cliente opcional; si no se informa cliente, se usa `CONSUMIDOR_FINAL`.
@@ -140,7 +140,7 @@ Esto permite auditar quien abrio, quien registro movimientos y quien cerro. Es m
 
 ## Compras basicas
 
-### Reglas propuestas
+### Reglas aprobadas
 
 - Cada compra pertenece a un tenant y sucursal.
 - Proveedor obligatorio.
@@ -165,7 +165,7 @@ Esto permite auditar quien abrio, quien registro movimientos y quien cerro. Es m
 
 ## Reportes operativos simples
 
-### Reportes propuestos
+### Reportes aprobados
 
 - Ventas por rango de fechas.
 - Compras por rango de fechas.
@@ -181,7 +181,7 @@ Esto permite auditar quien abrio, quien registro movimientos y quien cerro. Es m
 
 ## Dashboard operativo inicial
 
-### Indicadores propuestos
+### Indicadores aprobados
 
 - Ventas del dia.
 - Compras del dia.
@@ -189,7 +189,7 @@ Esto permite auditar quien abrio, quien registro movimientos y quien cerro. Es m
 - Productos con stock bajo.
 - Ultimos movimientos de stock.
 
-## Matriz de permisos propuesta
+## Matriz de permisos aprobada
 
 | Recurso | TENANT_OWNER | TENANT_ADMIN | MANAGER | SALES_USER | STOCK_USER | READ_ONLY |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -207,7 +207,7 @@ Notas:
 - `READ_ONLY` nunca crea, confirma, cancela ni ajusta.
 - Los permisos finales deben convertirse en permisos atomicos por recurso y accion antes de implementar.
 
-## Auditoria propuesta
+## Auditoria aprobada
 
 Deben auditarse como minimo:
 
@@ -252,8 +252,8 @@ Sprint 2 se considerara funcionalmente aceptable si:
 - No existe forma de acceder a datos de otro tenant desde API.
 - Existen tests backend para permisos, tenant, estados, stock, caja y anulaciones.
 
-## Decision requerida
+## Decision
 
-El Product Owner debe aprobar, modificar o rechazar esta base antes de implementar codigo de Sprint 2.
+Se aprueba esta base funcional para iniciar la implementacion de Sprint 2.
 
-Sin esta aprobacion, el siguiente trabajo tecnico recomendado es CI/CD minimo y tests de persistencia, porque no introduce reglas funcionales nuevas.
+Cualquier cambio sobre clientes, proveedores, caja, ventas, compras, permisos, auditoria, estados o impactos en stock/caja requiere aprobacion explicita del Product Owner antes de implementarse.

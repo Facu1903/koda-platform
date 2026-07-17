@@ -112,7 +112,7 @@ El alcance es amplio para un Sprint 1. La forma madura de manejarlo es mantener 
 
 ### Estado
 
-Propuesta inicial pendiente de aprobacion del Product Owner. Ver `docs/sprints/SPRINT_2_EXECUTION_PLAN.md`.
+En progreso desde el 2026-07-17. Base funcional aprobada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
 
 ### Objetivo
 
@@ -129,7 +129,7 @@ Extender ERP hacia operaciones comerciales basicas.
 - Mejoras de dashboard.
 - CI/CD minimo y tests de persistencia como refuerzo tecnico recomendado.
 
-El alcance definitivo requiere aprobacion del Product Owner antes de escribir codigo de negocio.
+La base funcional minima fue aprobada por el Product Owner el 2026-07-17.
 
 ## 5. Sprint 3 - Licenciamiento y modularidad comercial
 

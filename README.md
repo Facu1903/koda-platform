@@ -10,7 +10,7 @@ Sprint 1 cerrado. Sprint 2 en planificacion.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
-Sprint 2 queda iniciado solo como planificacion. Ya existe una base funcional propuesta para operaciones comerciales, pendiente de aprobacion del Product Owner. No se implementara codigo de negocio nuevo hasta aprobarla.
+Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
 
 ## Documentos principales
 

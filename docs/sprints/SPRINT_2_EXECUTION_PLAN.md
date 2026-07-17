@@ -2,9 +2,9 @@
 
 ## Estado
 
-Propuesta inicial pendiente de aprobacion del Product Owner.
+En progreso desde el 2026-07-17.
 
-## Objetivo propuesto
+## Objetivo
 
 Construir la primera base de operacion comercial de KODA ERP, manteniendo arquitectura SaaS multiempresa, trazabilidad, permisos y compatibilidad futura.
 
@@ -12,7 +12,7 @@ Sprint 2 no debe intentar hacer un sistema contable/fiscal completo. El objetivo
 
 ## Principio rector
 
-No se implementara codigo de negocio de Sprint 2 hasta aprobar la base funcional minima documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
+El codigo de negocio de Sprint 2 debe respetar la base funcional aprobada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
 
 Si se codifica ventas o compras sin definir numeracion, estados, impacto en stock, caja, permisos y anulaciones, el sistema empezara a improvisar reglas. Esa improvisacion despues se convierte en deuda con perfume caro.
 
@@ -31,7 +31,7 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 
 | Hito | Estado | Resultado esperado |
 | --- | --- | --- |
-| 1. Base funcional Sprint 2 | En revision | Reglas propuestas para clientes, proveedores, caja, ventas y compras. |
+| 1. Base funcional Sprint 2 | Completado | Reglas aprobadas para clientes, proveedores, caja, ventas y compras. |
 | 2. CI/CD minimo y tests de persistencia | Pendiente | Validacion automatica en GitHub y pruebas con PostgreSQL real/Testcontainers. |
 | 3. Clientes y proveedores | Pendiente | CRUD tenant-scoped con permisos, auditoria y validaciones. |
 | 4. Caja inicial | Pendiente | Apertura/cierre o movimientos basicos de caja segun decision funcional. |
@@ -40,11 +40,11 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 | 7. Reportes y dashboard operativo | Pendiente | Indicadores simples para ventas, compras, stock y caja. |
 | 8. Hardening Sprint 2 | Pendiente | Tests, documentacion, revision de seguridad y cierre del sprint. |
 
-## Base funcional propuesta
+## Base funcional aprobada
 
-La propuesta inicial esta documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md` y queda pendiente de aprobacion del Product Owner.
+La base funcional fue aprobada por el Product Owner el 2026-07-17 y esta documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
 
-## Decisiones funcionales pendientes
+## Decisiones funcionales aprobadas
 
 ### Clientes
 
@@ -120,6 +120,4 @@ La propuesta inicial esta documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASEL
 
 ## Primer paso recomendado
 
-Revisar y aprobar, modificar o rechazar `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
-
-Si la base funcional queda aprobada, el siguiente paso tecnico recomendado es implementar CI/CD minimo y tests de persistencia antes de aumentar el volumen de codigo de negocio.
+Avanzar al Hito 2: CI/CD minimo y tests de persistencia. El objetivo es automatizar validaciones en GitHub y empezar a probar persistencia real antes de sumar volumen de negocio.
