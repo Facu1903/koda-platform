@@ -1,5 +1,6 @@
 package com.koda.platform.shared.api;
 
+import com.koda.platform.shared.application.tenant.MissingTenantContextException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.List;
@@ -22,6 +23,16 @@ public class ApiExceptionHandler {
         problem.setProperty("details", exception.getBindingResult().getFieldErrors().stream()
             .map(error -> new FieldValidationError(error.getField(), error.getDefaultMessage()))
             .toList());
+        return problem;
+    }
+
+    @ExceptionHandler(MissingTenantContextException.class)
+    ProblemDetail handleMissingTenantContext(MissingTenantContextException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
+        problem.setTitle("Tenant context required");
+        problem.setProperty("code", "TENANT_CONTEXT_REQUIRED");
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
         return problem;
     }
 

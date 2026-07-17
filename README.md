@@ -6,9 +6,9 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1: Hito 2 - PostgreSQL y Flyway completado.
+Sprint 1: Hito 3 - Tenant Context completado.
 
-Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales y seed minimo aprobado. Todavia no hay CRUDs ni reglas de negocio expuestas por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
+Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado y Tenant Context backend. Todavia no hay login/JWT productivo, CRUDs ni reglas de negocio expuestas por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
 
 ## Documentos principales
 
@@ -22,6 +22,7 @@ Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migr
 - [Sprint 1 Functional Baseline](docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md)
 - [Sprint 1 Execution Plan](docs/sprints/SPRINT_1_EXECUTION_PLAN.md)
 - [PostgreSQL Conventions](docs/database/POSTGRESQL_CONVENTIONS.md)
+- [Tenant Context](docs/security/TENANT_CONTEXT.md)
 
 ## Stack obligatorio
 
@@ -148,6 +149,17 @@ Flyway deja el esquema en `v202607171520` con:
 - Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock y auditoria.
 
 La matriz rol-permiso y la creacion de usuarios reales se definen en hitos posteriores.
+
+## Tenant Context
+
+El backend ya tiene una base tecnica para resolver tenant desde el principal autenticado de KODA:
+
+- No se acepta `tenant_id` libre desde el frontend para operaciones tenant-scoped.
+- Las rutas tenant-scoped quedan preparadas para exigir un principal con tenant; auth y plataforma quedan neutrales.
+- El contexto se limpia al finalizar cada request.
+- Los casos de uso podran depender de `CurrentTenantProvider` para obtener el tenant actual.
+
+JWT, login y matriz rol-permiso se implementaran en hitos posteriores.
 
 ## Nota de entorno
 

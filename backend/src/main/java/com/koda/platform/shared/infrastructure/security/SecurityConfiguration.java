@@ -7,13 +7,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, TenantContextAuthenticationFilter tenantContextAuthenticationFilter) throws Exception {
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
@@ -21,6 +22,7 @@ public class SecurityConfiguration {
                 .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults())
+            .addFilterAfter(tenantContextAuthenticationFilter, BasicAuthenticationFilter.class)
             .build();
     }
 }

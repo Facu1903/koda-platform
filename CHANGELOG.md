@@ -17,12 +17,17 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregadas migraciones Flyway iniciales para extensiones PostgreSQL, nucleo SaaS, seguridad/RBAC, catalogos ERP, stock y auditoria.
 - Agregado seed inicial aprobado para tenant KODA, producto KODA ERP, modulos base, roles y permisos.
 - Agregada documentacion de convenciones PostgreSQL.
+- Agregado Tenant Context backend con `TenantId`, `TenantContext`, `CurrentTenantProvider`, `TenantAwarePrincipal` y filtro por request.
+- Agregada documentacion de Tenant Context.
+- Agregados tests unitarios para resolucion y limpieza de Tenant Context.
 
 ### Changed
 
 - Corregida configuracion TypeScript/Vite del frontend para build Docker.
 - Cambiado Docker Compose de PostgreSQL 18 a PostgreSQL 17 por compatibilidad probada con Flyway.
 - Actualizado README con estado real de Sprint 1 Hito 2 y base de datos inicial.
+- Conectado `TenantContextAuthenticationFilter` a Spring Security despues de Basic Auth.
+- Agregado manejo de error `TENANT_CONTEXT_REQUIRED` para operaciones que exijan tenant.
 
 ### Verified
 
@@ -33,6 +38,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Backend local empaquetado con Maven y validado contra PostgreSQL 17 aplicando 6 migraciones nuevas.
 - Imagen Docker backend reconstruida y backend Docker validado con schema Flyway en `v202607171520`.
 - Base validada con 25 tablas, 40 permisos, 7 roles y tenant KODA seed.
+- mvn test ejecutado correctamente con 9 tests: contexto Spring, TenantId y filtro Tenant Context.
+- Jar backend actual empaquetado y validado en runtime local contra PostgreSQL 17 con Actuator UP.
 
 ### Known Issues
 
