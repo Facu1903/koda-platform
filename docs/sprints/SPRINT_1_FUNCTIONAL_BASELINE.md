@@ -47,6 +47,7 @@ Esta base no reemplaza futuras especificaciones detalladas. Funciona como contra
 | `categories` | `read`, `create`, `update`, `delete` |
 | `units` | `read`, `create`, `update`, `delete` |
 | `presentations` | `read`, `create`, `update`, `delete` |
+| `stock_balances` | `read` |
 | `stock_movements` | `read`, `create` |
 | `audit` | `read` |
 
@@ -64,6 +65,7 @@ Aprobado por Product Owner el 2026-07-17 para Hito 6:
 - `TENANT_OWNER` y `TENANT_ADMIN`: CRUD completo de catalogos.
 - `MANAGER`: lectura y actualizacion de catalogos.
 - `READ_ONLY`: solo lectura de catalogos.
+
 ## Reglas iniciales de stock
 
 - Tipos de movimiento: `IN`, `OUT`, `ADJUSTMENT`.
@@ -71,6 +73,24 @@ Aprobado por Product Owner el 2026-07-17 para Hito 6:
 - Todo movimiento de stock debe ser auditado.
 - Un movimiento confirmado no se edita.
 - Para corregir un movimiento confirmado se debe generar un movimiento inverso.
+
+## Decision funcional - Stock
+
+Aprobado por Product Owner el 2026-07-17 para Hito 7:
+
+- `IN` suma stock.
+- `OUT` resta stock.
+- `ADJUSTMENT` fija el stock al conteo real informado.
+- No se permite stock negativo.
+- No se permite dejar `quantity_on_hand < reserved_quantity`.
+- No se permiten movimientos sobre productos `SERVICE`, inactivos o sin seguimiento de stock.
+- Todo movimiento confirmado es inmutable.
+- Toda correccion futura debe hacerse con otro movimiento.
+- El ledger debe registrar saldo anterior, saldo posterior y delta.
+- `TENANT_OWNER`, `TENANT_ADMIN`, `MANAGER` y `STOCK_USER`: lectura de saldos, lectura de movimientos y creacion de movimientos.
+- `SALES_USER`: lectura de saldos.
+- `READ_ONLY`: lectura de saldos y movimientos.
+- Se crea seed minimo de sucursal/deposito KODA para operar Sprint 1 sin abrir todavia CRUD de sucursales/depositos.
 
 ## Criterios de implementacion
 

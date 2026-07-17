@@ -36,6 +36,12 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada documentacion de catalogos en `docs/catalogs/ERP_CATALOGS.md`.
 - Agregada decision funcional aprobada de catalogos en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
 - Agregados tests unitarios para permisos, referencias, versionado, soft delete y auditoria de catalogos.
+- Agregada API tenant-scoped de stock bajo `/api/v1/stock` para saldos y movimientos.
+- Agregados servicio, puerto de repositorio y adaptador JDBC para stock.
+- Agregada migracion `V202607171540__enable_stock_operations.sql` con ledger enriquecido, permiso `stock_balances:read`, matriz rol-permiso de stock y seed minimo de sucursal/deposito KODA.
+- Agregada documentacion de stock en `docs/stock/STOCK_MOVEMENTS.md`.
+- Agregada decision funcional aprobada de stock en `docs/sprints/SPRINT_1_FUNCTIONAL_BASELINE.md`.
+- Agregados tests unitarios para permisos, stock negativo, ajustes a cero, reservas, productos no stockeables y auditoria de stock.
 
 ### Changed
 
@@ -51,6 +57,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado error `PERMISSION_DENIED` para permisos backend insuficientes.
 - Agregados errores `COMPANY_SETTINGS_NOT_FOUND` y `COMPANY_SETTINGS_VERSION_CONFLICT`.
 - Agregados errores `CATALOG_ITEM_NOT_FOUND`, `CATALOG_REFERENCE_NOT_FOUND` y `CATALOG_VERSION_CONFLICT`.
+- Agregados errores `STOCK_ITEM_NOT_FOUND`, `STOCK_REFERENCE_NOT_FOUND` y `STOCK_MOVEMENT_REJECTED`.
 
 ### Verified
 
@@ -69,6 +76,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Jar backend Hito 5 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP` y endpoint company settings protegido con `401` anonimo.
 - `mvn test` ejecutado correctamente con 25 tests: contexto Spring, Tenant Context, AuthService, conversion JWT, CompanySettingsService y CatalogService.
 - Jar backend Hito 6 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171530`, 55 asignaciones rol-permiso y endpoint catalog products protegido con `401` anonimo.
+- `mvn test` ejecutado correctamente con 32 tests: contexto Spring, Tenant Context, AuthService, conversion JWT, CompanySettingsService, CatalogService y StockService.
+- Jar backend Hito 7 empaquetado y validado en runtime temporal contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171540`, 41 permisos, 70 asignaciones rol-permiso, deposito piloto `PRINCIPAL` y endpoint stock balances protegido con `401` anonimo.
 
 ### Known Issues
 
@@ -76,7 +85,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - El primer build Docker del backend puede tardar varios minutos porque Maven descarga dependencias dentro de la imagen builder.
 - Mockito emite advertencia por carga dinamica de Java agent; no bloquea actualmente, pero debe revisarse antes de endurecer la matriz de Java futura.
 - HS256 se acepta para Sprint 1; antes de produccion multi-nodo debe evaluarse rotacion de llaves, RS256/JWKS y politica operacional de secretos.
-- La matriz rol-permiso de catalogos fue aprobada y aplicada; quedan pendientes matrices finas de seguridad, configuracion de empresa, stock y auditoria.
+- Las matrices rol-permiso de catalogos y stock fueron aprobadas y aplicadas; quedan pendientes matrices finas de seguridad, configuracion de empresa y auditoria.
+- Stock no incluye transferencias, reservas, lotes, vencimientos, costos promedio ni UI en Hito 7.
 
 ## [0.0.2] - 2026-07-15
 

@@ -18,7 +18,7 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 | 4. Seguridad JWT | Completado | Login, refresh tokens, usuarios, roles y permisos. |
 | 5. Configuracion de empresa | Completado | Configuracion visual/regional por tenant. |
 | 6. Catalogos ERP | Completado | Productos, marcas, categorias, unidades y presentaciones. |
-| 7. Stock | Pendiente | Movimientos IN, OUT y ADJUSTMENT sin stock negativo por defecto. |
+| 7. Stock | Completado | Movimientos IN, OUT y ADJUSTMENT sin stock negativo por defecto. |
 | 8. Auditoria | Pendiente | Registro persistente de operaciones sensibles. |
 | 9. Tests y hardening | Pendiente | Cobertura minima y validacion de aislamiento multiempresa. |
 
@@ -47,7 +47,7 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 
 - PostgreSQL 17 como version objetivo local.
 - Extensiones `pgcrypto` y `citext`.
-- Migraciones Flyway versionadas hasta `v202607171530`.
+- Migraciones Flyway versionadas hasta `v202607171540`.
 - Tablas base para tenants, configuracion de empresa, productos/modulos de plataforma, entitlements, sucursales y depositos.
 - Tablas base para usuarios globales, membresias tenant, roles, permisos, asignaciones y refresh tokens.
 - Tablas base para marcas, categorias, unidades, presentaciones, productos, saldos de stock, movimientos de stock y auditoria persistente.
@@ -164,6 +164,35 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Precios, impuestos o imagenes de producto.
 - Validacion de stock para eliminar/desactivar.
 - UI de catalogos.
+
+## Hito 7 - Stock
+
+### Incluye
+
+- Endpoints tenant-scoped bajo `/api/v1/stock` para saldos y movimientos.
+- Movimientos `IN`, `OUT` y `ADJUSTMENT`.
+- `ADJUSTMENT` como conteo real que fija el saldo resultante.
+- Ledger inmutable en `stock_movements` con `quantity_before`, `quantity_after` y `quantity_delta`.
+- Saldo materializado en `stock_balances`.
+- Bloqueo transaccional del saldo antes de confirmar movimientos.
+- Regla de no stock negativo.
+- Bloqueo de movimientos que dejen reservas sin cobertura.
+- Validacion de deposito activo del mismo tenant.
+- Validacion de producto activo, tipo `GOOD` y con seguimiento de stock.
+- Matriz rol-permiso aprobada para stock aplicada por Flyway.
+- Seed minimo de sucursal `CENTRAL` y deposito `PRINCIPAL` para KODA.
+- Auditoria persistente de creacion de movimientos.
+- Documentacion en `docs/stock/STOCK_MOVEMENTS.md`.
+- Tests unitarios de servicio.
+
+### No incluye
+
+- Transferencias entre depositos.
+- Reservas de stock.
+- Lotes o vencimientos.
+- Costos promedio o valorizacion contable.
+- UI de stock.
+- CRUD de sucursales/depositos.
 ## Herramientas locales detectadas
 
 - Git: disponible.
@@ -175,8 +204,8 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Frontend dependencies: `package-lock.json` generado con `npm install --package-lock-only`; instalacion completa de `node_modules` dentro de OneDrive supero el tiempo de espera.
 - Backend tests: `mvn test` ejecutado correctamente con Java 21.0.10 y Maven 3.9.16.
 - Docker stack: PostgreSQL 17.10 healthy, backend Actuator `UP` y frontend HTTP 200.
-- Flyway: 8 migraciones validadas y schema actual en `v202607171530`.
-- PostgreSQL seed: 25 tablas, 40 permisos, 7 roles, 55 asignaciones rol-permiso y tenant KODA.
+- Flyway: 9 migraciones validadas y schema actual en `v202607171540`.
+- PostgreSQL seed: 25 tablas, 41 permisos, 7 roles, 70 asignaciones rol-permiso, tenant KODA y deposito piloto `PRINCIPAL`.
 - Tenant Context tests: mvn test ejecutado correctamente con 9 tests, 0 fallos.
 - Tenant Context runtime: jar backend actual validado contra PostgreSQL 17 con Actuator UP.
 - Seguridad JWT: `mvn test` ejecutado correctamente con 14 tests, 0 fallos.
@@ -185,6 +214,8 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - Configuracion de empresa runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP` y endpoint tenant-scoped protegido con `401` sin autenticacion.
 - Catalogos ERP: `mvn test` ejecutado correctamente con 25 tests, 0 fallos.
 - Catalogos ERP runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171530`, endpoint tenant-scoped protegido con `401` sin autenticacion y matriz rol-permiso aplicada.
+- Stock: `mvn test` ejecutado correctamente con 32 tests, 0 fallos.
+- Stock runtime: jar backend actual validado contra PostgreSQL 17 con Actuator `UP`, Flyway `v202607171540`, endpoint tenant-scoped protegido con `401` sin autenticacion, 41 permisos, 70 asignaciones rol-permiso y deposito piloto `PRINCIPAL`.
 
 ## Riesgo actual
 
@@ -195,11 +226,11 @@ La base tecnica local esta validada. Los riesgos abiertos son controlados:
 - Mockito emite advertencia por carga dinamica de Java agent; debe revisarse antes de endurecer la matriz de Java futura.
 - `KODA_JWT_SECRET` es obligatorio para ejecutar backend real o Docker Compose; esto es una proteccion deliberada, no una incomodidad accidental.
 - HS256 es suficiente para este hito; antes de multi-nodo productivo debe evaluarse rotacion de llaves y firma asimetrica/JWKS.
-- La matriz rol-permiso de catalogos fue aprobada y aplicada. Siguen pendientes matrices finas para seguridad, configuracion de empresa, stock y auditoria.
+- Las matrices rol-permiso de catalogos y stock fueron aprobadas y aplicadas. Siguen pendientes matrices finas para seguridad, configuracion de empresa y auditoria.
 
 ## Siguiente paso tecnico
 
-Avanzar al Hito 7: Stock. El objetivo sera implementar movimientos IN, OUT y ADJUSTMENT con regla de no stock negativo por defecto y auditoria.
+Avanzar al Hito 8: Auditoria. El objetivo sera exponer consulta controlada de eventos auditables y endurecer trazabilidad operativa sin convertir auditoria en un basurero elegante.
 
 ## Decision tecnica: PostgreSQL 17
 

@@ -6,9 +6,9 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1: Hito 6 - Catalogos ERP completado.
+Sprint 1: Hito 7 - Stock completado.
 
-Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa y CRUD backend de catalogos ERP. Todavia no hay movimientos de stock expuestos por API; esa contencion es intencional. Primero cimientos, despues pisos. Hacerlo al reves queda lindo hasta que empieza a crujir.
+Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway iniciales, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP y API tenant-scoped de stock con saldos y movimientos confirmados. La base ya camina; ahora hay que evitar que corra en ojotas.
 
 ## Documentos principales
 
@@ -26,6 +26,7 @@ Ya existe una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migr
 - [Authentication](docs/security/AUTHENTICATION.md)
 - [Company Settings](docs/configuration/COMPANY_SETTINGS.md)
 - [ERP Catalogs](docs/catalogs/ERP_CATALOGS.md)
+- [Stock Movements](docs/stock/STOCK_MOVEMENTS.md)
 
 ## Stack obligatorio
 
@@ -145,7 +146,7 @@ Servicios esperados:
 
 ## Base de datos inicial
 
-Flyway deja el esquema en `v202607171530` con:
+Flyway deja el esquema en `v202607171540` con:
 
 - Tenant piloto KODA.
 - Producto `KODA_ERP`.
@@ -204,6 +205,19 @@ El backend ya expone CRUD tenant-scoped bajo `/api/v1/catalog` para:
 Reglas aprobadas: marca opcional, SKU unico por tenant, una presentacion principal por producto, desactivacion permitida con stock y eliminacion por soft delete. La matriz aprobada de catalogos fue aplicada por Flyway para KODA: `TENANT_OWNER`/`TENANT_ADMIN` CRUD completo, `MANAGER` lectura/actualizacion y `READ_ONLY` lectura.
 
 Ver detalle en `docs/catalogs/ERP_CATALOGS.md`.
+
+## Stock
+
+El backend ya expone endpoints tenant-scoped bajo `/api/v1/stock` para:
+
+- consulta de saldos por deposito/producto,
+- consulta de movimientos confirmados,
+- creacion de movimientos `IN`, `OUT` y `ADJUSTMENT`.
+
+Reglas aprobadas: no stock negativo, movimientos confirmados inmutables, correcciones mediante nuevos movimientos, productos stockeables solo si son `GOOD`, activos y con seguimiento de stock. El ledger guarda saldo anterior, saldo posterior y delta para trazabilidad real. La matriz aprobada de stock fue aplicada por Flyway para KODA.
+
+Ver detalle en `docs/stock/STOCK_MOVEMENTS.md`.
+
 ## Nota de entorno
 
 Java 21 y Maven 3.9.16 fueron verificados para ejecutar tests backend. Docker Desktop fue validado con PostgreSQL 17, backend y frontend activos.

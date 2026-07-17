@@ -4,6 +4,9 @@ import com.koda.platform.platform.catalog.application.CatalogItemNotFoundExcepti
 import com.koda.platform.platform.catalog.application.CatalogReferenceNotFoundException;
 import com.koda.platform.platform.catalog.application.CatalogVersionConflictException;
 import com.koda.platform.platform.configuration.application.CompanySettingsNotFoundException;
+import com.koda.platform.platform.stock.application.StockItemNotFoundException;
+import com.koda.platform.platform.stock.application.StockMovementRejectedException;
+import com.koda.platform.platform.stock.application.StockReferenceNotFoundException;
 import com.koda.platform.platform.configuration.application.CompanySettingsVersionConflictException;
 import com.koda.platform.platform.security.application.AuthenticationFailedException;
 import com.koda.platform.platform.security.application.InvalidRefreshTokenException;
@@ -100,6 +103,41 @@ public class ApiExceptionHandler {
         problem.setProperty("path", request.getRequestURI());
         return problem;
     }
+
+    @ExceptionHandler(StockItemNotFoundException.class)
+    ProblemDetail handleStockItemNotFound(StockItemNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problem.setTitle("Stock item not found");
+        problem.setProperty("code", "STOCK_ITEM_NOT_FOUND");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(StockReferenceNotFoundException.class)
+    ProblemDetail handleStockReferenceNotFound(StockReferenceNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+        problem.setTitle("Stock reference not found");
+        problem.setProperty("code", "STOCK_REFERENCE_NOT_FOUND");
+        problem.setProperty("reference", exception.reference());
+        problem.setProperty("referenceId", exception.referenceId());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(StockMovementRejectedException.class)
+    ProblemDetail handleStockMovementRejected(StockMovementRejectedException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Stock movement rejected");
+        problem.setProperty("code", "STOCK_MOVEMENT_REJECTED");
+        problem.setProperty("reasonCode", exception.reasonCode());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
     @ExceptionHandler(PermissionDeniedException.class)
     ProblemDetail handlePermissionDenied(PermissionDeniedException exception, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
