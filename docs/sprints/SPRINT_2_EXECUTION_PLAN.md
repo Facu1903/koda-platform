@@ -2,7 +2,8 @@
 
 ## Estado
 
-En progreso desde el 2026-07-17.
+Cierre tecnico completado el 2026-07-20. Pendiente de aprobacion funcional final del Product Owner.
+
 
 ## Objetivo
 
@@ -38,7 +39,7 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 | 5. Ventas basicas | Completado | Venta draft, confirmacion, anulacion, numeracion interna e impacto explicito en stock/caja. |
 | 6. Compras basicas | Completado | Compra draft, confirmacion, anulacion, numeracion interna e impacto explicito en stock/caja. |
 | 7. Reportes y dashboard operativo | Completado | API read-only con reportes por rango, stock bajo, top vendidos y dashboard inicial. |
-| 8. Hardening Sprint 2 | Pendiente | Tests, documentacion, revision de seguridad y cierre del sprint. |
+| 8. Hardening Sprint 2 | Completado | Manejo API endurecido, pruebas, documentacion y cierre tecnico del sprint. |
 
 ## Base funcional aprobada
 
@@ -203,6 +204,18 @@ El Hito 7 implemento reportes operativos y dashboard inicial como modulo read-on
 - Tests unitarios de permisos, rangos, limites, threshold y zona horaria del dashboard.
 - Testcontainers PostgreSQL 17 validando 19 migraciones hasta `v202607201400`.
 - Documentacion especifica en `docs/reports/OPERATIONAL_REPORTS.md`.
+
+## Hito 8 completado
+
+El Hito 8 cerro el Sprint 2 con hardening tecnico y documentacion final:
+
+- Manejo estructurado `400` para parametros faltantes, invalidos o fuera de validacion.
+- Tests unitarios especificos para `ApiExceptionHandler`.
+- Suite backend elevada a 89 tests unitarios.
+- Reporte de hardening en `docs/sprints/SPRINT_2_HARDENING_REPORT.md`.
+- Reporte de cierre en `docs/sprints/SPRINT_2_CLOSURE_REPORT.md`.
+- Riesgo de permisos finos de reportes documentado para decision futura.
+
 ## Fuera de alcance propuesto
 
 - Facturacion fiscal electronica.
@@ -218,4 +231,4 @@ El Hito 7 implemento reportes operativos y dashboard inicial como modulo read-on
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 8: hardening Sprint 2. El circuito operativo ya existe y tiene lectura basica; ahora toca revisar seguridad, consistencia, documentacion final, deuda tecnica chica y cierre ordenado del sprint.
+Solicitar aprobacion funcional final del Product Owner para cerrar Sprint 2 y luego definir el Sprint 3. Recomendacion tecnica inicial: priorizar licenciamiento/modularidad comercial o UI operativa, pero no mezclar ambos sin una base funcional aprobada.

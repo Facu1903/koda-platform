@@ -6,11 +6,11 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1 cerrado. Sprint 2 en progreso.
+Sprint 1 cerrado. Sprint 2 con cierre tecnico completado el 2026-07-20, pendiente de aprobacion funcional final del Product Owner.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
-Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales. El Hito 4 agrego caja inicial con apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. El Hito 5 agrego ventas basicas con borradores, confirmacion, anulacion, numeracion interna, impacto en stock/caja y auditoria. El Hito 6 agrego compras basicas con proveedor obligatorio, numeracion interna, ingreso de stock, pago opcional contra caja y reversas auditadas. El Hito 7 agrego reportes operativos y dashboard inicial con ventas, compras, caja y stock.
+Sprint 2 queda con cierre tecnico completado. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales. El Hito 4 agrego caja inicial con apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. El Hito 5 agrego ventas basicas con borradores, confirmacion, anulacion, numeracion interna, impacto en stock/caja y auditoria. El Hito 6 agrego compras basicas con proveedor obligatorio, numeracion interna, ingreso de stock, pago opcional contra caja y reversas auditadas. El Hito 7 agrego reportes operativos y dashboard inicial con ventas, compras, caja y stock. El Hito 8 endurecio errores API, pruebas, documentacion y cierre tecnico del sprint.
 
 ## Documentos principales
 
@@ -27,6 +27,8 @@ Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales f
 - [Sprint 1 Closure Report](docs/sprints/SPRINT_1_CLOSURE_REPORT.md)
 - [Sprint 2 Execution Plan](docs/sprints/SPRINT_2_EXECUTION_PLAN.md)
 - [Sprint 2 Functional Baseline](docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md)
+- [Sprint 2 Hardening Report](docs/sprints/SPRINT_2_HARDENING_REPORT.md)
+- [Sprint 2 Closure Report](docs/sprints/SPRINT_2_CLOSURE_REPORT.md)
 - [GitHub Actions CI](docs/ci/GITHUB_ACTIONS.md)
 - [PostgreSQL Conventions](docs/database/POSTGRESQL_CONVENTIONS.md)
 - [Tenant Context](docs/security/TENANT_CONTEXT.md)
@@ -286,6 +288,7 @@ El backend ya expone endpoints tenant-scoped bajo `/api/v1/reports` para:
 Reglas aprobadas: permiso `commercial_reports:read`, rango obligatorio para reportes historicos, maximo 366 dias por consulta, limite maximo de 500 filas, dashboard calculado con la zona horaria del tenant y stock bajo por parametro `threshold` hasta aprobar stock minimo por producto.
 
 Ver detalle en `docs/reports/OPERATIONAL_REPORTS.md`.
+
 ## Stock
 
 El backend ya expone endpoints tenant-scoped bajo `/api/v1/stock` para:
@@ -334,9 +337,9 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 86 tests unitarios y 6 tests de integracion, 0 fallos en `mvn -B verify`.
+- Suite backend actual: 89 tests unitarios y 6 tests de integracion, 0 fallos en `mvn -B verify`.
 
-Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
+Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md` y `docs/sprints/SPRINT_2_HARDENING_REPORT.md`.
 
 ## Nota de entorno
 

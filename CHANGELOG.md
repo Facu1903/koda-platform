@@ -4,7 +4,7 @@ Todas las modificaciones relevantes de KODA PLATFORM se documentaran en este arc
 
 El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patch>` hasta la primera version comercial estable.
 
-## [0.2.0] - Unreleased
+## [0.2.0] - 2026-07-20
 
 ### Added
 
@@ -42,10 +42,12 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregados indices operativos para reportes por fecha en ventas, compras, caja y stock.
 - Agregada API `/api/v1/reports` para ventas, compras, caja, top productos, stock bajo y dashboard.
 - Agregada documentacion de reportes operativos en `docs/reports/OPERATIONAL_REPORTS.md`.
+- Agregados reportes de hardening y cierre de Sprint 2 en `docs/sprints/SPRINT_2_HARDENING_REPORT.md` y `docs/sprints/SPRINT_2_CLOSURE_REPORT.md`.
 
 ### Changed
 
 - Agregado manejo global de errores `PURCHASE_NOT_FOUND`, `PURCHASE_REFERENCE_NOT_FOUND`, `PURCHASE_VERSION_CONFLICT` y `PURCHASE_OPERATION_REJECTED`.
+- Endurecido el manejo global de errores para parametros URL faltantes, invalidos o fuera de validacion.
 
 ### Verified
 
@@ -66,11 +68,14 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `mvn -B test` ejecutado correctamente en backend con 86 pruebas unitarias.
 - `mvn -B verify` ejecutado correctamente en backend con 86 pruebas unitarias y 6 pruebas de integracion.
 - Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201400`.
+- `mvn -B test` ejecutado correctamente en backend con 89 pruebas unitarias.
+- `mvn -B verify` ejecutado correctamente en backend con 89 pruebas unitarias y 6 pruebas de integracion.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 
 ### Known Issues
 
 - `npm.cmd ci` en carpeta OneDrive supero el tiempo de espera local; no dejo procesos Node activos y el build posterior fue exitoso. GitHub Actions valida `npm ci` en Linux.
+- Los reportes usan permiso unico `commercial_reports:read`; la separacion fina por rol queda pendiente de decision funcional futura.
 
 ## [0.1.0] - 2026-07-17
 

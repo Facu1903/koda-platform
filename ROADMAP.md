@@ -112,11 +112,11 @@ El alcance es amplio para un Sprint 1. La forma madura de manejarlo es mantener 
 
 ### Estado
 
-En progreso desde el 2026-07-17. Base funcional aprobada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`.
+Cierre tecnico completado el 2026-07-20. Ver `docs/sprints/SPRINT_2_CLOSURE_REPORT.md`.
 
 ### Objetivo
 
-Extender ERP hacia operaciones comerciales basicas.
+Extender ERP hacia operaciones comerciales basicas. Sprint 2 entrega backend/API para clientes, proveedores, caja, ventas, compras, reportes y dashboard operativo inicial.
 
 ### Alcance candidato
 
