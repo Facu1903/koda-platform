@@ -65,6 +65,6 @@ Tambien se actualizaron README, roadmap, changelog y plan de ejecucion del Sprin
 
 ## Decision
 
-Hito 8 deja Sprint 2 tecnicamente mas defendible y listo para cierre funcional del Product Owner.
+Hito 8 deja Sprint 2 tecnicamente mas defendible. El cierre funcional fue aprobado por el Product Owner el 2026-07-20.
 
 La conclusion honesta: el circuito comercial minimo ya existe, pero todavia no es un ERP comercial vendible. Es una base backend seria para construir el siguiente salto sin improvisar.

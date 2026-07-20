@@ -2,8 +2,7 @@
 
 ## Estado
 
-Cierre tecnico completado el 2026-07-20. Pendiente de aprobacion funcional final del Product Owner.
-
+Cerrado y aprobado funcionalmente por el Product Owner el 2026-07-20.
 
 ## Objetivo
 
@@ -231,4 +230,4 @@ El Hito 8 cerro el Sprint 2 con hardening tecnico y documentacion final:
 
 ## Siguiente paso recomendado
 
-Solicitar aprobacion funcional final del Product Owner para cerrar Sprint 2 y luego definir el Sprint 3. Recomendacion tecnica inicial: priorizar licenciamiento/modularidad comercial o UI operativa, pero no mezclar ambos sin una base funcional aprobada.
+Definir Sprint 3. Recomendacion tecnica inicial: priorizar licenciamiento/modularidad comercial o UI operativa, pero no mezclar ambos en el mismo sprint.

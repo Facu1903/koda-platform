@@ -112,7 +112,7 @@ El alcance es amplio para un Sprint 1. La forma madura de manejarlo es mantener 
 
 ### Estado
 
-Cierre tecnico completado el 2026-07-20. Ver `docs/sprints/SPRINT_2_CLOSURE_REPORT.md`.
+Cerrado y aprobado funcionalmente por el Product Owner el 2026-07-20. Ver `docs/sprints/SPRINT_2_CLOSURE_REPORT.md` y `docs/sprints/SPRINT_2_APPROVAL.md`.
 
 ### Objetivo
 

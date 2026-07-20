@@ -43,11 +43,13 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada API `/api/v1/reports` para ventas, compras, caja, top productos, stock bajo y dashboard.
 - Agregada documentacion de reportes operativos en `docs/reports/OPERATIONAL_REPORTS.md`.
 - Agregados reportes de hardening y cierre de Sprint 2 en `docs/sprints/SPRINT_2_HARDENING_REPORT.md` y `docs/sprints/SPRINT_2_CLOSURE_REPORT.md`.
+- Agregada aprobacion funcional final del Product Owner en `docs/sprints/SPRINT_2_APPROVAL.md`.
 
 ### Changed
 
 - Agregado manejo global de errores `PURCHASE_NOT_FOUND`, `PURCHASE_REFERENCE_NOT_FOUND`, `PURCHASE_VERSION_CONFLICT` y `PURCHASE_OPERATION_REJECTED`.
 - Endurecido el manejo global de errores para parametros URL faltantes, invalidos o fuera de validacion.
+- Actualizado el estado de Sprint 2 a cerrado y aprobado funcionalmente por el Product Owner.
 
 ### Verified
 

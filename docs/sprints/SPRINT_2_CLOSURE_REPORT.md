@@ -2,7 +2,7 @@
 
 ## Estado
 
-Cierre tecnico completado el 2026-07-20. Pendiente de aprobacion funcional final del Product Owner.
+Cierre tecnico y aprobacion funcional final completados el 2026-07-20 por el Product Owner.
 
 ## Objetivo
 
@@ -77,8 +77,14 @@ Modulos SaaS incorporados durante Sprint 2:
 - No hay exportacion de reportes.
 - No hay estrategia final de secretos/llaves JWT para produccion multi-nodo.
 
+## Aprobacion funcional final
+
+El Product Owner aprueba formalmente el cierre funcional del Sprint 2 el 2026-07-20. La aprobacion acepta el alcance entregado y los riesgos abiertos documentados para backlog.
+
+Ver acta en `docs/sprints/SPRINT_2_APPROVAL.md`.
+
 ## Decision de cierre
 
-Sprint 2 cumple el objetivo tecnico: deja una operacion comercial backend minima, verificable, documentada y extensible.
+Sprint 2 cumple el objetivo tecnico y funcional acordado: deja una operacion comercial backend minima, verificable, documentada y extensible.
 
-Antes de Sprint 3 conviene que el Product Owner apruebe formalmente este cierre funcional y priorice si el siguiente foco sera licenciamiento/modularidad, UI operativa o hardening SaaS profundo.
+Sprint 2 queda cerrado. El siguiente paso es definir Sprint 3 con un foco principal claro: licenciamiento/modularidad SaaS o UI operativa.
