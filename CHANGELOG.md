@@ -4,6 +4,16 @@ Todas las modificaciones relevantes de KODA PLATFORM se documentaran en este arc
 
 El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patch>` hasta la primera version comercial estable.
 
+## [0.3.0] - Unreleased
+
+### Added
+
+- Agregada y aprobada base funcional de Sprint 3 en `docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md`.
+- Agregado plan de ejecucion de Sprint 3 en `docs/sprints/SPRINT_3_EXECUTION_PLAN.md`.
+
+### Changed
+
+- Actualizado README y roadmap para iniciar Sprint 3 como Fundacion SaaS Comercial.
 ## [0.2.0] - 2026-07-20
 
 ### Added

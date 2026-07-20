@@ -131,21 +131,28 @@ Extender ERP hacia operaciones comerciales basicas. Sprint 2 entrega backend/API
 
 La base funcional minima fue aprobada por el Product Owner el 2026-07-17.
 
-## 5. Sprint 3 - Licenciamiento y modularidad comercial
+## 5. Sprint 3 - Fundacion SaaS Comercial
+
+### Estado
+
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-20. Ver `docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md` y `docs/sprints/SPRINT_3_EXECUTION_PLAN.md`.
 
 ### Objetivo
 
-Formalizar la activacion/desactivacion de productos y modulos por tenant.
+Implementar licencias, modulos y control de acceso por empresa para convertir la base multi-tenant en una plataforma SaaS comercialmente gobernable.
 
-### Alcance candidato
+### Alcance aprobado
 
-- Catalogo de productos de plataforma.
-- Catalogo de modulos.
-- Planes.
-- Entitlements.
-- Feature flags.
-- UI de administracion de licencias.
-- Guards backend/frontend por modulo.
+- Plan tecnico inicial `KODA_PILOT`.
+- Suscripciones por tenant.
+- Entitlements efectivos por producto y modulo.
+- Limites iniciales modelados.
+- Feature flags tecnicos.
+- Capability API tenant-scoped.
+- Guards backend por producto/modulo.
+- Preparacion frontend para rutas y menus segun capabilities.
+- Administracion interna de licencias protegida por permisos de plataforma.
+- Auditoria y tests.
 
 ## 6. Sprint 4 - Escalabilidad y observabilidad
 
