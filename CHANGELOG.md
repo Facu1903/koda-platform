@@ -30,6 +30,16 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregados permisos `sales:*` con matriz rol-permiso aprobada.
 - Agregada integracion de ventas con stock y caja mediante puertos internos.
 - Agregada documentacion de ventas basicas en `docs/sales/SALES.md`.
+- Agregado modulo backend purchases para compras basicas tenant-scoped.
+- Agregadas migraciones `V202607201300__create_purchase_tables.sql` y `V202607201310__seed_purchase_permissions.sql`.
+- Agregada numeracion interna por tenant/sucursal mediante `purchase_number_sequences`.
+- Agregados permisos `purchases:*` con matriz rol-permiso aprobada.
+- Agregada integracion de compras con stock y caja mediante puertos internos.
+- Agregada documentacion de compras basicas en `docs/purchases/PURCHASES.md`.
+
+### Changed
+
+- Agregado manejo global de errores `PURCHASE_NOT_FOUND`, `PURCHASE_REFERENCE_NOT_FOUND`, `PURCHASE_VERSION_CONFLICT` y `PURCHASE_OPERATION_REJECTED`.
 
 ### Verified
 
@@ -44,6 +54,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `mvn -B test` ejecutado correctamente en backend con 70 pruebas unitarias.
 - `mvn -B verify` ejecutado correctamente en backend con 70 pruebas unitarias y 4 pruebas de integracion.
 - Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201210`.
+- `mvn -B test` ejecutado correctamente en backend con 79 pruebas unitarias.
+- `mvn -B verify` ejecutado correctamente en backend con 79 pruebas unitarias y 5 pruebas de integracion.
+- Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201310`.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 
 ### Known Issues

@@ -36,7 +36,7 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 | 3. Clientes y proveedores | Completado | CRUD backend tenant-scoped con permisos, auditoria, validaciones y seed Consumidor Final. |
 | 4. Caja inicial | Completado | Apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. |
 | 5. Ventas basicas | Completado | Venta draft, confirmacion, anulacion, numeracion interna e impacto explicito en stock/caja. |
-| 6. Compras basicas | Pendiente | Registro de compra con proveedor, items e impacto en stock/caja segun reglas aprobadas. |
+| 6. Compras basicas | Completado | Compra draft, confirmacion, anulacion, numeracion interna e impacto explicito en stock/caja. |
 | 7. Reportes y dashboard operativo | Pendiente | Indicadores simples para ventas, compras, stock y caja. |
 | 8. Hardening Sprint 2 | Pendiente | Tests, documentacion, revision de seguridad y cierre del sprint. |
 
@@ -168,6 +168,26 @@ El Hito 5 implemento ventas basicas como documento comercial tenant-scoped:
 - Testcontainers PostgreSQL 17 validando 16 migraciones hasta `v202607201210`.
 - Documentacion especifica en `docs/sales/SALES.md`.
 
+## Hito 6 completado
+
+El Hito 6 implemento compras basicas como documento comercial tenant-scoped:
+
+- Tablas `purchase_number_sequences`, `purchase_orders` y `purchase_order_items`.
+- API `/api/v1/purchases` para crear, listar, consultar, actualizar, eliminar draft, confirmar y anular compras.
+- Numeracion interna unica por tenant y sucursal.
+- Estados `DRAFT`, `CONFIRMED` y `CANCELLED`.
+- Proveedor obligatorio y documento de proveedor opcional.
+- Confirmacion con ingreso de stock para productos `GOOD` con seguimiento de stock.
+- Items stockeables con `warehouseId` obligatorio para mantener impacto explicito.
+- Pago opcional contra sesion de caja abierta mediante movimiento `PURCHASE_PAYMENT`.
+- Anulacion con movimiento inverso de stock y reversa de pago cuando corresponde.
+- Permisos atomicos `purchases:read/create/update/delete/confirm/cancel`.
+- Matriz rol-permiso aprobada aplicada por Flyway para KODA.
+- Auditoria de creacion, actualizacion, eliminacion draft, confirmacion y anulacion.
+- Tests unitarios de permisos, totales, proveedor obligatorio, producto comprable, deposito requerido, confirmacion, caja, stock y anulacion.
+- Testcontainers PostgreSQL 17 validando 18 migraciones hasta `v202607201310`.
+- Documentacion especifica en `docs/purchases/PURCHASES.md`.
+
 ## Fuera de alcance propuesto
 
 - Facturacion fiscal electronica.
@@ -183,4 +203,4 @@ El Hito 5 implemento ventas basicas como documento comercial tenant-scoped:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 6: compras basicas. Ventas ya valida cliente, stock y caja; ahora compras debe cerrar el circuito de ingreso de mercaderia y pagos a proveedores.
+Avanzar al Hito 7: reportes y dashboard operativo. El circuito comercial minimo ya tiene terceros, caja, ventas, compras y stock; ahora necesitamos lectura operativa simple para que el usuario vea el estado del negocio sin consultar tablas ni hacer arqueologia digital.

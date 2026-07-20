@@ -17,6 +17,10 @@ import com.koda.platform.platform.configuration.application.CompanySettingsVersi
 import com.koda.platform.platform.security.application.AuthenticationFailedException;
 import com.koda.platform.platform.security.application.InvalidRefreshTokenException;
 import com.koda.platform.platform.security.application.TenantSelectionRequiredException;
+import com.koda.platform.platform.purchases.application.PurchaseNotFoundException;
+import com.koda.platform.platform.purchases.application.PurchaseOperationRejectedException;
+import com.koda.platform.platform.purchases.application.PurchaseReferenceNotFoundException;
+import com.koda.platform.platform.purchases.application.PurchaseVersionConflictException;
 import com.koda.platform.platform.sales.application.SaleNotFoundException;
 import com.koda.platform.platform.sales.application.SaleOperationRejectedException;
 import com.koda.platform.platform.sales.application.SaleReferenceNotFoundException;
@@ -149,6 +153,51 @@ public class ApiExceptionHandler {
     }
 
 
+
+    @ExceptionHandler(PurchaseNotFoundException.class)
+    ProblemDetail handlePurchaseNotFound(PurchaseNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problem.setTitle("Purchase not found");
+        problem.setProperty("code", "PURCHASE_NOT_FOUND");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(PurchaseReferenceNotFoundException.class)
+    ProblemDetail handlePurchaseReferenceNotFound(PurchaseReferenceNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+        problem.setTitle("Purchase reference not found");
+        problem.setProperty("code", "PURCHASE_REFERENCE_NOT_FOUND");
+        problem.setProperty("reference", exception.reference());
+        problem.setProperty("referenceId", exception.referenceId());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(PurchaseVersionConflictException.class)
+    ProblemDetail handlePurchaseVersionConflict(PurchaseVersionConflictException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Purchase version conflict");
+        problem.setProperty("code", "PURCHASE_VERSION_CONFLICT");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(PurchaseOperationRejectedException.class)
+    ProblemDetail handlePurchaseOperationRejected(PurchaseOperationRejectedException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Purchase operation rejected");
+        problem.setProperty("code", "PURCHASE_OPERATION_REJECTED");
+        problem.setProperty("reasonCode", exception.reasonCode());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
     @ExceptionHandler(SaleNotFoundException.class)
     ProblemDetail handleSaleNotFound(SaleNotFoundException exception, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());

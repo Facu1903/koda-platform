@@ -10,7 +10,7 @@ Sprint 1 cerrado. Sprint 2 en progreso.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
-Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales. El Hito 4 agrego caja inicial con apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. El Hito 5 agrego ventas basicas con borradores, confirmacion, anulacion, numeracion interna, impacto en stock/caja y auditoria.
+Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales. El Hito 4 agrego caja inicial con apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. El Hito 5 agrego ventas basicas con borradores, confirmacion, anulacion, numeracion interna, impacto en stock/caja y auditoria. El Hito 6 agrego compras basicas con proveedor obligatorio, numeracion interna, ingreso de stock, pago opcional contra caja y reversas auditadas.
 
 ## Documentos principales
 
@@ -36,6 +36,7 @@ Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales f
 - [Commercial Partners](docs/commercial/COMMERCIAL_PARTNERS.md)
 - [Cash Sessions](docs/cash/CASH_SESSIONS.md)
 - [Ventas Basicas](docs/sales/SALES.md)
+- [Compras Basicas](docs/purchases/PURCHASES.md)
 - [Stock Movements](docs/stock/STOCK_MOVEMENTS.md)
 - [Audit Events](docs/audit/AUDIT_EVENTS.md)
 
@@ -157,15 +158,15 @@ Servicios esperados:
 
 ## Base de datos inicial
 
-Flyway deja el esquema en `v202607201210` con:
+Flyway deja el esquema en `v202607201310` con:
 
 - Tenant piloto KODA.
 - Producto `KODA_ERP`.
-- Modulos base de Sprint 1 y modulos `COMMERCIAL_PARTNERS`, `CASH` y `SALES`.
+- Modulos base de Sprint 1 y modulos `COMMERCIAL_PARTNERS`, `CASH`, `SALES` y `PURCHASES`.
 - Roles y permisos iniciales aprobados.
-- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock, auditoria, terceros comerciales, caja inicial y ventas basicas.
+- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock, auditoria, terceros comerciales, caja inicial, ventas basicas y compras basicas.
 
-La matriz inicial rol-permiso ya existe para la base del Sprint 1 y se amplio con clientes/proveedores, caja y ventas en Sprint 2. La creacion de usuarios reales se controla por bootstrap opt-in o por APIs futuras de administracion.
+La matriz inicial rol-permiso ya existe para la base del Sprint 1 y se amplio con clientes/proveedores, caja, ventas y compras en Sprint 2. La creacion de usuarios reales se controla por bootstrap opt-in o por APIs futuras de administracion.
 
 ## Tenant Context
 
@@ -258,6 +259,18 @@ Reglas aprobadas: cliente opcional con `Consumidor Final` por defecto, numeracio
 
 Ver detalle en `docs/sales/SALES.md`.
 
+## Compras basicas
+
+El backend ya expone endpoints tenant-scoped bajo `/api/v1/purchases` para:
+
+- crear, consultar, actualizar y eliminar logicamente compras `DRAFT`,
+- confirmar compras,
+- anular compras confirmadas.
+
+Reglas aprobadas: proveedor obligatorio, numeracion interna por tenant/sucursal, documento de proveedor opcional, compra confirmada inmutable, anulacion con movimientos inversos, ingreso de stock para productos `GOOD` con seguimiento de stock y pago opcional contra una sesion de caja abierta. Los items stockeables requieren `warehouseId` para mantener el impacto explicito.
+
+Ver detalle en `docs/purchases/PURCHASES.md`.
+
 ## Stock
 
 El backend ya expone endpoints tenant-scoped bajo `/api/v1/stock` para:
@@ -306,7 +319,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 70 tests unitarios y 4 tests de integracion, 0 fallos en `mvn -B verify`.
+- Suite backend actual: 79 tests unitarios y 5 tests de integracion, 0 fallos en `mvn -B verify`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
 
