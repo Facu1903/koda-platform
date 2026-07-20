@@ -37,12 +37,12 @@ class FlywayPostgresqlIT {
     @Test
     void flywayBuildsSprintOneSchemaAndSeedDataOnPostgresql17() throws SQLException {
         assertThat(queryForString("select version from flyway_schema_history where success = true order by installed_rank desc limit 1"))
-            .isEqualTo("202607201110");
+            .isEqualTo("202607201210");
         assertThat(queryForInt("select count(*) from tenants")).isEqualTo(1);
-        assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(7);
-        assertThat(queryForInt("select count(*) from permissions")).isEqualTo(55);
+        assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(8);
+        assertThat(queryForInt("select count(*) from permissions")).isEqualTo(61);
         assertThat(queryForInt("select count(*) from roles")).isEqualTo(7);
-        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(134);
+        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(158);
         assertThat(queryForString("select code from warehouses where tenant_id = '00000000-0000-4000-8000-000000000001'"))
             .isEqualTo("PRINCIPAL");
         assertThat(queryForString("select code from cash_registers where tenant_id = '00000000-0000-4000-8000-000000000001'"))
@@ -82,7 +82,10 @@ class FlywayPostgresqlIT {
             "business_partner_roles",
             "cash_registers",
             "cash_sessions",
-            "cash_movements"
+            "cash_movements",
+            "sales_number_sequences",
+            "sales_orders",
+            "sales_order_items"
         );
 
         for (String tableName : tenantScopedTables) {
@@ -99,6 +102,13 @@ class FlywayPostgresqlIT {
         assertThat(hasColumn("stock_movements", "quantity_delta")).isTrue();
     }
 
+
+    @Test
+    void salesMigrationAddsInternalNumberingAndPermissions() throws SQLException {
+        assertThat(hasColumn("sales_orders", "sale_number")).isTrue();
+        assertThat(hasColumn("sales_order_items", "stock_movement_id")).isTrue();
+        assertThat(queryForInt("select count(*) from permissions where code like 'sales:%'")).isEqualTo(6);
+    }
     private static int queryForInt(String sql) throws SQLException {
         try (Connection connection = connection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();

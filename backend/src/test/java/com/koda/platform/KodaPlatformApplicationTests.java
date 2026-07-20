@@ -6,6 +6,9 @@ import com.koda.platform.platform.catalog.application.CatalogRepository;
 import com.koda.platform.platform.commercial.application.CommercialPartnerRepository;
 import com.koda.platform.platform.configuration.application.CompanySettingsRepository;
 import com.koda.platform.platform.security.application.AuthRepository;
+import com.koda.platform.platform.sales.application.SalesCashPort;
+import com.koda.platform.platform.sales.application.SalesRepository;
+import com.koda.platform.platform.sales.application.SalesStockPort;
 import com.koda.platform.platform.stock.application.StockRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +23,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
     "koda.stock.jdbc.enabled=false",
     "koda.audit.jdbc.enabled=false",
     "koda.commercial.jdbc.enabled=false",
-    "koda.cash.jdbc.enabled=false"
+    "koda.cash.jdbc.enabled=false",
+    "koda.sales.jdbc.enabled=false"
 })
 class KodaPlatformApplicationTests {
 
@@ -44,6 +48,15 @@ class KodaPlatformApplicationTests {
 
     @MockitoBean
     private CashRepository cashRepository;
+
+    @MockitoBean
+    private SalesRepository salesRepository;
+
+    @MockitoBean
+    private SalesStockPort salesStockPort;
+
+    @MockitoBean
+    private SalesCashPort salesCashPort;
 
     @Test
     void contextLoads() {

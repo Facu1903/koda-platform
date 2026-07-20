@@ -35,7 +35,7 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 | 2. CI/CD minimo y tests de persistencia | Completado | GitHub Actions para backend/frontend y prueba Flyway con PostgreSQL 17/Testcontainers. |
 | 3. Clientes y proveedores | Completado | CRUD backend tenant-scoped con permisos, auditoria, validaciones y seed Consumidor Final. |
 | 4. Caja inicial | Completado | Apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. |
-| 5. Ventas basicas | Pendiente | Registro de venta con estados, cliente, items, impacto en stock/caja segun reglas aprobadas. |
+| 5. Ventas basicas | Completado | Venta draft, confirmacion, anulacion, numeracion interna e impacto explicito en stock/caja. |
 | 6. Compras basicas | Pendiente | Registro de compra con proveedor, items e impacto en stock/caja segun reglas aprobadas. |
 | 7. Reportes y dashboard operativo | Pendiente | Indicadores simples para ventas, compras, stock y caja. |
 | 8. Hardening Sprint 2 | Pendiente | Tests, documentacion, revision de seguridad y cierre del sprint. |
@@ -147,6 +147,27 @@ El Hito 4 implemento caja inicial como ledger operativo tenant-scoped:
 - Testcontainers PostgreSQL 17 validando 14 migraciones hasta `v202607201110`.
 - Documentacion especifica en `docs/cash/CASH_SESSIONS.md`.
 
+
+## Hito 5 completado
+
+El Hito 5 implemento ventas basicas como documento comercial tenant-scoped:
+
+- Tablas `sales_number_sequences`, `sales_orders` y `sales_order_items`.
+- API `/api/v1/sales` para crear, listar, consultar, actualizar, eliminar draft, confirmar y anular ventas.
+- Numeracion interna unica por tenant y sucursal.
+- Estados `DRAFT`, `CONFIRMED` y `CANCELLED`.
+- Cliente por defecto `Consumidor Final` cuando no se informa cliente.
+- Confirmacion con descuento de stock para productos `GOOD` con seguimiento de stock.
+- Items stockeables con `warehouseId` obligatorio para mantener impacto explicito.
+- Pago opcional contra sesion de caja abierta mediante movimiento `SALE_PAYMENT`.
+- Anulacion con movimiento inverso de stock y reversa de pago cuando corresponde.
+- Permisos atomicos `sales:read/create/update/delete/confirm/cancel`.
+- Matriz rol-permiso aprobada aplicada por Flyway para KODA.
+- Auditoria de creacion, actualizacion, eliminacion draft, confirmacion y anulacion.
+- Tests unitarios de permisos, totales, cliente default, deposito requerido, confirmacion, caja, stock y anulacion.
+- Testcontainers PostgreSQL 17 validando 16 migraciones hasta `v202607201210`.
+- Documentacion especifica en `docs/sales/SALES.md`.
+
 ## Fuera de alcance propuesto
 
 - Facturacion fiscal electronica.
@@ -162,4 +183,4 @@ El Hito 4 implemento caja inicial como ledger operativo tenant-scoped:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 5: ventas basicas. Clientes, proveedores y caja inicial ya estan listos para que la venta no improvise cliente, stock ni cobro.
+Avanzar al Hito 6: compras basicas. Ventas ya valida cliente, stock y caja; ahora compras debe cerrar el circuito de ingreso de mercaderia y pagos a proveedores.

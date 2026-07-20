@@ -17,6 +17,10 @@ import com.koda.platform.platform.configuration.application.CompanySettingsVersi
 import com.koda.platform.platform.security.application.AuthenticationFailedException;
 import com.koda.platform.platform.security.application.InvalidRefreshTokenException;
 import com.koda.platform.platform.security.application.TenantSelectionRequiredException;
+import com.koda.platform.platform.sales.application.SaleNotFoundException;
+import com.koda.platform.platform.sales.application.SaleOperationRejectedException;
+import com.koda.platform.platform.sales.application.SaleReferenceNotFoundException;
+import com.koda.platform.platform.sales.application.SaleVersionConflictException;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.MissingTenantContextException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -144,6 +148,51 @@ public class ApiExceptionHandler {
         return problem;
     }
 
+
+    @ExceptionHandler(SaleNotFoundException.class)
+    ProblemDetail handleSaleNotFound(SaleNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problem.setTitle("Sale not found");
+        problem.setProperty("code", "SALE_NOT_FOUND");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(SaleReferenceNotFoundException.class)
+    ProblemDetail handleSaleReferenceNotFound(SaleReferenceNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+        problem.setTitle("Sale reference not found");
+        problem.setProperty("code", "SALE_REFERENCE_NOT_FOUND");
+        problem.setProperty("reference", exception.reference());
+        problem.setProperty("referenceId", exception.referenceId());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(SaleVersionConflictException.class)
+    ProblemDetail handleSaleVersionConflict(SaleVersionConflictException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Sale version conflict");
+        problem.setProperty("code", "SALE_VERSION_CONFLICT");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(SaleOperationRejectedException.class)
+    ProblemDetail handleSaleOperationRejected(SaleOperationRejectedException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Sale operation rejected");
+        problem.setProperty("code", "SALE_OPERATION_REJECTED");
+        problem.setProperty("reasonCode", exception.reasonCode());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
     @ExceptionHandler(CashItemNotFoundException.class)
     ProblemDetail handleCashItemNotFound(CashItemNotFoundException exception, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
