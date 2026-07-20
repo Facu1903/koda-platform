@@ -3,7 +3,10 @@ package com.koda.platform.platform.stock.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
+import com.koda.platform.testing.FakeTenantLicenseAccessRepository;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
@@ -28,13 +31,14 @@ class StockServiceTest {
     private final UUID warehouseId = UUID.randomUUID();
     private final UUID productId = UUID.randomUUID();
     private final FakeStockRepository repository = new FakeStockRepository();
+    private final FakeTenantLicenseAccessRepository licenseAccessRepository = new FakeTenantLicenseAccessRepository();
     private final FakeCurrentTenantProvider currentTenantProvider = new FakeCurrentTenantProvider();
     private final StockRequestMetadata metadata = new StockRequestMetadata("127.0.0.1", "JUnit");
     private StockService service;
 
     @BeforeEach
     void setUp() {
-        service = new StockService(repository, currentTenantProvider);
+        service = new StockService(repository, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository));
         currentTenantProvider.context = Optional.of(new TenantContext(
             tenantId,
             userId,
@@ -126,6 +130,15 @@ class StockServiceTest {
 
         assertThatThrownBy(() -> service.createMovement(command("IN", "1"), metadata))
             .isInstanceOf(PermissionDeniedException.class);
+    }
+
+    @Test
+    void stockModuleDisabledBlocksOperationsEvenWithPermission() {
+        licenseAccessRepository.disableModule();
+
+        assertThatThrownBy(() -> service.listBalances(null, null, 100))
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).reasonCode()).isEqualTo("MODULE_NOT_ENABLED"));
     }
 
     @Test

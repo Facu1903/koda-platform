@@ -3,7 +3,10 @@ package com.koda.platform.platform.reports.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
+import com.koda.platform.testing.FakeTenantLicenseAccessRepository;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
@@ -24,6 +27,7 @@ class ReportsServiceTest {
     private final TenantId tenantId = TenantId.from(UUID.fromString("00000000-0000-4000-8000-000000000001"));
     private final UUID userId = UUID.fromString("00000000-0000-4000-8000-000000000002");
     private FakeCurrentTenantProvider currentTenantProvider;
+    private FakeTenantLicenseAccessRepository licenseAccessRepository;
     private FakeReportsRepository repository;
     private ReportsService service;
 
@@ -32,7 +36,9 @@ class ReportsServiceTest {
         currentTenantProvider = new FakeCurrentTenantProvider();
         currentTenantProvider.context = Optional.of(new TenantContext(tenantId, userId, Set.of("MANAGER"), Set.of("commercial_reports:read"), false));
         repository = new FakeReportsRepository();
-        service = new ReportsService(repository, currentTenantProvider, Clock.fixed(Instant.parse("2026-07-20T15:00:00Z"), ZoneOffset.UTC));
+        licenseAccessRepository = new FakeTenantLicenseAccessRepository();
+        service = new ReportsService(repository, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository),
+            Clock.fixed(Instant.parse("2026-07-20T15:00:00Z"), ZoneOffset.UTC));
     }
 
     @Test
@@ -42,6 +48,15 @@ class ReportsServiceTest {
         assertThatThrownBy(() -> service.salesByRange(Instant.parse("2026-07-01T00:00:00Z"), Instant.parse("2026-07-02T00:00:00Z"), 50))
             .isInstanceOf(PermissionDeniedException.class)
             .satisfies(exception -> assertThat(((PermissionDeniedException) exception).requiredPermission()).isEqualTo("commercial_reports:read"));
+    }
+
+    @Test
+    void commercialReportsModuleDisabledBlocksReportsEvenWithPermission() {
+        licenseAccessRepository.disableModule();
+
+        assertThatThrownBy(() -> service.salesByRange(Instant.parse("2026-07-01T00:00:00Z"), Instant.parse("2026-07-02T00:00:00Z"), 50))
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).reasonCode()).isEqualTo("MODULE_NOT_ENABLED"));
     }
 
     @Test

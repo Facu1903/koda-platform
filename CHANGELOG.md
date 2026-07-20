@@ -15,17 +15,22 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado backend de capabilities tenant-scoped con servicio de aplicacion, puerto y repositorio JDBC.
 - Agregado endpoint `GET /api/v1/capabilities` para productos, modulos, feature flags y limites efectivos del tenant autenticado.
 - Agregadas pruebas unitarias de `TenantCapabilitiesService` y prueba de integracion del calculo real sobre PostgreSQL 17.
+- Agregado guard backend `TenantLicenseAccessGuard` para bloquear operaciones por producto/modulo no habilitado.
+- Agregado puerto `TenantLicenseAccessRepository` con consultas `EXISTS` para producto y modulo efectivo.
+- Agregada documentacion de guards en `docs/licensing/TENANT_LICENSE_GUARDS.md`.
+- Agregadas pruebas de bloqueo por licencia en servicios existentes y dependencias cruzadas de ventas/compras con stock/caja.
 
 ### Changed
 
 - Actualizado README y roadmap para iniciar Sprint 3 como Fundacion SaaS Comercial.
 - Agregados metadatos `core_module` y `commercially_toggleable` a `platform_modules`.
 - Actualizado manejo global de excepciones para responder tenants sin capabilities disponibles.
+- Aplicado control de licencia SaaS en configuracion, catalogos, stock, auditoria, clientes/proveedores, caja, ventas, compras y reportes comerciales.
 
 ### Verified
 
-- `mvn -B test` ejecutado correctamente en backend con 92 pruebas unitarias.
-- `mvn -B verify` ejecutado correctamente en backend con 92 pruebas unitarias y 8 pruebas de integracion.
+- `mvn -B test` ejecutado correctamente en backend con 110 pruebas unitarias.
+- `mvn -B verify` ejecutado correctamente en backend con 110 pruebas unitarias y 9 pruebas de integracion.
 - Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201500`.
 
 ## [0.2.0] - 2026-07-20

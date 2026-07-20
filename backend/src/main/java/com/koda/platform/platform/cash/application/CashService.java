@@ -1,5 +1,8 @@
 package com.koda.platform.platform.cash.application;
 
+import com.koda.platform.platform.licensing.application.LicensedModules;
+import com.koda.platform.platform.licensing.application.LicensedProducts;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
@@ -33,10 +36,12 @@ public class CashService {
 
     private final CashRepository repository;
     private final CurrentTenantProvider currentTenantProvider;
+    private final TenantLicenseAccessGuard licenseAccessGuard;
 
-    public CashService(CashRepository repository, CurrentTenantProvider currentTenantProvider) {
+    public CashService(CashRepository repository, CurrentTenantProvider currentTenantProvider, TenantLicenseAccessGuard licenseAccessGuard) {
         this.repository = repository;
         this.currentTenantProvider = currentTenantProvider;
+        this.licenseAccessGuard = licenseAccessGuard;
     }
 
     @Transactional(readOnly = true)
@@ -140,6 +145,7 @@ public class CashService {
 
     private TenantContext requirePermission(String permission) {
         TenantContext context = currentTenantProvider.requireContext();
+        licenseAccessGuard.requireModuleEnabled(context, LicensedProducts.KODA_ERP, LicensedModules.CASH);
         if (context.platformAdmin() || context.hasPermission(permission)) {
             return context;
         }

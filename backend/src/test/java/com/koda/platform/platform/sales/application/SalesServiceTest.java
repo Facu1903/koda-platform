@@ -3,7 +3,11 @@ package com.koda.platform.platform.sales.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.koda.platform.platform.licensing.application.LicensedModules;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
+import com.koda.platform.testing.FakeTenantLicenseAccessRepository;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
@@ -32,13 +36,14 @@ class SalesServiceTest {
     private final FakeSalesRepository repository = new FakeSalesRepository();
     private final FakeSalesStockPort stockPort = new FakeSalesStockPort();
     private final FakeSalesCashPort cashPort = new FakeSalesCashPort();
+    private final FakeTenantLicenseAccessRepository licenseAccessRepository = new FakeTenantLicenseAccessRepository();
     private final FakeCurrentTenantProvider currentTenantProvider = new FakeCurrentTenantProvider();
     private final SalesRequestMetadata metadata = new SalesRequestMetadata("127.0.0.1", "JUnit");
     private SalesService service;
 
     @BeforeEach
     void setUp() {
-        service = new SalesService(repository, stockPort, cashPort, currentTenantProvider);
+        service = new SalesService(repository, stockPort, cashPort, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository));
         repository.activeBranches.add(branchId);
         repository.activeWarehouses.add(new WarehouseKey(branchId, warehouseId));
         repository.defaultCustomer = new SalesCustomer(defaultCustomerId, "Consumidor Final", "ACTIVE", true);
@@ -129,6 +134,35 @@ class SalesServiceTest {
 
         assertThatThrownBy(() -> service.createSale(new CreateSaleCommand(branchId, null, List.of(item(serviceProductId, null, "1", "20"))), metadata))
             .isInstanceOf(PermissionDeniedException.class);
+    }
+
+    @Test
+    void salesModuleDisabledBlocksSalesEvenWithPermission() {
+        licenseAccessRepository.disableModule();
+
+        assertThatThrownBy(() -> service.listSales(100))
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).reasonCode()).isEqualTo("MODULE_NOT_ENABLED"));
+    }
+
+    @Test
+    void paidConfirmationRequiresCashModuleEvenWithCashPermission() {
+        Sale draft = service.createSale(new CreateSaleCommand(branchId, null, List.of(item(serviceProductId, null, "1", "20"))), metadata);
+        licenseAccessRepository.disableModule(LicensedModules.CASH);
+
+        assertThatThrownBy(() -> service.confirmSale(draft.id(), new ConfirmSaleCommand(draft.version(), cashSessionId, "CASH"), metadata))
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).moduleCode()).isEqualTo(LicensedModules.CASH));
+    }
+
+    @Test
+    void trackedSaleConfirmationRequiresStockModule() {
+        Sale draft = service.createSale(new CreateSaleCommand(branchId, null, List.of(item(productId, warehouseId, "1", "15"))), metadata);
+        licenseAccessRepository.disableModule(LicensedModules.STOCK);
+
+        assertThatThrownBy(() -> service.confirmSale(draft.id(), new ConfirmSaleCommand(draft.version(), null, null), metadata))
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).moduleCode()).isEqualTo(LicensedModules.STOCK));
     }
 
     @Test

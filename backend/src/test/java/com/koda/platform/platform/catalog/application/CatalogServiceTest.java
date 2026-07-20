@@ -3,7 +3,10 @@ package com.koda.platform.platform.catalog.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
+import com.koda.platform.testing.FakeTenantLicenseAccessRepository;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
@@ -26,13 +29,14 @@ class CatalogServiceTest {
     private final UUID unitId = UUID.randomUUID();
     private final UUID presentationId = UUID.randomUUID();
     private final FakeCatalogRepository repository = new FakeCatalogRepository();
+    private final FakeTenantLicenseAccessRepository licenseAccessRepository = new FakeTenantLicenseAccessRepository();
     private final FakeCurrentTenantProvider currentTenantProvider = new FakeCurrentTenantProvider();
     private final CatalogRequestMetadata metadata = new CatalogRequestMetadata("127.0.0.1", "JUnit");
     private CatalogService service;
 
     @BeforeEach
     void setUp() {
-        service = new CatalogService(repository, currentTenantProvider);
+        service = new CatalogService(repository, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository));
         currentTenantProvider.context = Optional.of(new TenantContext(
             tenantId,
             userId,
@@ -68,6 +72,15 @@ class CatalogServiceTest {
 
         assertThatThrownBy(() -> service.createBrand(new CreateBrandCommand("ACME", "ACME", null, true), metadata))
             .isInstanceOf(PermissionDeniedException.class);
+    }
+
+    @Test
+    void catalogModuleDisabledBlocksCatalogOperationsEvenWithPermission() {
+        licenseAccessRepository.disableModule();
+
+        assertThatThrownBy(() -> service.listBrands())
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).reasonCode()).isEqualTo("MODULE_NOT_ENABLED"));
     }
 
     @Test

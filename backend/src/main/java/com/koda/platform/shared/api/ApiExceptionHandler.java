@@ -12,6 +12,7 @@ import com.koda.platform.platform.commercial.application.CommercialPartnerVersio
 import com.koda.platform.platform.configuration.application.CompanySettingsNotFoundException;
 import com.koda.platform.platform.configuration.application.CompanySettingsVersionConflictException;
 import com.koda.platform.platform.licensing.application.TenantCapabilitiesUnavailableException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
 import com.koda.platform.platform.purchases.application.PurchaseNotFoundException;
 import com.koda.platform.platform.purchases.application.PurchaseOperationRejectedException;
 import com.koda.platform.platform.purchases.application.PurchaseReferenceNotFoundException;
@@ -351,6 +352,19 @@ public class ApiExceptionHandler {
         problem.setTitle("Tenant capabilities unavailable");
         problem.setProperty("code", "TENANT_CAPABILITIES_UNAVAILABLE");
         problem.setProperty("reasonCode", exception.reasonCode());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(TenantLicenseAccessDeniedException.class)
+    ProblemDetail handleTenantLicenseAccessDenied(TenantLicenseAccessDeniedException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
+        problem.setTitle("Tenant license access denied");
+        problem.setProperty("code", "TENANT_LICENSE_ACCESS_DENIED");
+        problem.setProperty("reasonCode", exception.reasonCode());
+        problem.setProperty("productCode", exception.productCode());
+        problem.setProperty("moduleCode", exception.moduleCode());
         problem.setProperty("timestamp", Instant.now());
         problem.setProperty("path", request.getRequestURI());
         return problem;

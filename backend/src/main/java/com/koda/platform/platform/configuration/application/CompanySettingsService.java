@@ -1,5 +1,8 @@
 package com.koda.platform.platform.configuration.application;
 
+import com.koda.platform.platform.licensing.application.LicensedModules;
+import com.koda.platform.platform.licensing.application.LicensedProducts;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
@@ -21,10 +24,13 @@ public class CompanySettingsService {
 
     private final CompanySettingsRepository repository;
     private final CurrentTenantProvider currentTenantProvider;
+    private final TenantLicenseAccessGuard licenseAccessGuard;
 
-    public CompanySettingsService(CompanySettingsRepository repository, CurrentTenantProvider currentTenantProvider) {
+    public CompanySettingsService(CompanySettingsRepository repository, CurrentTenantProvider currentTenantProvider,
+                                  TenantLicenseAccessGuard licenseAccessGuard) {
         this.repository = repository;
         this.currentTenantProvider = currentTenantProvider;
+        this.licenseAccessGuard = licenseAccessGuard;
     }
 
     @Transactional(readOnly = true)
@@ -51,6 +57,7 @@ public class CompanySettingsService {
     }
 
     private void requirePermission(TenantContext context, String permission) {
+        licenseAccessGuard.requireModuleEnabled(context, LicensedProducts.KODA_ERP, LicensedModules.CONFIGURATION);
         if (context.platformAdmin() || context.hasPermission(permission)) {
             return;
         }

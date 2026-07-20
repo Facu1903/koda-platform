@@ -3,7 +3,11 @@ package com.koda.platform.platform.purchases.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.koda.platform.platform.licensing.application.LicensedModules;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
+import com.koda.platform.testing.FakeTenantLicenseAccessRepository;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
@@ -32,13 +36,14 @@ class PurchasesServiceTest {
     private final FakePurchasesRepository repository = new FakePurchasesRepository();
     private final FakePurchasesStockPort stockPort = new FakePurchasesStockPort();
     private final FakePurchasesCashPort cashPort = new FakePurchasesCashPort();
+    private final FakeTenantLicenseAccessRepository licenseAccessRepository = new FakeTenantLicenseAccessRepository();
     private final FakeCurrentTenantProvider currentTenantProvider = new FakeCurrentTenantProvider();
     private final PurchasesRequestMetadata metadata = new PurchasesRequestMetadata("127.0.0.1", "JUnit");
     private PurchasesService service;
 
     @BeforeEach
     void setUp() {
-        service = new PurchasesService(repository, stockPort, cashPort, currentTenantProvider);
+        service = new PurchasesService(repository, stockPort, cashPort, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository));
         repository.activeBranches.add(branchId);
         repository.activeWarehouses.add(new WarehouseKey(branchId, warehouseId));
         repository.supplier = new PurchaseSupplier(supplierId, "Proveedor", "ACTIVE", false);
@@ -144,6 +149,38 @@ class PurchasesServiceTest {
         assertThatThrownBy(() -> service.confirmPurchase(draft.id(), new ConfirmPurchaseCommand(draft.version(), null, null), metadata))
             .isInstanceOf(PermissionDeniedException.class)
             .satisfies(exception -> assertThat(((PermissionDeniedException) exception).requiredPermission()).isEqualTo("purchases:confirm"));
+    }
+
+    @Test
+    void purchasesModuleDisabledBlocksPurchasesEvenWithPermission() {
+        licenseAccessRepository.disableModule();
+
+        assertThatThrownBy(() -> service.listPurchases(100))
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).reasonCode()).isEqualTo("MODULE_NOT_ENABLED"));
+    }
+
+    @Test
+    void paidConfirmationRequiresCashModuleEvenWithCashPermission() {
+        repository.products.put(productId, new PurchaseProduct(productId, "SKU-1", "Producto", "GOOD", "ACTIVE", false, false));
+        Purchase draft = service.createPurchase(new CreatePurchaseCommand(branchId, supplierId, null,
+            List.of(item(productId, null, "1", "20"))), metadata);
+        licenseAccessRepository.disableModule(LicensedModules.CASH);
+
+        assertThatThrownBy(() -> service.confirmPurchase(draft.id(), new ConfirmPurchaseCommand(draft.version(), cashSessionId, "CASH"), metadata))
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).moduleCode()).isEqualTo(LicensedModules.CASH));
+    }
+
+    @Test
+    void trackedPurchaseConfirmationRequiresStockModule() {
+        Purchase draft = service.createPurchase(new CreatePurchaseCommand(branchId, supplierId, null,
+            List.of(item(productId, warehouseId, "1", "15"))), metadata);
+        licenseAccessRepository.disableModule(LicensedModules.STOCK);
+
+        assertThatThrownBy(() -> service.confirmPurchase(draft.id(), new ConfirmPurchaseCommand(draft.version(), null, null), metadata))
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).moduleCode()).isEqualTo(LicensedModules.STOCK));
     }
 
     @Test

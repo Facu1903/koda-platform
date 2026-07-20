@@ -1,5 +1,8 @@
 package com.koda.platform.platform.stock.application;
 
+import com.koda.platform.platform.licensing.application.LicensedModules;
+import com.koda.platform.platform.licensing.application.LicensedProducts;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
@@ -28,10 +31,12 @@ public class StockService {
 
     private final StockRepository repository;
     private final CurrentTenantProvider currentTenantProvider;
+    private final TenantLicenseAccessGuard licenseAccessGuard;
 
-    public StockService(StockRepository repository, CurrentTenantProvider currentTenantProvider) {
+    public StockService(StockRepository repository, CurrentTenantProvider currentTenantProvider, TenantLicenseAccessGuard licenseAccessGuard) {
         this.repository = repository;
         this.currentTenantProvider = currentTenantProvider;
+        this.licenseAccessGuard = licenseAccessGuard;
     }
 
     @Transactional(readOnly = true)
@@ -76,6 +81,7 @@ public class StockService {
 
     private TenantContext requirePermission(String permission) {
         TenantContext context = currentTenantProvider.requireContext();
+        licenseAccessGuard.requireModuleEnabled(context, LicensedProducts.KODA_ERP, LicensedModules.STOCK);
         if (context.platformAdmin() || context.hasPermission(permission)) {
             return context;
         }

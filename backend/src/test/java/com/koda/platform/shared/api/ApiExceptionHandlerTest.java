@@ -2,6 +2,7 @@ package com.koda.platform.shared.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,25 @@ class ApiExceptionHandlerTest {
         assertThat(problem.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(problem.getProperties()).containsEntry("code", "VALIDATION_ERROR");
         assertThat(problem.getProperties()).containsEntry("path", "/api/v1/reports/dashboard");
+    }
+
+    @Test
+    void tenantLicenseAccessDeniedReturnsStructuredForbidden() {
+        MockHttpServletRequest request = request("/api/v1/sales");
+
+        ProblemDetail problem = handler.handleTenantLicenseAccessDenied(new TenantLicenseAccessDeniedException(
+            "MODULE_NOT_ENABLED",
+            "KODA_ERP",
+            "SALES",
+            "Module is not enabled for tenant"
+        ), request);
+
+        assertThat(problem.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(problem.getProperties()).containsEntry("code", "TENANT_LICENSE_ACCESS_DENIED");
+        assertThat(problem.getProperties()).containsEntry("reasonCode", "MODULE_NOT_ENABLED");
+        assertThat(problem.getProperties()).containsEntry("productCode", "KODA_ERP");
+        assertThat(problem.getProperties()).containsEntry("moduleCode", "SALES");
+        assertThat(problem.getProperties()).containsEntry("path", "/api/v1/sales");
     }
 
     private MockHttpServletRequest request(String path) {

@@ -1,5 +1,8 @@
 package com.koda.platform.platform.sales.application;
 
+import com.koda.platform.platform.licensing.application.LicensedModules;
+import com.koda.platform.platform.licensing.application.LicensedProducts;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
@@ -33,13 +36,15 @@ public class SalesService {
     private final SalesStockPort stockPort;
     private final SalesCashPort cashPort;
     private final CurrentTenantProvider currentTenantProvider;
+    private final TenantLicenseAccessGuard licenseAccessGuard;
 
     public SalesService(SalesRepository repository, SalesStockPort stockPort, SalesCashPort cashPort,
-                        CurrentTenantProvider currentTenantProvider) {
+                        CurrentTenantProvider currentTenantProvider, TenantLicenseAccessGuard licenseAccessGuard) {
         this.repository = repository;
         this.stockPort = stockPort;
         this.cashPort = cashPort;
         this.currentTenantProvider = currentTenantProvider;
+        this.licenseAccessGuard = licenseAccessGuard;
     }
 
     @Transactional(readOnly = true)
@@ -107,6 +112,9 @@ public class SalesService {
         ensureVersion(sale, normalized.version());
 
         List<SaleItemStockUpdate> stockUpdates = new ArrayList<>();
+        if (sale.items().stream().anyMatch(SaleItem::stockTrackingEnabled)) {
+            requireModule(context, LicensedModules.STOCK);
+        }
         for (SaleItem item : sale.items()) {
             if (item.stockTrackingEnabled()) {
                 SalesStockMovement movement = stockPort.issueSaleStock(context, item.warehouseId(), item.productId(), item.quantity(), sale.id(), item.id(),
@@ -117,6 +125,7 @@ public class SalesService {
 
         SalePaymentUpdate paymentUpdate = null;
         if (normalized.cashSessionId() != null) {
+            requireModule(context, LicensedModules.CASH);
             requireContextPermission(context, "cash_movements:create");
             if (sale.totalAmount().signum() <= 0) {
                 throw new SaleOperationRejectedException("ZERO_TOTAL_PAYMENT_NOT_ALLOWED", "Zero total sale cannot register a payment");
@@ -143,6 +152,9 @@ public class SalesService {
         ensureVersion(sale, normalized.version());
 
         List<SaleItemStockReversal> stockReversals = new ArrayList<>();
+        if (sale.items().stream().anyMatch(item -> item.stockMovementId() != null)) {
+            requireModule(context, LicensedModules.STOCK);
+        }
         for (SaleItem item : sale.items()) {
             if (item.stockMovementId() != null) {
                 SalesStockMovement movement = stockPort.reverseSaleStock(context, item.warehouseId(), item.productId(), item.quantity(), sale.id(), item.id(),
@@ -153,6 +165,7 @@ public class SalesService {
 
         SalePaymentReversalUpdate paymentReversal = null;
         if (PAID.equals(sale.paymentStatus())) {
+            requireModule(context, LicensedModules.CASH);
             requireContextPermission(context, "cash_movements:create");
             UUID cashSessionId = required(normalized.cashSessionId(), "Cash session");
             SalesCashMovement movement = cashPort.reverseSalePayment(context, cashSessionId, sale.paymentMethod(), sale.paidAmount(), sale.currencyCode(),
@@ -269,8 +282,13 @@ public class SalesService {
 
     private TenantContext requirePermission(String permission) {
         TenantContext context = currentTenantProvider.requireContext();
+        requireModule(context, LicensedModules.SALES);
         requireContextPermission(context, permission);
         return context;
+    }
+
+    private void requireModule(TenantContext context, String moduleCode) {
+        licenseAccessGuard.requireModuleEnabled(context, LicensedProducts.KODA_ERP, moduleCode);
     }
 
     private void requireContextPermission(TenantContext context, String permission) {

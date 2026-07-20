@@ -39,7 +39,7 @@ La base funcional de Sprint 3 fue aprobada por el Product Owner el 2026-07-20 y 
 | 1. Base funcional Sprint 3 | Completado | Foco aprobado: Fundacion SaaS Comercial, licencias, modulos y control de acceso por empresa. |
 | 2. Modelo de licencias y migraciones | Completado | Tablas para planes, suscripciones, limites, overrides, feature flags y seed `KODA_PILOT`, preservando entitlements existentes. |
 | 3. Capability backend | Completado | Servicio y API `GET /api/v1/capabilities` para calcular productos, modulos, features y limites efectivos del tenant autenticado. |
-| 4. Guards backend por modulo | Pendiente | Bloqueo reutilizable `PRODUCT_NOT_ENABLED` y `MODULE_NOT_ENABLED` aplicado a modulos existentes. |
+| 4. Guards backend por modulo | Completado | Bloqueo reutilizable `PRODUCT_NOT_ENABLED` y `MODULE_NOT_ENABLED` aplicado a modulos existentes. |
 | 5. Administracion interna de licencias | Pendiente | APIs plataforma para consultar y modificar suscripciones/entitlements con auditoria. |
 | 6. Frontend capability shell | Pendiente | Contexto frontend de capabilities, menus/rutas condicionados y bloqueo visual de modulos no habilitados. |
 | 7. Hardening Sprint 3 | Pendiente | Tests unitarios/integracion, validacion Flyway PostgreSQL 17, documentacion final y cierre. |
@@ -80,6 +80,29 @@ Validacion:
 
 - `mvn -B test`: 92 pruebas unitarias, 0 fallos.
 - `mvn -B verify`: 92 pruebas unitarias y 8 pruebas de integracion, 0 fallos.
+- Flyway/Testcontainers/PostgreSQL 17.10: 20 migraciones hasta `v202607201500`.
+
+## Hito 4 completado
+
+El Hito 4 implemento guards backend reutilizables por producto/modulo:
+
+- Servicio `TenantLicenseAccessGuard`.
+- Puerto `TenantLicenseAccessRepository`.
+- Consultas `SELECT EXISTS` en `JdbcTenantCapabilitiesRepository` para producto y modulo habilitado.
+- Error `TenantLicenseAccessDeniedException` con motivos `PRODUCT_NOT_ENABLED` y `MODULE_NOT_ENABLED`.
+- Respuesta API 403 `TENANT_LICENSE_ACCESS_DENIED` con `reasonCode`, `productCode` y `moduleCode`.
+- Control aplicado a configuracion, catalogos, stock, auditoria, clientes/proveedores, caja, ventas, compras y reportes comerciales.
+- Control cruzado en ventas/compras cuando usan stock o caja internamente.
+- Documentacion especifica en `docs/licensing/TENANT_LICENSE_GUARDS.md`.
+
+Decision tecnica: el guard se ejecuta en capa de aplicacion y antes de RBAC. RBAC define permiso de usuario; licencia SaaS define derecho de uso del tenant. Un platform admin no salta la licencia del tenant cuando opera dentro de una empresa.
+
+Hito 4 no implementa todavia administracion interna de licencias, UI de capabilities ni cache distribuida de capabilities.
+
+Validacion:
+
+- `mvn -B test`: 110 pruebas unitarias, 0 fallos.
+- `mvn -B verify`: 110 pruebas unitarias y 9 pruebas de integracion, 0 fallos.
 - Flyway/Testcontainers/PostgreSQL 17.10: 20 migraciones hasta `v202607201500`.
 
 ## Orientacion tecnica inicial
@@ -179,4 +202,4 @@ No se habilita self-service comercial en Sprint 3.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 4: implementar guards backend reutilizables por producto/modulo y aplicarlos a los modulos existentes sin mezclar RBAC con licenciamiento.
+Avanzar al Hito 5: implementar administracion interna de licencias protegida por permisos de plataforma, con auditoria de cambios y sin habilitar self-service comercial.

@@ -3,7 +3,10 @@ package com.koda.platform.platform.audit.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
+import com.koda.platform.testing.FakeTenantLicenseAccessRepository;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
@@ -22,12 +25,13 @@ class AuditServiceTest {
     private final TenantId tenantId = TenantId.from(UUID.fromString("00000000-0000-4000-8000-000000000001"));
     private final UUID userId = UUID.randomUUID();
     private final FakeAuditRepository repository = new FakeAuditRepository();
+    private final FakeTenantLicenseAccessRepository licenseAccessRepository = new FakeTenantLicenseAccessRepository();
     private final FakeCurrentTenantProvider currentTenantProvider = new FakeCurrentTenantProvider();
     private AuditService service;
 
     @BeforeEach
     void setUp() {
-        service = new AuditService(repository, currentTenantProvider);
+        service = new AuditService(repository, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository));
         currentTenantProvider.context = Optional.of(new TenantContext(
             tenantId,
             userId,
@@ -44,6 +48,15 @@ class AuditServiceTest {
 
         assertThatThrownBy(() -> service.listEvents(defaultFilter()))
             .isInstanceOf(PermissionDeniedException.class);
+    }
+
+    @Test
+    void auditModuleDisabledBlocksAuditReadEvenWithPermission() {
+        licenseAccessRepository.disableModule();
+
+        assertThatThrownBy(() -> service.listEvents(defaultFilter()))
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).reasonCode()).isEqualTo("MODULE_NOT_ENABLED"));
     }
 
     @Test

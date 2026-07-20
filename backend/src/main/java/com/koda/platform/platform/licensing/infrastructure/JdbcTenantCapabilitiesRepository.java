@@ -6,6 +6,7 @@ import com.koda.platform.platform.licensing.application.ModuleCapability;
 import com.koda.platform.platform.licensing.application.ProductCapability;
 import com.koda.platform.platform.licensing.application.TenantCapabilitiesRepository;
 import com.koda.platform.platform.licensing.application.TenantCapabilityTenant;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessRepository;
 import com.koda.platform.shared.domain.tenant.TenantId;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,12 +21,69 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @ConditionalOnProperty(prefix = "koda.licensing.jdbc", name = "enabled", havingValue = "true", matchIfMissing = true)
-public class JdbcTenantCapabilitiesRepository implements TenantCapabilitiesRepository {
+public class JdbcTenantCapabilitiesRepository implements TenantCapabilitiesRepository, TenantLicenseAccessRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
     public JdbcTenantCapabilitiesRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public boolean isProductEnabled(TenantId tenantId, String productCode, Instant calculatedAt) {
+        Timestamp now = timestamp(calculatedAt);
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM tenant_product_subscriptions s
+                JOIN tenants t ON t.id = s.tenant_id AND t.status = 'ACTIVE' AND t.deleted_at IS NULL
+                JOIN platform_products p ON p.id = s.product_id AND p.status = 'ACTIVE'
+                JOIN product_plans plan ON plan.id = s.plan_id AND plan.product_id = s.product_id AND plan.status = 'ACTIVE'
+                JOIN tenant_product_entitlements pe ON pe.tenant_id = s.tenant_id AND pe.product_id = s.product_id
+                WHERE s.tenant_id = ?
+                  AND p.code = ?
+                  AND s.status = 'ACTIVE'
+                  AND s.valid_from <= ?
+                  AND (s.valid_until IS NULL OR s.valid_until > ?)
+                  AND pe.status = 'ACTIVE'
+                  AND pe.valid_from <= ?
+                  AND (pe.valid_until IS NULL OR pe.valid_until > ?)
+            )
+            """;
+        Boolean enabled = jdbcTemplate.queryForObject(sql, Boolean.class, tenantId.value(), productCode, now, now, now, now);
+        return Boolean.TRUE.equals(enabled);
+    }
+
+    @Override
+    public boolean isModuleEnabled(TenantId tenantId, String productCode, String moduleCode, Instant calculatedAt) {
+        Timestamp now = timestamp(calculatedAt);
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM tenant_product_subscriptions s
+                JOIN tenants t ON t.id = s.tenant_id AND t.status = 'ACTIVE' AND t.deleted_at IS NULL
+                JOIN platform_products p ON p.id = s.product_id AND p.status = 'ACTIVE'
+                JOIN product_plans plan ON plan.id = s.plan_id AND plan.product_id = s.product_id AND plan.status = 'ACTIVE'
+                JOIN tenant_product_entitlements pe ON pe.tenant_id = s.tenant_id AND pe.product_id = s.product_id
+                JOIN product_plan_modules ppm ON ppm.plan_id = s.plan_id AND ppm.product_id = s.product_id
+                JOIN platform_modules m ON m.id = ppm.module_id AND m.product_id = s.product_id AND m.status = 'ACTIVE'
+                JOIN tenant_module_entitlements me ON me.tenant_id = s.tenant_id AND me.module_id = m.id
+                WHERE s.tenant_id = ?
+                  AND p.code = ?
+                  AND m.code = ?
+                  AND s.status = 'ACTIVE'
+                  AND s.valid_from <= ?
+                  AND (s.valid_until IS NULL OR s.valid_until > ?)
+                  AND pe.status = 'ACTIVE'
+                  AND pe.valid_from <= ?
+                  AND (pe.valid_until IS NULL OR pe.valid_until > ?)
+                  AND me.status = 'ACTIVE'
+                  AND me.valid_from <= ?
+                  AND (me.valid_until IS NULL OR me.valid_until > ?)
+            )
+            """;
+        Boolean enabled = jdbcTemplate.queryForObject(sql, Boolean.class, tenantId.value(), productCode, moduleCode, now, now, now, now, now, now);
+        return Boolean.TRUE.equals(enabled);
     }
 
     @Override

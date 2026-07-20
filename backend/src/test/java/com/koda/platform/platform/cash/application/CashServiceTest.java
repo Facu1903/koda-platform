@@ -3,7 +3,10 @@ package com.koda.platform.platform.cash.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
+import com.koda.platform.testing.FakeTenantLicenseAccessRepository;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
@@ -27,13 +30,14 @@ class CashServiceTest {
     private final UUID branchId = UUID.randomUUID();
     private final UUID cashRegisterId = UUID.randomUUID();
     private final FakeCashRepository repository = new FakeCashRepository();
+    private final FakeTenantLicenseAccessRepository licenseAccessRepository = new FakeTenantLicenseAccessRepository();
     private final FakeCurrentTenantProvider currentTenantProvider = new FakeCurrentTenantProvider();
     private final CashRequestMetadata metadata = new CashRequestMetadata("127.0.0.1", "JUnit");
     private CashService service;
 
     @BeforeEach
     void setUp() {
-        service = new CashService(repository, currentTenantProvider);
+        service = new CashService(repository, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository));
         repository.registers.add(new CashRegister(cashRegisterId, tenantId, branchId, "CAJA_PRINCIPAL", "Caja Principal", "ACTIVE", 0,
             Instant.parse("2026-07-20T10:00:00Z")));
         currentTenantProvider.context = Optional.of(new TenantContext(
@@ -137,6 +141,15 @@ class CashServiceTest {
             new BigDecimal("10"), "ARS", null, null, null), metadata))
             .isInstanceOf(CashOperationRejectedException.class)
             .satisfies(exception -> assertThat(((CashOperationRejectedException) exception).reasonCode()).isEqualTo("UNSUPPORTED_MANUAL_MOVEMENT_TYPE"));
+    }
+
+    @Test
+    void cashModuleDisabledBlocksOperationsEvenWithPermission() {
+        licenseAccessRepository.disableModule();
+
+        assertThatThrownBy(() -> service.listRegisters())
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).reasonCode()).isEqualTo("MODULE_NOT_ENABLED"));
     }
 
     @Test

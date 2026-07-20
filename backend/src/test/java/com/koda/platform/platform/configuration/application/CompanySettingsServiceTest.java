@@ -3,7 +3,10 @@ package com.koda.platform.platform.configuration.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
+import com.koda.platform.testing.FakeTenantLicenseAccessRepository;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
@@ -20,13 +23,14 @@ class CompanySettingsServiceTest {
     private final TenantId tenantId = TenantId.from(UUID.fromString("00000000-0000-4000-8000-000000000001"));
     private final UUID userId = UUID.randomUUID();
     private final FakeCompanySettingsRepository repository = new FakeCompanySettingsRepository();
+    private final FakeTenantLicenseAccessRepository licenseAccessRepository = new FakeTenantLicenseAccessRepository();
     private final FakeCurrentTenantProvider currentTenantProvider = new FakeCurrentTenantProvider();
     private final ClientRequestMetadata metadata = new ClientRequestMetadata("127.0.0.1", "JUnit");
     private CompanySettingsService service;
 
     @BeforeEach
     void setUp() {
-        service = new CompanySettingsService(repository, currentTenantProvider);
+        service = new CompanySettingsService(repository, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository));
         repository.settings = settings(0, "#F6862B", null, "dark", "es-AR", "ARS", "America/Argentina/Buenos_Aires");
         currentTenantProvider.context = Optional.of(new TenantContext(
             tenantId,
@@ -53,6 +57,15 @@ class CompanySettingsServiceTest {
         assertThatThrownBy(() -> service.getCurrentTenantSettings())
             .isInstanceOf(PermissionDeniedException.class)
             .hasMessage("Permission denied");
+    }
+
+    @Test
+    void configurationModuleDisabledBlocksSettingsEvenWithPermission() {
+        licenseAccessRepository.disableModule();
+
+        assertThatThrownBy(() -> service.getCurrentTenantSettings())
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).reasonCode()).isEqualTo("MODULE_NOT_ENABLED"));
     }
 
     @Test

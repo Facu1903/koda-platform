@@ -2,7 +2,7 @@
 
 ## Estado
 
-Modelo persistente implementado en Sprint 3 Hito 2. Calculo backend y API de capabilities implementados en Sprint 3 Hito 3.
+Modelo persistente implementado en Sprint 3 Hito 2. Calculo backend y API de capabilities implementados en Sprint 3 Hito 3. Guards backend por producto/modulo implementados en Sprint 3 Hito 4.
 
 ## Objetivo
 
@@ -150,19 +150,24 @@ Reglas de calculo actuales:
 - respeta `valid_from` y `valid_until`,
 - resuelve overrides de limites por tenant sobre los limites del plan.
 
-La API requiere usuario autenticado y tenant context. No exige permiso RBAC especifico porque el frontend necesita leer capabilities para construir navegacion y rutas. El bloqueo operativo real queda en los guards backend del Hito 4.
+La API requiere usuario autenticado y tenant context. No exige permiso RBAC especifico porque el frontend necesita leer capabilities para construir navegacion y rutas.
+
+## Guards backend
+
+Implementado en Hito 4 mediante `TenantLicenseAccessGuard` y documentado en `docs/licensing/TENANT_LICENSE_GUARDS.md`.
+
+El guard bloquea operaciones cuando el tenant no tiene producto o modulo habilitado, aunque el usuario tenga permisos RBAC. Los errores API son 403 con codigo `TENANT_LICENSE_ACCESS_DENIED` y motivos `PRODUCT_NOT_ENABLED` o `MODULE_NOT_ENABLED`.
 
 ## Validacion
 
 Validado con:
 
-- `mvn -B test`: 92 tests unitarios, 0 fallos.
-- `mvn -B verify`: 92 tests unitarios y 8 tests de integracion, 0 fallos.
+- `mvn -B test`: 110 tests unitarios, 0 fallos.
+- `mvn -B verify`: 110 tests unitarios y 9 tests de integracion, 0 fallos.
 - Flyway/Testcontainers/PostgreSQL 17.10: 20 migraciones hasta `v202607201500`.
 
 ## Fuera de alcance actual
 
-- Guards backend por modulo.
 - Administracion interna de licencias.
 - UI de capabilities.
 - Billing real.
@@ -170,4 +175,4 @@ Validado con:
 
 ## Siguiente paso
 
-Hito 4 debe implementar guards backend reutilizables por producto/modulo para que cada operacion valide permiso RBAC y derecho comercial del tenant.
+Hito 5 debe implementar administracion interna de licencias protegida por permisos de plataforma, con auditoria de cambios y sin permitir self-service comercial para tenants.

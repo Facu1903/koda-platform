@@ -135,7 +135,7 @@ La base funcional minima fue aprobada por el Product Owner el 2026-07-17.
 
 ### Estado
 
-Definido y aprobado funcionalmente por el Product Owner el 2026-07-20. Hitos 2 y 3 completados: modelo persistente de licencias SaaS y API backend de capabilities tenant-scoped. Ver `docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_3_EXECUTION_PLAN.md` y `docs/licensing/SAAS_LICENSING_MODEL.md`.
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-20. Hitos 2, 3 y 4 completados: modelo persistente de licencias SaaS, API backend de capabilities tenant-scoped y guards backend por modulo. Ver `docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_3_EXECUTION_PLAN.md`, `docs/licensing/SAAS_LICENSING_MODEL.md` y `docs/licensing/TENANT_LICENSE_GUARDS.md`.
 
 ### Objetivo
 

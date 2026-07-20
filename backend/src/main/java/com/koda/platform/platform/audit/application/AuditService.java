@@ -1,5 +1,8 @@
 package com.koda.platform.platform.audit.application;
 
+import com.koda.platform.platform.licensing.application.LicensedModules;
+import com.koda.platform.platform.licensing.application.LicensedProducts;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
@@ -17,10 +20,12 @@ public class AuditService {
 
     private final AuditRepository repository;
     private final CurrentTenantProvider currentTenantProvider;
+    private final TenantLicenseAccessGuard licenseAccessGuard;
 
-    public AuditService(AuditRepository repository, CurrentTenantProvider currentTenantProvider) {
+    public AuditService(AuditRepository repository, CurrentTenantProvider currentTenantProvider, TenantLicenseAccessGuard licenseAccessGuard) {
         this.repository = repository;
         this.currentTenantProvider = currentTenantProvider;
+        this.licenseAccessGuard = licenseAccessGuard;
     }
 
     @Transactional(readOnly = true)
@@ -31,6 +36,7 @@ public class AuditService {
 
     private TenantContext requirePermission(String permission) {
         TenantContext context = currentTenantProvider.requireContext();
+        licenseAccessGuard.requireModuleEnabled(context, LicensedProducts.KODA_ERP, LicensedModules.AUDIT);
         if (context.platformAdmin() || context.hasPermission(permission)) {
             return context;
         }

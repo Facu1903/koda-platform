@@ -187,6 +187,18 @@ class FlywayPostgresqlIT {
         assertThat(repository.findEffectiveFeatureFlags(tenantId, calculatedAt)).isEmpty();
     }
 
+    @Test
+    void licenseAccessRepositoryResolvesKodaPilotProductAndModuleGuards() throws SQLException {
+        JdbcTenantCapabilitiesRepository repository = new JdbcTenantCapabilitiesRepository(new JdbcTemplate(dataSource()));
+        TenantId tenantId = TenantId.fromString(KODA_TENANT_ID);
+        Instant calculatedAt = Instant.now();
+
+        assertThat(repository.isProductEnabled(tenantId, "KODA_ERP", calculatedAt)).isTrue();
+        assertThat(repository.isProductEnabled(tenantId, "KODA_POS", calculatedAt)).isFalse();
+        assertThat(repository.isModuleEnabled(tenantId, "KODA_ERP", "SALES", calculatedAt)).isTrue();
+        assertThat(repository.isModuleEnabled(tenantId, "KODA_ERP", "UNKNOWN", calculatedAt)).isFalse();
+    }
+
     private static int queryForInt(String sql) throws SQLException {
         try (Connection connection = connection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();

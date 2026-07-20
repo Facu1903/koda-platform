@@ -1,5 +1,8 @@
 package com.koda.platform.platform.purchases.application;
 
+import com.koda.platform.platform.licensing.application.LicensedModules;
+import com.koda.platform.platform.licensing.application.LicensedProducts;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
@@ -32,13 +35,15 @@ public class PurchasesService {
     private final PurchasesStockPort stockPort;
     private final PurchasesCashPort cashPort;
     private final CurrentTenantProvider currentTenantProvider;
+    private final TenantLicenseAccessGuard licenseAccessGuard;
 
     public PurchasesService(PurchasesRepository repository, PurchasesStockPort stockPort, PurchasesCashPort cashPort,
-                            CurrentTenantProvider currentTenantProvider) {
+                            CurrentTenantProvider currentTenantProvider, TenantLicenseAccessGuard licenseAccessGuard) {
         this.repository = repository;
         this.stockPort = stockPort;
         this.cashPort = cashPort;
         this.currentTenantProvider = currentTenantProvider;
+        this.licenseAccessGuard = licenseAccessGuard;
     }
 
     @Transactional(readOnly = true)
@@ -107,6 +112,9 @@ public class PurchasesService {
         ensureVersion(purchase, normalized.version());
 
         List<PurchaseItemStockUpdate> stockUpdates = new ArrayList<>();
+        if (purchase.items().stream().anyMatch(PurchaseItem::stockTrackingEnabled)) {
+            requireModule(context, LicensedModules.STOCK);
+        }
         for (PurchaseItem item : purchase.items()) {
             if (item.stockTrackingEnabled()) {
                 PurchasesStockMovement movement = stockPort.receivePurchaseStock(context, item.warehouseId(), item.productId(), item.quantity(),
@@ -117,6 +125,7 @@ public class PurchasesService {
 
         PurchasePaymentUpdate paymentUpdate = null;
         if (normalized.cashSessionId() != null) {
+            requireModule(context, LicensedModules.CASH);
             requireContextPermission(context, "cash_movements:create");
             if (purchase.totalAmount().signum() <= 0) {
                 throw new PurchaseOperationRejectedException("ZERO_TOTAL_PAYMENT_NOT_ALLOWED", "Zero total purchase cannot register a payment");
@@ -143,6 +152,9 @@ public class PurchasesService {
         ensureVersion(purchase, normalized.version());
 
         List<PurchaseItemStockReversal> stockReversals = new ArrayList<>();
+        if (purchase.items().stream().anyMatch(item -> item.stockMovementId() != null)) {
+            requireModule(context, LicensedModules.STOCK);
+        }
         for (PurchaseItem item : purchase.items()) {
             if (item.stockMovementId() != null) {
                 PurchasesStockMovement movement = stockPort.reversePurchaseStock(context, item.warehouseId(), item.productId(), item.quantity(),
@@ -153,6 +165,7 @@ public class PurchasesService {
 
         PurchasePaymentReversalUpdate paymentReversal = null;
         if (PAID.equals(purchase.paymentStatus())) {
+            requireModule(context, LicensedModules.CASH);
             requireContextPermission(context, "cash_movements:create");
             UUID cashSessionId = required(normalized.cashSessionId(), "Cash session");
             PurchasesCashMovement movement = cashPort.reversePurchasePayment(context, cashSessionId, purchase.paymentMethod(), purchase.paidAmount(),
@@ -269,8 +282,13 @@ public class PurchasesService {
 
     private TenantContext requirePermission(String permission) {
         TenantContext context = currentTenantProvider.requireContext();
+        requireModule(context, LicensedModules.PURCHASES);
         requireContextPermission(context, permission);
         return context;
+    }
+
+    private void requireModule(TenantContext context, String moduleCode) {
+        licenseAccessGuard.requireModuleEnabled(context, LicensedProducts.KODA_ERP, moduleCode);
     }
 
     private void requireContextPermission(TenantContext context, String permission) {

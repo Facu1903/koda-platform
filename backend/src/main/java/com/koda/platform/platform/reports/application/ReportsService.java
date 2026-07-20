@@ -1,5 +1,8 @@
 package com.koda.platform.platform.reports.application;
 
+import com.koda.platform.platform.licensing.application.LicensedModules;
+import com.koda.platform.platform.licensing.application.LicensedProducts;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessGuard;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
@@ -30,16 +33,18 @@ public class ReportsService {
 
     private final ReportsRepository repository;
     private final CurrentTenantProvider currentTenantProvider;
+    private final TenantLicenseAccessGuard licenseAccessGuard;
     private final Clock clock;
 
     @Autowired
-    public ReportsService(ReportsRepository repository, CurrentTenantProvider currentTenantProvider) {
-        this(repository, currentTenantProvider, Clock.systemUTC());
+    public ReportsService(ReportsRepository repository, CurrentTenantProvider currentTenantProvider, TenantLicenseAccessGuard licenseAccessGuard) {
+        this(repository, currentTenantProvider, licenseAccessGuard, Clock.systemUTC());
     }
 
-    ReportsService(ReportsRepository repository, CurrentTenantProvider currentTenantProvider, Clock clock) {
+    ReportsService(ReportsRepository repository, CurrentTenantProvider currentTenantProvider, TenantLicenseAccessGuard licenseAccessGuard, Clock clock) {
         this.repository = repository;
         this.currentTenantProvider = currentTenantProvider;
+        this.licenseAccessGuard = licenseAccessGuard;
         this.clock = clock;
     }
 
@@ -116,6 +121,7 @@ public class ReportsService {
 
     private TenantContext requireReportsPermission() {
         TenantContext context = currentTenantProvider.requireContext();
+        licenseAccessGuard.requireModuleEnabled(context, LicensedProducts.KODA_ERP, LicensedModules.COMMERCIAL_REPORTS);
         if (context.platformAdmin() || context.hasPermission(REPORTS_READ_PERMISSION)) {
             return context;
         }

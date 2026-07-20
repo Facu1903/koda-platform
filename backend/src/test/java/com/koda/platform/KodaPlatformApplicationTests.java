@@ -6,6 +6,7 @@ import com.koda.platform.platform.catalog.application.CatalogRepository;
 import com.koda.platform.platform.commercial.application.CommercialPartnerRepository;
 import com.koda.platform.platform.configuration.application.CompanySettingsRepository;
 import com.koda.platform.platform.licensing.application.TenantCapabilitiesRepository;
+import com.koda.platform.platform.licensing.application.TenantLicenseAccessRepository;
 import com.koda.platform.platform.security.application.AuthRepository;
 import com.koda.platform.platform.purchases.application.PurchasesCashPort;
 import com.koda.platform.platform.purchases.application.PurchasesRepository;
@@ -80,6 +81,9 @@ class KodaPlatformApplicationTests {
 
     @MockitoBean
     private TenantCapabilitiesRepository tenantCapabilitiesRepository;
+
+    @MockitoBean
+    private TenantLicenseAccessRepository tenantLicenseAccessRepository;
 
     @Test
     void contextLoads() {
