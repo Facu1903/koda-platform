@@ -2,7 +2,7 @@
 
 ## Estado
 
-Implementado en Sprint 3 Hito 2.
+Modelo persistente implementado en Sprint 3 Hito 2. Calculo backend y API de capabilities implementados en Sprint 3 Hito 3.
 
 ## Objetivo
 
@@ -122,17 +122,46 @@ Se agregan indices para preparar consultas eficientes de capabilities:
 - `idx_tenant_product_entitlements_tenant_status`
 - `idx_tenant_module_entitlements_tenant_status`
 
+## Capabilities backend
+
+Implementado en Hito 3 mediante:
+
+- Servicio `TenantCapabilitiesService`.
+- Puerto `TenantCapabilitiesRepository`.
+- Repositorio `JdbcTenantCapabilitiesRepository`.
+- Endpoint `GET /api/v1/capabilities`.
+
+La respuesta expone:
+
+- tenant activo,
+- productos habilitados,
+- modulos habilitados por producto,
+- feature flags efectivas,
+- limites efectivos,
+- timestamp de calculo.
+
+Reglas de calculo actuales:
+
+- filtra siempre por tenant,
+- exige suscripcion activa y vigente,
+- exige plan activo,
+- exige producto y modulo activos,
+- exige entitlement activo de producto y modulo,
+- respeta `valid_from` y `valid_until`,
+- resuelve overrides de limites por tenant sobre los limites del plan.
+
+La API requiere usuario autenticado y tenant context. No exige permiso RBAC especifico porque el frontend necesita leer capabilities para construir navegacion y rutas. El bloqueo operativo real queda en los guards backend del Hito 4.
+
 ## Validacion
 
 Validado con:
 
-- `mvn -B test`: 89 tests unitarios, 0 fallos.
-- `mvn -B verify`: 89 tests unitarios y 7 tests de integracion, 0 fallos.
-- Flyway/Testcontainers/PostgreSQL 17: 20 migraciones hasta `v202607201500`.
+- `mvn -B test`: 92 tests unitarios, 0 fallos.
+- `mvn -B verify`: 92 tests unitarios y 8 tests de integracion, 0 fallos.
+- Flyway/Testcontainers/PostgreSQL 17.10: 20 migraciones hasta `v202607201500`.
 
-## Fuera de alcance del Hito 2
+## Fuera de alcance actual
 
-- API de capabilities.
 - Guards backend por modulo.
 - Administracion interna de licencias.
 - UI de capabilities.
@@ -141,4 +170,4 @@ Validado con:
 
 ## Siguiente paso
 
-Hito 3 debe implementar el calculo backend de capabilities y exponer una API tenant-scoped para que backend y frontend consuman la misma verdad operativa.
+Hito 4 debe implementar guards backend reutilizables por producto/modulo para que cada operacion valide permiso RBAC y derecho comercial del tenant.

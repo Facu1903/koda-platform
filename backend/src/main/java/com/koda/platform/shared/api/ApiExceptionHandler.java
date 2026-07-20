@@ -10,13 +10,8 @@ import com.koda.platform.platform.commercial.application.CommercialPartnerNotFou
 import com.koda.platform.platform.commercial.application.CommercialPartnerOperationRejectedException;
 import com.koda.platform.platform.commercial.application.CommercialPartnerVersionConflictException;
 import com.koda.platform.platform.configuration.application.CompanySettingsNotFoundException;
-import com.koda.platform.platform.stock.application.StockItemNotFoundException;
-import com.koda.platform.platform.stock.application.StockMovementRejectedException;
-import com.koda.platform.platform.stock.application.StockReferenceNotFoundException;
 import com.koda.platform.platform.configuration.application.CompanySettingsVersionConflictException;
-import com.koda.platform.platform.security.application.AuthenticationFailedException;
-import com.koda.platform.platform.security.application.InvalidRefreshTokenException;
-import com.koda.platform.platform.security.application.TenantSelectionRequiredException;
+import com.koda.platform.platform.licensing.application.TenantCapabilitiesUnavailableException;
 import com.koda.platform.platform.purchases.application.PurchaseNotFoundException;
 import com.koda.platform.platform.purchases.application.PurchaseOperationRejectedException;
 import com.koda.platform.platform.purchases.application.PurchaseReferenceNotFoundException;
@@ -25,6 +20,12 @@ import com.koda.platform.platform.sales.application.SaleNotFoundException;
 import com.koda.platform.platform.sales.application.SaleOperationRejectedException;
 import com.koda.platform.platform.sales.application.SaleReferenceNotFoundException;
 import com.koda.platform.platform.sales.application.SaleVersionConflictException;
+import com.koda.platform.platform.security.application.AuthenticationFailedException;
+import com.koda.platform.platform.security.application.InvalidRefreshTokenException;
+import com.koda.platform.platform.security.application.TenantSelectionRequiredException;
+import com.koda.platform.platform.stock.application.StockItemNotFoundException;
+import com.koda.platform.platform.stock.application.StockMovementRejectedException;
+import com.koda.platform.platform.stock.application.StockReferenceNotFoundException;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.MissingTenantContextException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -338,6 +339,17 @@ public class ApiExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
         problem.setTitle("Stock movement rejected");
         problem.setProperty("code", "STOCK_MOVEMENT_REJECTED");
+        problem.setProperty("reasonCode", exception.reasonCode());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(TenantCapabilitiesUnavailableException.class)
+    ProblemDetail handleTenantCapabilitiesUnavailable(TenantCapabilitiesUnavailableException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.getMessage());
+        problem.setTitle("Tenant capabilities unavailable");
+        problem.setProperty("code", "TENANT_CAPABILITIES_UNAVAILABLE");
         problem.setProperty("reasonCode", exception.reasonCode());
         problem.setProperty("timestamp", Instant.now());
         problem.setProperty("path", request.getRequestURI());

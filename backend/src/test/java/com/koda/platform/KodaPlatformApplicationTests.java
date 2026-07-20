@@ -5,6 +5,7 @@ import com.koda.platform.platform.cash.application.CashRepository;
 import com.koda.platform.platform.catalog.application.CatalogRepository;
 import com.koda.platform.platform.commercial.application.CommercialPartnerRepository;
 import com.koda.platform.platform.configuration.application.CompanySettingsRepository;
+import com.koda.platform.platform.licensing.application.TenantCapabilitiesRepository;
 import com.koda.platform.platform.security.application.AuthRepository;
 import com.koda.platform.platform.purchases.application.PurchasesCashPort;
 import com.koda.platform.platform.purchases.application.PurchasesRepository;
@@ -30,7 +31,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
     "koda.cash.jdbc.enabled=false",
     "koda.sales.jdbc.enabled=false",
     "koda.purchases.jdbc.enabled=false",
-    "koda.reports.jdbc.enabled=false"
+    "koda.reports.jdbc.enabled=false",
+    "koda.licensing.jdbc.enabled=false"
 })
 class KodaPlatformApplicationTests {
 
@@ -75,6 +77,9 @@ class KodaPlatformApplicationTests {
 
     @MockitoBean
     private ReportsRepository reportsRepository;
+
+    @MockitoBean
+    private TenantCapabilitiesRepository tenantCapabilitiesRepository;
 
     @Test
     void contextLoads() {

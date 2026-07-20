@@ -38,7 +38,7 @@ La base funcional de Sprint 3 fue aprobada por el Product Owner el 2026-07-20 y 
 | --- | --- | --- |
 | 1. Base funcional Sprint 3 | Completado | Foco aprobado: Fundacion SaaS Comercial, licencias, modulos y control de acceso por empresa. |
 | 2. Modelo de licencias y migraciones | Completado | Tablas para planes, suscripciones, limites, overrides, feature flags y seed `KODA_PILOT`, preservando entitlements existentes. |
-| 3. Capability backend | Pendiente | Servicio y API para calcular productos, modulos, features y limites efectivos del tenant autenticado. |
+| 3. Capability backend | Completado | Servicio y API `GET /api/v1/capabilities` para calcular productos, modulos, features y limites efectivos del tenant autenticado. |
 | 4. Guards backend por modulo | Pendiente | Bloqueo reutilizable `PRODUCT_NOT_ENABLED` y `MODULE_NOT_ENABLED` aplicado a modulos existentes. |
 | 5. Administracion interna de licencias | Pendiente | APIs plataforma para consultar y modificar suscripciones/entitlements con auditoria. |
 | 6. Frontend capability shell | Pendiente | Contexto frontend de capabilities, menus/rutas condicionados y bloqueo visual de modulos no habilitados. |
@@ -59,6 +59,28 @@ El Hito 2 implemento la base persistente del licenciamiento SaaS comercial:
 - Documentacion especifica en `docs/licensing/SAAS_LICENSING_MODEL.md`.
 
 Hito 2 no implementa todavia API de capabilities, guards por modulo, administracion interna de licencias ni UI.
+
+## Hito 3 completado
+
+El Hito 3 implemento el calculo backend de capabilities tenant-scoped:
+
+- Servicio de aplicacion `TenantCapabilitiesService`.
+- Puerto `TenantCapabilitiesRepository` para mantener Clean Architecture.
+- Repositorio JDBC `JdbcTenantCapabilitiesRepository` con consultas optimizadas sobre suscripciones, planes, entitlements, feature flags y overrides de limites.
+- API `GET /api/v1/capabilities` para el tenant autenticado.
+- DTOs de salida para productos, modulos, feature flags y limites efectivos, sin exponer entidades.
+- Manejo global de error `TenantCapabilitiesUnavailableException` para tenant inexistente o inactivo.
+- Pruebas unitarias del servicio y prueba de integracion contra PostgreSQL 17 para validar el calculo real sobre el seed `KODA_PILOT`.
+
+Decision tecnica aprobada de facto en este hito: la API de capabilities requiere usuario autenticado y tenant context, pero no exige un permiso RBAC especifico. Es informacion necesaria para construir el shell operativo del frontend. La seguridad de ejecucion real se aplicara en Hito 4 con guards backend por producto/modulo.
+
+Hito 3 no implementa todavia guards backend por modulo, administracion interna de licencias ni UI.
+
+Validacion:
+
+- `mvn -B test`: 92 pruebas unitarias, 0 fallos.
+- `mvn -B verify`: 92 pruebas unitarias y 8 pruebas de integracion, 0 fallos.
+- Flyway/Testcontainers/PostgreSQL 17.10: 20 migraciones hasta `v202607201500`.
 
 ## Orientacion tecnica inicial
 
@@ -101,7 +123,7 @@ No conviene dispersar consultas de entitlements en cada servicio. Eso seria rapi
 
 ### Capability API
 
-Endpoint tenant-scoped sugerido:
+Endpoint tenant-scoped implementado en Hito 3:
 
 - `GET /api/v1/capabilities`
 
@@ -157,4 +179,4 @@ No se habilita self-service comercial en Sprint 3.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 3: implementar el calculo backend de capabilities y exponer una API tenant-scoped para el tenant autenticado.
+Avanzar al Hito 4: implementar guards backend reutilizables por producto/modulo y aplicarlos a los modulos existentes sin mezclar RBAC con licenciamiento.

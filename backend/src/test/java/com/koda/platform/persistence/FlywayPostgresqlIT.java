@@ -2,15 +2,20 @@ package com.koda.platform.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.koda.platform.platform.licensing.infrastructure.JdbcTenantCapabilitiesRepository;
+import com.koda.platform.shared.domain.tenant.TenantId;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
 import java.util.List;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -163,6 +168,25 @@ class FlywayPostgresqlIT {
         assertThat(hasIndex("idx_tenant_feature_flags_tenant_product_enabled")).isTrue();
     }
 
+    @Test
+    void capabilitiesRepositoryResolvesKodaPilotEffectiveCapabilities() throws SQLException {
+        JdbcTenantCapabilitiesRepository repository = new JdbcTenantCapabilitiesRepository(new JdbcTemplate(dataSource()));
+        TenantId tenantId = TenantId.fromString(KODA_TENANT_ID);
+        Instant calculatedAt = Instant.now();
+
+        assertThat(repository.findEnabledProducts(tenantId, calculatedAt))
+            .hasSize(1)
+            .first()
+            .satisfies(product -> {
+                assertThat(product.code()).isEqualTo("KODA_ERP");
+                assertThat(product.planCode()).isEqualTo("KODA_PILOT");
+                assertThat(product.enabled()).isTrue();
+            });
+        assertThat(repository.findEnabledModules(tenantId, calculatedAt)).hasSize(10);
+        assertThat(repository.findEffectiveLimits(tenantId, calculatedAt)).hasSize(5);
+        assertThat(repository.findEffectiveFeatureFlags(tenantId, calculatedAt)).isEmpty();
+    }
+
     private static int queryForInt(String sql) throws SQLException {
         try (Connection connection = connection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
@@ -196,6 +220,14 @@ class FlywayPostgresqlIT {
               and indexname = '%s'
             """.formatted(indexName);
         return queryForInt(sql) == 1;
+    }
+
+    private static DriverManagerDataSource dataSource() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setUrl(POSTGRES.getJdbcUrl());
+        dataSource.setUsername(POSTGRES.getUsername());
+        dataSource.setPassword(POSTGRES.getPassword());
+        return dataSource;
     }
 
     private static Connection connection() throws SQLException {
