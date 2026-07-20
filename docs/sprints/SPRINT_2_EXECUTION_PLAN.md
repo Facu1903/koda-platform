@@ -37,7 +37,7 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 | 4. Caja inicial | Completado | Apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. |
 | 5. Ventas basicas | Completado | Venta draft, confirmacion, anulacion, numeracion interna e impacto explicito en stock/caja. |
 | 6. Compras basicas | Completado | Compra draft, confirmacion, anulacion, numeracion interna e impacto explicito en stock/caja. |
-| 7. Reportes y dashboard operativo | Pendiente | Indicadores simples para ventas, compras, stock y caja. |
+| 7. Reportes y dashboard operativo | Completado | API read-only con reportes por rango, stock bajo, top vendidos y dashboard inicial. |
 | 8. Hardening Sprint 2 | Pendiente | Tests, documentacion, revision de seguridad y cierre del sprint. |
 
 ## Base funcional aprobada
@@ -188,6 +188,21 @@ El Hito 6 implemento compras basicas como documento comercial tenant-scoped:
 - Testcontainers PostgreSQL 17 validando 18 migraciones hasta `v202607201310`.
 - Documentacion especifica en `docs/purchases/PURCHASES.md`.
 
+## Hito 7 completado
+
+El Hito 7 implemento reportes operativos y dashboard inicial como modulo read-only tenant-scoped:
+
+- Modulo SaaS `COMMERCIAL_REPORTS`.
+- Permiso atomico `commercial_reports:read`.
+- API `/api/v1/reports` para ventas por rango, compras por rango, caja por rango, top productos vendidos, stock bajo y dashboard.
+- Reportes por rango con `from` y `to` obligatorios, rango maximo de 366 dias y limite maximo de 500 filas.
+- Dashboard calculado con `time_zone` del tenant.
+- Stock bajo simple por parametro `threshold`, con default `0` hasta aprobar stock minimo por producto.
+- Totales operativos sobre documentos `CONFIRMED`, con documentos `CANCELLED` informados por separado.
+- Indices para consultas por fecha en ventas, compras, caja y stock.
+- Tests unitarios de permisos, rangos, limites, threshold y zona horaria del dashboard.
+- Testcontainers PostgreSQL 17 validando 19 migraciones hasta `v202607201400`.
+- Documentacion especifica en `docs/reports/OPERATIONAL_REPORTS.md`.
 ## Fuera de alcance propuesto
 
 - Facturacion fiscal electronica.
@@ -203,4 +218,4 @@ El Hito 6 implemento compras basicas como documento comercial tenant-scoped:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 7: reportes y dashboard operativo. El circuito comercial minimo ya tiene terceros, caja, ventas, compras y stock; ahora necesitamos lectura operativa simple para que el usuario vea el estado del negocio sin consultar tablas ni hacer arqueologia digital.
+Avanzar al Hito 8: hardening Sprint 2. El circuito operativo ya existe y tiene lectura basica; ahora toca revisar seguridad, consistencia, documentacion final, deuda tecnica chica y cierre ordenado del sprint.

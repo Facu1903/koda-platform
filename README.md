@@ -10,7 +10,7 @@ Sprint 1 cerrado. Sprint 2 en progreso.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
-Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales. El Hito 4 agrego caja inicial con apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. El Hito 5 agrego ventas basicas con borradores, confirmacion, anulacion, numeracion interna, impacto en stock/caja y auditoria. El Hito 6 agrego compras basicas con proveedor obligatorio, numeracion interna, ingreso de stock, pago opcional contra caja y reversas auditadas.
+Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales. El Hito 4 agrego caja inicial con apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. El Hito 5 agrego ventas basicas con borradores, confirmacion, anulacion, numeracion interna, impacto en stock/caja y auditoria. El Hito 6 agrego compras basicas con proveedor obligatorio, numeracion interna, ingreso de stock, pago opcional contra caja y reversas auditadas. El Hito 7 agrego reportes operativos y dashboard inicial con ventas, compras, caja y stock.
 
 ## Documentos principales
 
@@ -37,6 +37,7 @@ Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales f
 - [Cash Sessions](docs/cash/CASH_SESSIONS.md)
 - [Ventas Basicas](docs/sales/SALES.md)
 - [Compras Basicas](docs/purchases/PURCHASES.md)
+- [Reportes Operativos](docs/reports/OPERATIONAL_REPORTS.md)
 - [Stock Movements](docs/stock/STOCK_MOVEMENTS.md)
 - [Audit Events](docs/audit/AUDIT_EVENTS.md)
 
@@ -158,15 +159,15 @@ Servicios esperados:
 
 ## Base de datos inicial
 
-Flyway deja el esquema en `v202607201310` con:
+Flyway deja el esquema en `v202607201400` con:
 
 - Tenant piloto KODA.
 - Producto `KODA_ERP`.
-- Modulos base de Sprint 1 y modulos `COMMERCIAL_PARTNERS`, `CASH`, `SALES` y `PURCHASES`.
+- Modulos base de Sprint 1 y modulos `COMMERCIAL_PARTNERS`, `CASH`, `SALES`, `PURCHASES` y `COMMERCIAL_REPORTS`.
 - Roles y permisos iniciales aprobados.
-- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock, auditoria, terceros comerciales, caja inicial, ventas basicas y compras basicas.
+- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock, auditoria, terceros comerciales, caja inicial, ventas basicas y compras basicas, mas permisos e indices para reportes operativos.
 
-La matriz inicial rol-permiso ya existe para la base del Sprint 1 y se amplio con clientes/proveedores, caja, ventas y compras en Sprint 2. La creacion de usuarios reales se controla por bootstrap opt-in o por APIs futuras de administracion.
+La matriz inicial rol-permiso ya existe para la base del Sprint 1 y se amplio con clientes/proveedores, caja, ventas, compras y reportes en Sprint 2. La creacion de usuarios reales se controla por bootstrap opt-in o por APIs futuras de administracion.
 
 ## Tenant Context
 
@@ -271,6 +272,20 @@ Reglas aprobadas: proveedor obligatorio, numeracion interna por tenant/sucursal,
 
 Ver detalle en `docs/purchases/PURCHASES.md`.
 
+## Reportes y dashboard operativo
+
+El backend ya expone endpoints tenant-scoped bajo `/api/v1/reports` para:
+
+- ventas por rango de fechas,
+- compras por rango de fechas,
+- movimientos de caja por rango de fechas,
+- top productos vendidos,
+- stock bajo simple,
+- dashboard operativo inicial.
+
+Reglas aprobadas: permiso `commercial_reports:read`, rango obligatorio para reportes historicos, maximo 366 dias por consulta, limite maximo de 500 filas, dashboard calculado con la zona horaria del tenant y stock bajo por parametro `threshold` hasta aprobar stock minimo por producto.
+
+Ver detalle en `docs/reports/OPERATIONAL_REPORTS.md`.
 ## Stock
 
 El backend ya expone endpoints tenant-scoped bajo `/api/v1/stock` para:
@@ -319,7 +334,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 79 tests unitarios y 5 tests de integracion, 0 fallos en `mvn -B verify`.
+- Suite backend actual: 86 tests unitarios y 6 tests de integracion, 0 fallos en `mvn -B verify`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
 

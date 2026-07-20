@@ -36,6 +36,12 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregados permisos `purchases:*` con matriz rol-permiso aprobada.
 - Agregada integracion de compras con stock y caja mediante puertos internos.
 - Agregada documentacion de compras basicas en `docs/purchases/PURCHASES.md`.
+- Agregado modulo backend reports para reportes operativos y dashboard tenant-scoped.
+- Agregada migracion `V202607201400__enable_commercial_reports.sql`.
+- Agregado modulo SaaS `COMMERCIAL_REPORTS` y permiso `commercial_reports:read` con matriz rol-permiso aprobada.
+- Agregados indices operativos para reportes por fecha en ventas, compras, caja y stock.
+- Agregada API `/api/v1/reports` para ventas, compras, caja, top productos, stock bajo y dashboard.
+- Agregada documentacion de reportes operativos en `docs/reports/OPERATIONAL_REPORTS.md`.
 
 ### Changed
 
@@ -57,6 +63,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `mvn -B test` ejecutado correctamente en backend con 79 pruebas unitarias.
 - `mvn -B verify` ejecutado correctamente en backend con 79 pruebas unitarias y 5 pruebas de integracion.
 - Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201310`.
+- `mvn -B test` ejecutado correctamente en backend con 86 pruebas unitarias.
+- `mvn -B verify` ejecutado correctamente en backend con 86 pruebas unitarias y 6 pruebas de integracion.
+- Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201400`.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 
 ### Known Issues

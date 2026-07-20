@@ -37,12 +37,12 @@ class FlywayPostgresqlIT {
     @Test
     void flywayBuildsSprintOneSchemaAndSeedDataOnPostgresql17() throws SQLException {
         assertThat(queryForString("select version from flyway_schema_history where success = true order by installed_rank desc limit 1"))
-            .isEqualTo("202607201310");
+            .isEqualTo("202607201400");
         assertThat(queryForInt("select count(*) from tenants")).isEqualTo(1);
-        assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(9);
-        assertThat(queryForInt("select count(*) from permissions")).isEqualTo(67);
+        assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(10);
+        assertThat(queryForInt("select count(*) from permissions")).isEqualTo(68);
         assertThat(queryForInt("select count(*) from roles")).isEqualTo(7);
-        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(181);
+        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(187);
         assertThat(queryForString("select code from warehouses where tenant_id = '00000000-0000-4000-8000-000000000001'"))
             .isEqualTo("PRINCIPAL");
         assertThat(queryForString("select code from cash_registers where tenant_id = '00000000-0000-4000-8000-000000000001'"))
@@ -120,6 +120,16 @@ class FlywayPostgresqlIT {
         assertThat(hasColumn("purchase_order_items", "stock_movement_id")).isTrue();
         assertThat(queryForInt("select count(*) from permissions where code like 'purchases:%'")).isEqualTo(6);
     }
+
+    @Test
+    void reportsMigrationAddsPermissionAndReportingIndexes() throws SQLException {
+        assertThat(queryForInt("select count(*) from permissions where code = 'commercial_reports:read'")).isEqualTo(1);
+        assertThat(hasIndex("idx_sales_orders_tenant_confirmed_at")).isTrue();
+        assertThat(hasIndex("idx_purchase_orders_tenant_confirmed_at")).isTrue();
+        assertThat(hasIndex("idx_cash_movements_tenant_occurred_at")).isTrue();
+        assertThat(hasIndex("idx_stock_balances_tenant_quantity")).isTrue();
+        assertThat(hasIndex("idx_stock_movements_tenant_confirmed_at")).isTrue();
+    }
     private static int queryForInt(String sql) throws SQLException {
         try (Connection connection = connection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
@@ -142,6 +152,16 @@ class FlywayPostgresqlIT {
               and table_name = '%s'
               and column_name = '%s'
             """.formatted(tableName, columnName);
+        return queryForInt(sql) == 1;
+    }
+
+    private static boolean hasIndex(String indexName) throws SQLException {
+        String sql = """
+            select count(*)
+            from pg_indexes
+            where schemaname = 'public'
+              and indexname = '%s'
+            """.formatted(indexName);
         return queryForInt(sql) == 1;
     }
 
