@@ -37,12 +37,28 @@ La base funcional de Sprint 3 fue aprobada por el Product Owner el 2026-07-20 y 
 | Hito | Estado | Resultado esperado |
 | --- | --- | --- |
 | 1. Base funcional Sprint 3 | Completado | Foco aprobado: Fundacion SaaS Comercial, licencias, modulos y control de acceso por empresa. |
-| 2. Modelo de licencias y migraciones | Pendiente | Tablas/ajustes para planes, suscripciones, limites y seed `KODA_PILOT`, preservando entitlements existentes. |
+| 2. Modelo de licencias y migraciones | Completado | Tablas para planes, suscripciones, limites, overrides, feature flags y seed `KODA_PILOT`, preservando entitlements existentes. |
 | 3. Capability backend | Pendiente | Servicio y API para calcular productos, modulos, features y limites efectivos del tenant autenticado. |
 | 4. Guards backend por modulo | Pendiente | Bloqueo reutilizable `PRODUCT_NOT_ENABLED` y `MODULE_NOT_ENABLED` aplicado a modulos existentes. |
 | 5. Administracion interna de licencias | Pendiente | APIs plataforma para consultar y modificar suscripciones/entitlements con auditoria. |
 | 6. Frontend capability shell | Pendiente | Contexto frontend de capabilities, menus/rutas condicionados y bloqueo visual de modulos no habilitados. |
 | 7. Hardening Sprint 3 | Pendiente | Tests unitarios/integracion, validacion Flyway PostgreSQL 17, documentacion final y cierre. |
+
+## Hito 2 completado
+
+El Hito 2 implemento la base persistente del licenciamiento SaaS comercial:
+
+- Migracion `V202607201500__create_saas_licensing_model.sql`.
+- Metadatos `core_module` y `commercially_toggleable` en `platform_modules`.
+- Tablas `product_plans`, `product_plan_modules` y `product_plan_limits`.
+- Tabla `tenant_product_subscriptions` para suscripciones por tenant/producto/plan.
+- Tablas `tenant_limit_overrides` y `tenant_feature_flags`.
+- Indices para consultas futuras de capabilities.
+- Plan tecnico `KODA_PILOT` para tenant KODA con todos los modulos actuales y limites ilimitados.
+- Test de persistencia actualizado para validar 20 migraciones hasta `v202607201500`.
+- Documentacion especifica en `docs/licensing/SAAS_LICENSING_MODEL.md`.
+
+Hito 2 no implementa todavia API de capabilities, guards por modulo, administracion interna de licencias ni UI.
 
 ## Orientacion tecnica inicial
 
@@ -50,15 +66,16 @@ La base funcional de Sprint 3 fue aprobada por el Product Owner el 2026-07-20 y 
 
 Ya existen tablas base para productos, modulos y entitlements. Sprint 3 debe extenderlas o complementarlas, no reemplazarlas.
 
-Candidatos a incorporar o ajustar en Hito 2:
+Estructuras incorporadas en Hito 2:
 
 - `product_plans`
 - `product_plan_modules`
 - `product_plan_limits`
 - `tenant_product_subscriptions`
 - `tenant_feature_flags`
+- `tenant_limit_overrides`
 
-La decision final de migracion debe priorizar compatibilidad, baja duplicacion y lectura eficiente de capabilities.
+La migracion priorizo compatibilidad, baja duplicacion y lectura eficiente de capabilities.
 
 ### Modulo backend recomendado
 
@@ -140,4 +157,4 @@ No se habilita self-service comercial en Sprint 3.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 2: disenar e implementar el modelo de licencias y migraciones, tomando como base las tablas existentes de productos, modulos y entitlements.
+Avanzar al Hito 3: implementar el calculo backend de capabilities y exponer una API tenant-scoped para el tenant autenticado.

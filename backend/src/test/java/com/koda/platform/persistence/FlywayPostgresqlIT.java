@@ -19,6 +19,11 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers
 class FlywayPostgresqlIT {
 
+    private static final String KODA_TENANT_ID = "00000000-0000-4000-8000-000000000001";
+    private static final String KODA_ERP_PRODUCT_ID = "10000000-0000-4000-8000-000000000001";
+    private static final String KODA_PILOT_PLAN_ID = "21000000-0000-4000-8000-000000000001";
+    private static final String KODA_PILOT_SUBSCRIPTION_ID = "22000000-0000-4000-8000-000000000001";
+
     @Container
     private static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(DockerImageName.parse("postgres:17-alpine"))
         .withDatabaseName("koda_platform_it")
@@ -35,9 +40,9 @@ class FlywayPostgresqlIT {
     }
 
     @Test
-    void flywayBuildsSprintOneSchemaAndSeedDataOnPostgresql17() throws SQLException {
+    void flywayBuildsCurrentSchemaAndSeedDataOnPostgresql17() throws SQLException {
         assertThat(queryForString("select version from flyway_schema_history where success = true order by installed_rank desc limit 1"))
-            .isEqualTo("202607201400");
+            .isEqualTo("202607201500");
         assertThat(queryForInt("select count(*) from tenants")).isEqualTo(1);
         assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(10);
         assertThat(queryForInt("select count(*) from permissions")).isEqualTo(68);
@@ -64,6 +69,9 @@ class FlywayPostgresqlIT {
             "company_settings",
             "tenant_product_entitlements",
             "tenant_module_entitlements",
+            "tenant_product_subscriptions",
+            "tenant_limit_overrides",
+            "tenant_feature_flags",
             "branches",
             "warehouses",
             "roles",
@@ -130,6 +138,31 @@ class FlywayPostgresqlIT {
         assertThat(hasIndex("idx_stock_balances_tenant_quantity")).isTrue();
         assertThat(hasIndex("idx_stock_movements_tenant_confirmed_at")).isTrue();
     }
+
+    @Test
+    void licensingMigrationAddsPilotPlanSubscriptionsAndCapabilityTables() throws SQLException {
+        assertThat(hasColumn("platform_modules", "core_module")).isTrue();
+        assertThat(hasColumn("platform_modules", "commercially_toggleable")).isTrue();
+        assertThat(queryForInt("select count(*) from platform_modules where core_module = true and commercially_toggleable = false"))
+            .isEqualTo(3);
+        assertThat(queryForString("select code from product_plans where id = '" + KODA_PILOT_PLAN_ID + "'"))
+            .isEqualTo("KODA_PILOT");
+        assertThat(queryForInt("select count(*) from product_plan_modules where plan_id = '" + KODA_PILOT_PLAN_ID + "'"))
+            .isEqualTo(10);
+        assertThat(queryForInt("select count(*) from product_plan_limits where plan_id = '" + KODA_PILOT_PLAN_ID + "' and unlimited = true"))
+            .isEqualTo(5);
+        assertThat(queryForString("select status from tenant_product_subscriptions where id = '" + KODA_PILOT_SUBSCRIPTION_ID + "'"))
+            .isEqualTo("ACTIVE");
+        assertThat(queryForInt("select count(*) from tenant_product_entitlements where tenant_id = '" + KODA_TENANT_ID + "' and product_id = '" + KODA_ERP_PRODUCT_ID + "' and status = 'ACTIVE'"))
+            .isEqualTo(1);
+        assertThat(queryForInt("select count(*) from tenant_module_entitlements where tenant_id = '" + KODA_TENANT_ID + "' and status = 'ACTIVE'"))
+            .isEqualTo(10);
+        assertThat(hasIndex("uq_tenant_product_subscriptions_current")).isTrue();
+        assertThat(hasIndex("idx_tenant_product_subscriptions_tenant_status")).isTrue();
+        assertThat(hasIndex("idx_tenant_module_entitlements_tenant_status")).isTrue();
+        assertThat(hasIndex("idx_tenant_feature_flags_tenant_product_enabled")).isTrue();
+    }
+
     private static int queryForInt(String sql) throws SQLException {
         try (Connection connection = connection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();

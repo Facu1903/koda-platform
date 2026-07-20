@@ -10,10 +10,20 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 
 - Agregada y aprobada base funcional de Sprint 3 en `docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md`.
 - Agregado plan de ejecucion de Sprint 3 en `docs/sprints/SPRINT_3_EXECUTION_PLAN.md`.
+- Agregada migracion `V202607201500__create_saas_licensing_model.sql` para planes, suscripciones, limites, feature flags y seed `KODA_PILOT`.
+- Agregada documentacion del modelo SaaS en `docs/licensing/SAAS_LICENSING_MODEL.md`.
 
 ### Changed
 
 - Actualizado README y roadmap para iniciar Sprint 3 como Fundacion SaaS Comercial.
+- Agregados metadatos `core_module` y `commercially_toggleable` a `platform_modules`.
+
+### Verified
+
+- `mvn -B test` ejecutado correctamente en backend con 89 pruebas unitarias.
+- `mvn -B verify` ejecutado correctamente en backend con 89 pruebas unitarias y 7 pruebas de integracion.
+- Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201500`.
+
 ## [0.2.0] - 2026-07-20
 
 ### Added

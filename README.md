@@ -12,7 +12,7 @@ Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, 
 
 Sprint 2 queda cerrado y aprobado funcionalmente. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales. El Hito 4 agrego caja inicial con apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. El Hito 5 agrego ventas basicas con borradores, confirmacion, anulacion, numeracion interna, impacto en stock/caja y auditoria. El Hito 6 agrego compras basicas con proveedor obligatorio, numeracion interna, ingreso de stock, pago opcional contra caja y reversas auditadas. El Hito 7 agrego reportes operativos y dashboard inicial con ventas, compras, caja y stock. El Hito 8 endurecio errores API, pruebas, documentacion y cierre tecnico del sprint.
 
-Sprint 3 queda definido y aprobado para construir la fundacion SaaS comercial: planes, suscripciones, entitlements efectivos, limites, capabilities y guards backend/frontend por modulo. El objetivo es que KODA PLATFORM controle que puede usar cada empresa antes de seguir sumando pantallas o modulos.
+Sprint 3 queda definido y aprobado para construir la fundacion SaaS comercial: planes, suscripciones, entitlements efectivos, limites, capabilities y guards backend/frontend por modulo. El Hito 2 implemento el modelo persistente de licencias con plan `KODA_PILOT`, suscripcion del tenant KODA, limites, feature flags e indices para capabilities. El objetivo es que KODA PLATFORM controle que puede usar cada empresa antes de seguir sumando pantallas o modulos.
 
 ## Documentos principales
 
@@ -34,6 +34,7 @@ Sprint 3 queda definido y aprobado para construir la fundacion SaaS comercial: p
 - [Sprint 2 Product Owner Approval](docs/sprints/SPRINT_2_APPROVAL.md)
 - [Sprint 3 Functional Baseline](docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md)
 - [Sprint 3 Execution Plan](docs/sprints/SPRINT_3_EXECUTION_PLAN.md)
+- [SaaS Licensing Model](docs/licensing/SAAS_LICENSING_MODEL.md)
 - [GitHub Actions CI](docs/ci/GITHUB_ACTIONS.md)
 - [PostgreSQL Conventions](docs/database/POSTGRESQL_CONVENTIONS.md)
 - [Tenant Context](docs/security/TENANT_CONTEXT.md)
