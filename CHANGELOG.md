@@ -14,11 +14,19 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado Maven Failsafe para ejecutar pruebas de integracion durante `mvn verify`.
 - Agregada prueba de persistencia `FlywayPostgresqlIT` con Testcontainers y PostgreSQL 17.
 - Agregada documentacion de CI en `docs/ci/GITHUB_ACTIONS.md`.
+- Agregado modulo backend commercial para clientes y proveedores tenant-scoped.
+- Agregadas migraciones `V202607201000__create_commercial_partner_tables.sql` y `V202607201010__seed_commercial_partners_permissions.sql`.
+- Agregado seed `Consumidor Final` como cliente sistema para KODA.
+- Agregados permisos `customers:*` y `suppliers:*` con matriz rol-permiso aprobada.
+- Agregada documentacion de clientes/proveedores en `docs/commercial/COMMERCIAL_PARTNERS.md`.
 
 ### Verified
 
 - `mvn -B verify` ejecutado correctamente en backend con 47 pruebas unitarias y 3 pruebas de integracion.
 - Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607171550`.
+- `mvn -B test` ejecutado correctamente en backend con 54 pruebas unitarias.
+- `mvn -B verify` ejecutado correctamente en backend con 54 pruebas unitarias y 3 pruebas de integracion.
+- Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201010`.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 
 ### Known Issues

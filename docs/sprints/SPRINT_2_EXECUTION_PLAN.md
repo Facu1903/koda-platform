@@ -33,7 +33,7 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 | --- | --- | --- |
 | 1. Base funcional Sprint 2 | Completado | Reglas aprobadas para clientes, proveedores, caja, ventas y compras. |
 | 2. CI/CD minimo y tests de persistencia | Completado | GitHub Actions para backend/frontend y prueba Flyway con PostgreSQL 17/Testcontainers. |
-| 3. Clientes y proveedores | Pendiente | CRUD tenant-scoped con permisos, auditoria y validaciones. |
+| 3. Clientes y proveedores | Completado | CRUD backend tenant-scoped con permisos, auditoria, validaciones y seed Consumidor Final. |
 | 4. Caja inicial | Pendiente | Apertura/cierre o movimientos basicos de caja segun decision funcional. |
 | 5. Ventas basicas | Pendiente | Registro de venta con estados, cliente, items, impacto en stock/caja segun reglas aprobadas. |
 | 6. Compras basicas | Pendiente | Registro de compra con proveedor, items e impacto en stock/caja segun reglas aprobadas. |
@@ -116,6 +116,19 @@ El Hito 2 agrego una primera barrera automatica de calidad antes de sumar mas ne
 - Frontend validado con build TypeScript/Vite.
 - Documentacion especifica en `docs/ci/GITHUB_ACTIONS.md`.
 
+## Hito 3 completado
+
+El Hito 3 implemento la base backend de clientes y proveedores sin duplicar modelo innecesariamente:
+
+- Tablas `business_partners` y `business_partner_roles`.
+- APIs `/api/v1/customers` y `/api/v1/suppliers`.
+- Permisos atomicos `customers:*` y `suppliers:*`.
+- Matriz rol-permiso aprobada aplicada por Flyway para KODA.
+- Cliente sistema `Consumidor Final` protegido contra baja y desactivacion.
+- Auditoria de creacion, actualizacion y eliminacion logica de roles comerciales.
+- Tests unitarios de permisos, tenant, versionado, sistema protegido, reutilizacion por documento y auditoria.
+- Testcontainers PostgreSQL 17 validando 12 migraciones hasta `v202607201010`.
+- Documentacion especifica en `docs/commercial/COMMERCIAL_PARTNERS.md`.
 ## Fuera de alcance propuesto
 
 - Facturacion fiscal electronica.
@@ -131,4 +144,4 @@ El Hito 2 agrego una primera barrera automatica de calidad antes de sumar mas ne
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 3: clientes y proveedores. Ahora que existe una puerta automatica basica de calidad, se puede empezar a sumar negocio con menor riesgo de romper migraciones, backend o frontend.
+Avanzar al Hito 4: caja inicial. La base de clientes/proveedores ya esta lista para que ventas, compras y caja no dependan de datos improvisados.

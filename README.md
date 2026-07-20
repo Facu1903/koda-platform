@@ -6,11 +6,11 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1 cerrado. Sprint 2 en planificacion.
+Sprint 1 cerrado. Sprint 2 en progreso.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
-Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers.
+Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales.
 
 ## Documentos principales
 
@@ -33,6 +33,7 @@ Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales f
 - [Authentication](docs/security/AUTHENTICATION.md)
 - [Company Settings](docs/configuration/COMPANY_SETTINGS.md)
 - [ERP Catalogs](docs/catalogs/ERP_CATALOGS.md)
+- [Commercial Partners](docs/commercial/COMMERCIAL_PARTNERS.md)
 - [Stock Movements](docs/stock/STOCK_MOVEMENTS.md)
 - [Audit Events](docs/audit/AUDIT_EVENTS.md)
 
@@ -154,15 +155,15 @@ Servicios esperados:
 
 ## Base de datos inicial
 
-Flyway deja el esquema en `v202607171550` con:
+Flyway deja el esquema en `v202607201010` con:
 
 - Tenant piloto KODA.
 - Producto `KODA_ERP`.
-- Modulos base de Sprint 1.
+- Modulos base de Sprint 1 y modulo `COMMERCIAL_PARTNERS`.
 - Roles y permisos iniciales aprobados.
-- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock y auditoria.
+- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock, auditoria y terceros comerciales.
 
-La matriz inicial rol-permiso ya existe para la base del Sprint 1 y se ampliara por modulo. La creacion de usuarios reales se controla por bootstrap opt-in o por APIs futuras de administracion.
+La matriz inicial rol-permiso ya existe para la base del Sprint 1 y se amplio con clientes/proveedores en Sprint 2. La creacion de usuarios reales se controla por bootstrap opt-in o por APIs futuras de administracion.
 
 ## Tenant Context
 
@@ -214,6 +215,18 @@ Reglas aprobadas: marca opcional, SKU unico por tenant, una presentacion princip
 
 Ver detalle en `docs/catalogs/ERP_CATALOGS.md`.
 
+## Clientes y proveedores
+
+El backend ya expone CRUD tenant-scoped para clientes y proveedores:
+
+- `/api/v1/customers`
+- `/api/v1/suppliers`
+
+La API mantiene clientes y proveedores separados, pero la base tecnica usa `business_partners` y `business_partner_roles` para permitir que una misma entidad pueda ser cliente, proveedor o ambas. El tenant se resuelve desde JWT/Tenant Context, los listados tienen limite maximo, las escrituras usan version optimista y las operaciones sensibles registran auditoria.
+
+Flyway crea el cliente sistema `Consumidor Final` para KODA; no puede eliminarse ni desactivarse.
+
+Ver detalle en `docs/commercial/COMMERCIAL_PARTNERS.md`.
 ## Stock
 
 El backend ya expone endpoints tenant-scoped bajo `/api/v1/stock` para:
@@ -262,7 +275,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 47 tests unitarios y 3 tests de integracion, 0 fallos en `mvn -B verify`.
+- Suite backend actual: 54 tests unitarios y 3 tests de integracion, 0 fallos en `mvn -B verify`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
 

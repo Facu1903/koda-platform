@@ -3,6 +3,9 @@ package com.koda.platform.shared.api;
 import com.koda.platform.platform.catalog.application.CatalogItemNotFoundException;
 import com.koda.platform.platform.catalog.application.CatalogReferenceNotFoundException;
 import com.koda.platform.platform.catalog.application.CatalogVersionConflictException;
+import com.koda.platform.platform.commercial.application.CommercialPartnerNotFoundException;
+import com.koda.platform.platform.commercial.application.CommercialPartnerOperationRejectedException;
+import com.koda.platform.platform.commercial.application.CommercialPartnerVersionConflictException;
 import com.koda.platform.platform.configuration.application.CompanySettingsNotFoundException;
 import com.koda.platform.platform.stock.application.StockItemNotFoundException;
 import com.koda.platform.platform.stock.application.StockMovementRejectedException;
@@ -104,6 +107,39 @@ public class ApiExceptionHandler {
         return problem;
     }
 
+
+    @ExceptionHandler(CommercialPartnerNotFoundException.class)
+    ProblemDetail handleCommercialPartnerNotFound(CommercialPartnerNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problem.setTitle("Commercial partner not found");
+        problem.setProperty("code", "COMMERCIAL_PARTNER_NOT_FOUND");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(CommercialPartnerVersionConflictException.class)
+    ProblemDetail handleCommercialPartnerVersionConflict(CommercialPartnerVersionConflictException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Commercial partner version conflict");
+        problem.setProperty("code", "COMMERCIAL_PARTNER_VERSION_CONFLICT");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(CommercialPartnerOperationRejectedException.class)
+    ProblemDetail handleCommercialPartnerOperationRejected(CommercialPartnerOperationRejectedException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Commercial partner operation rejected");
+        problem.setProperty("code", "COMMERCIAL_PARTNER_OPERATION_REJECTED");
+        problem.setProperty("reasonCode", exception.reasonCode());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
     @ExceptionHandler(StockItemNotFoundException.class)
     ProblemDetail handleStockItemNotFound(StockItemNotFoundException exception, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
