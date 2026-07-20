@@ -10,7 +10,7 @@ Sprint 1 cerrado. Sprint 2 en progreso.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
-Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales.
+Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales. El Hito 4 agrego caja inicial con apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped.
 
 ## Documentos principales
 
@@ -34,6 +34,7 @@ Sprint 2 esta en progreso. La base funcional minima de operaciones comerciales f
 - [Company Settings](docs/configuration/COMPANY_SETTINGS.md)
 - [ERP Catalogs](docs/catalogs/ERP_CATALOGS.md)
 - [Commercial Partners](docs/commercial/COMMERCIAL_PARTNERS.md)
+- [Cash Sessions](docs/cash/CASH_SESSIONS.md)
 - [Stock Movements](docs/stock/STOCK_MOVEMENTS.md)
 - [Audit Events](docs/audit/AUDIT_EVENTS.md)
 
@@ -155,13 +156,13 @@ Servicios esperados:
 
 ## Base de datos inicial
 
-Flyway deja el esquema en `v202607201010` con:
+Flyway deja el esquema en `v202607201110` con:
 
 - Tenant piloto KODA.
 - Producto `KODA_ERP`.
-- Modulos base de Sprint 1 y modulo `COMMERCIAL_PARTNERS`.
+- Modulos base de Sprint 1 y modulos `COMMERCIAL_PARTNERS` y `CASH`.
 - Roles y permisos iniciales aprobados.
-- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock, auditoria y terceros comerciales.
+- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock, auditoria, terceros comerciales y caja inicial.
 
 La matriz inicial rol-permiso ya existe para la base del Sprint 1 y se amplio con clientes/proveedores en Sprint 2. La creacion de usuarios reales se controla por bootstrap opt-in o por APIs futuras de administracion.
 
@@ -227,6 +228,23 @@ La API mantiene clientes y proveedores separados, pero la base tecnica usa `busi
 Flyway crea el cliente sistema `Consumidor Final` para KODA; no puede eliminarse ni desactivarse.
 
 Ver detalle en `docs/commercial/COMMERCIAL_PARTNERS.md`.
+
+## Caja inicial
+
+El backend ya expone endpoints tenant-scoped bajo `/api/v1/cash` para:
+
+- consultar cajas,
+- abrir y cerrar sesiones de caja,
+- consultar la sesion abierta del usuario,
+- registrar movimientos manuales `CASH_IN` y `CASH_OUT`,
+- consultar movimientos de una sesion.
+
+Reglas aprobadas: una sesion abierta por caja y usuario, cierre con saldo esperado/contado/diferencia, movimientos cerrados inmutables y ajuste automatico al cierre si existe diferencia. Los medios no efectivos registran importe, pero no modifican el efectivo fisico (`cash_effect = 0`).
+
+Flyway crea la caja seed `CAJA_PRINCIPAL` para KODA y aplica la matriz rol-permiso aprobada: owner/admin/manager con acceso completo, sales user sobre sesiones propias, read-only solo lectura y stock user sin acceso.
+
+Ver detalle en `docs/cash/CASH_SESSIONS.md`.
+
 ## Stock
 
 El backend ya expone endpoints tenant-scoped bajo `/api/v1/stock` para:
@@ -275,7 +293,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 54 tests unitarios y 3 tests de integracion, 0 fallos en `mvn -B verify`.
+- Suite backend actual: 62 tests unitarios y 3 tests de integracion, 0 fallos en `mvn -B verify`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md`.
 

@@ -37,14 +37,16 @@ class FlywayPostgresqlIT {
     @Test
     void flywayBuildsSprintOneSchemaAndSeedDataOnPostgresql17() throws SQLException {
         assertThat(queryForString("select version from flyway_schema_history where success = true order by installed_rank desc limit 1"))
-            .isEqualTo("202607201010");
+            .isEqualTo("202607201110");
         assertThat(queryForInt("select count(*) from tenants")).isEqualTo(1);
-        assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(6);
-        assertThat(queryForInt("select count(*) from permissions")).isEqualTo(49);
+        assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(7);
+        assertThat(queryForInt("select count(*) from permissions")).isEqualTo(55);
         assertThat(queryForInt("select count(*) from roles")).isEqualTo(7);
-        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(107);
+        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(134);
         assertThat(queryForString("select code from warehouses where tenant_id = '00000000-0000-4000-8000-000000000001'"))
             .isEqualTo("PRINCIPAL");
+        assertThat(queryForString("select code from cash_registers where tenant_id = '00000000-0000-4000-8000-000000000001'"))
+            .isEqualTo("CAJA_PRINCIPAL");
         assertThat(queryForString("""
             select p.legal_name
             from business_partners p
@@ -77,7 +79,10 @@ class FlywayPostgresqlIT {
             "stock_movements",
             "audit_events",
             "business_partners",
-            "business_partner_roles"
+            "business_partner_roles",
+            "cash_registers",
+            "cash_sessions",
+            "cash_movements"
         );
 
         for (String tableName : tenantScopedTables) {

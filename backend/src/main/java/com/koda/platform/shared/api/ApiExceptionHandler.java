@@ -3,6 +3,9 @@ package com.koda.platform.shared.api;
 import com.koda.platform.platform.catalog.application.CatalogItemNotFoundException;
 import com.koda.platform.platform.catalog.application.CatalogReferenceNotFoundException;
 import com.koda.platform.platform.catalog.application.CatalogVersionConflictException;
+import com.koda.platform.platform.cash.application.CashItemNotFoundException;
+import com.koda.platform.platform.cash.application.CashOperationRejectedException;
+import com.koda.platform.platform.cash.application.CashVersionConflictException;
 import com.koda.platform.platform.commercial.application.CommercialPartnerNotFoundException;
 import com.koda.platform.platform.commercial.application.CommercialPartnerOperationRejectedException;
 import com.koda.platform.platform.commercial.application.CommercialPartnerVersionConflictException;
@@ -135,6 +138,39 @@ public class ApiExceptionHandler {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
         problem.setTitle("Commercial partner operation rejected");
         problem.setProperty("code", "COMMERCIAL_PARTNER_OPERATION_REJECTED");
+        problem.setProperty("reasonCode", exception.reasonCode());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(CashItemNotFoundException.class)
+    ProblemDetail handleCashItemNotFound(CashItemNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problem.setTitle("Cash item not found");
+        problem.setProperty("code", "CASH_ITEM_NOT_FOUND");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(CashVersionConflictException.class)
+    ProblemDetail handleCashVersionConflict(CashVersionConflictException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Cash version conflict");
+        problem.setProperty("code", "CASH_VERSION_CONFLICT");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(CashOperationRejectedException.class)
+    ProblemDetail handleCashOperationRejected(CashOperationRejectedException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Cash operation rejected");
+        problem.setProperty("code", "CASH_OPERATION_REJECTED");
         problem.setProperty("reasonCode", exception.reasonCode());
         problem.setProperty("timestamp", Instant.now());
         problem.setProperty("path", request.getRequestURI());

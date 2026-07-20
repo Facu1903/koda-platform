@@ -34,7 +34,7 @@ Si se codifica ventas o compras sin definir numeracion, estados, impacto en stoc
 | 1. Base funcional Sprint 2 | Completado | Reglas aprobadas para clientes, proveedores, caja, ventas y compras. |
 | 2. CI/CD minimo y tests de persistencia | Completado | GitHub Actions para backend/frontend y prueba Flyway con PostgreSQL 17/Testcontainers. |
 | 3. Clientes y proveedores | Completado | CRUD backend tenant-scoped con permisos, auditoria, validaciones y seed Consumidor Final. |
-| 4. Caja inicial | Pendiente | Apertura/cierre o movimientos basicos de caja segun decision funcional. |
+| 4. Caja inicial | Completado | Apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. |
 | 5. Ventas basicas | Pendiente | Registro de venta con estados, cliente, items, impacto en stock/caja segun reglas aprobadas. |
 | 6. Compras basicas | Pendiente | Registro de compra con proveedor, items e impacto en stock/caja segun reglas aprobadas. |
 | 7. Reportes y dashboard operativo | Pendiente | Indicadores simples para ventas, compras, stock y caja. |
@@ -129,6 +129,24 @@ El Hito 3 implemento la base backend de clientes y proveedores sin duplicar mode
 - Tests unitarios de permisos, tenant, versionado, sistema protegido, reutilizacion por documento y auditoria.
 - Testcontainers PostgreSQL 17 validando 12 migraciones hasta `v202607201010`.
 - Documentacion especifica en `docs/commercial/COMMERCIAL_PARTNERS.md`.
+
+## Hito 4 completado
+
+El Hito 4 implemento caja inicial como ledger operativo tenant-scoped:
+
+- Tablas `cash_registers`, `cash_sessions` y `cash_movements`.
+- API `/api/v1/cash` para cajas, sesiones y movimientos.
+- Apertura con saldo inicial y cierre con saldo esperado, contado y diferencia.
+- Movimientos manuales `CASH_IN` y `CASH_OUT`.
+- Movimiento `OPENING` automatico al abrir y `CLOSING_ADJUSTMENT` automatico cuando el cierre tiene diferencia.
+- Permisos atomicos `cash_registers:*`, `cash_sessions:*` y `cash_movements:*`.
+- Matriz rol-permiso aprobada aplicada por Flyway para KODA.
+- Caja seed `CAJA_PRINCIPAL`.
+- Auditoria de apertura, cierre y movimientos manuales.
+- Tests unitarios de permisos, restricciones de usuario, medios no efectivos, cierre y ajustes.
+- Testcontainers PostgreSQL 17 validando 14 migraciones hasta `v202607201110`.
+- Documentacion especifica en `docs/cash/CASH_SESSIONS.md`.
+
 ## Fuera de alcance propuesto
 
 - Facturacion fiscal electronica.
@@ -144,4 +162,4 @@ El Hito 3 implemento la base backend de clientes y proveedores sin duplicar mode
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 4: caja inicial. La base de clientes/proveedores ya esta lista para que ventas, compras y caja no dependan de datos improvisados.
+Avanzar al Hito 5: ventas basicas. Clientes, proveedores y caja inicial ya estan listos para que la venta no improvise cliente, stock ni cobro.

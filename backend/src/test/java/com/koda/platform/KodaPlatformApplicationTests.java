@@ -1,6 +1,7 @@
 package com.koda.platform;
 
 import com.koda.platform.platform.audit.application.AuditRepository;
+import com.koda.platform.platform.cash.application.CashRepository;
 import com.koda.platform.platform.catalog.application.CatalogRepository;
 import com.koda.platform.platform.commercial.application.CommercialPartnerRepository;
 import com.koda.platform.platform.configuration.application.CompanySettingsRepository;
@@ -18,7 +19,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
     "koda.catalogs.jdbc.enabled=false",
     "koda.stock.jdbc.enabled=false",
     "koda.audit.jdbc.enabled=false",
-    "koda.commercial.jdbc.enabled=false"
+    "koda.commercial.jdbc.enabled=false",
+    "koda.cash.jdbc.enabled=false"
 })
 class KodaPlatformApplicationTests {
 
@@ -39,6 +41,9 @@ class KodaPlatformApplicationTests {
 
     @MockitoBean
     private CommercialPartnerRepository commercialPartnerRepository;
+
+    @MockitoBean
+    private CashRepository cashRepository;
 
     @Test
     void contextLoads() {

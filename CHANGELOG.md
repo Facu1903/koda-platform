@@ -19,6 +19,11 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado seed `Consumidor Final` como cliente sistema para KODA.
 - Agregados permisos `customers:*` y `suppliers:*` con matriz rol-permiso aprobada.
 - Agregada documentacion de clientes/proveedores en `docs/commercial/COMMERCIAL_PARTNERS.md`.
+- Agregado modulo backend cash para caja inicial tenant-scoped.
+- Agregadas migraciones `V202607201100__create_cash_tables.sql` y `V202607201110__seed_cash_permissions.sql`.
+- Agregado seed `CAJA_PRINCIPAL` para KODA.
+- Agregados permisos `cash_registers:*`, `cash_sessions:*` y `cash_movements:*` con matriz rol-permiso aprobada.
+- Agregada documentacion de caja inicial en `docs/cash/CASH_SESSIONS.md`.
 
 ### Verified
 
@@ -27,6 +32,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `mvn -B test` ejecutado correctamente en backend con 54 pruebas unitarias.
 - `mvn -B verify` ejecutado correctamente en backend con 54 pruebas unitarias y 3 pruebas de integracion.
 - Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201010`.
+- `mvn -B test` ejecutado correctamente en backend con 62 pruebas unitarias.
+- `mvn -B verify` ejecutado correctamente en backend con 62 pruebas unitarias y 3 pruebas de integracion.
+- Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201110`.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 
 ### Known Issues
@@ -100,6 +108,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregados errores `COMPANY_SETTINGS_NOT_FOUND` y `COMPANY_SETTINGS_VERSION_CONFLICT`.
 - Agregados errores `CATALOG_ITEM_NOT_FOUND`, `CATALOG_REFERENCE_NOT_FOUND` y `CATALOG_VERSION_CONFLICT`.
 - Agregados errores `STOCK_ITEM_NOT_FOUND`, `STOCK_REFERENCE_NOT_FOUND` y `STOCK_MOVEMENT_REJECTED`.
+- Agregados errores `CASH_ITEM_NOT_FOUND`, `CASH_VERSION_CONFLICT` y `CASH_OPERATION_REJECTED`.
 - `AuthService` ahora depende de puertos de aplicacion en lugar de clases de infraestructura JWT/refresh/configuracion.
 - El decoder JWT ahora valida explicitamente `KODA_JWT_ISSUER`.
 - Actualizado diagrama de capas para reflejar que `api` no depende de `infrastructure`.
