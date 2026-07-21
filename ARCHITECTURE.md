@@ -235,10 +235,13 @@ La auditoria no debe depender solo de logs. Debe existir modelo persistido consu
 Desde el inicio:
 
 - Logs estructurados.
-- `traceId` y `correlationId`.
+- `correlationId` obligatorio por request HTTP mediante `X-Correlation-ID`.
+- MDC/log context con `correlationId`, tenant, usuario, metodo, path normalizado, status y duracion.
 - Separacion clara entre errores esperados y fallas inesperadas.
 - Health checks.
 - Metricas preparadas para evolucion posterior.
+
+El correlation ID no participa en autorizacion y no reemplaza auditoria persistente. Su funcion es diagnostico tecnico. La sanitizacion de logs es obligatoria: no se loguean tokens, passwords, secretos, cuerpos completos ni headers sensibles.
 
 ## 11. Frontend
 
@@ -330,4 +333,3 @@ Antes de cerrar una funcionalidad:
 - Existen tests para casos exitosos, validaciones y accesos indebidos.
 - La migracion Flyway es reversible conceptualmente aunque Flyway no ejecute rollback automatico.
 - La documentacion afectada fue actualizada.
-

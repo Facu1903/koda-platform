@@ -37,7 +37,7 @@ La base funcional de Sprint 4 fue aprobada por el Product Owner el 2026-07-21 y 
 | Hito | Estado | Resultado esperado |
 | --- | --- | --- |
 | 1. Base funcional Sprint 4 | Completado | Foco aprobado: Escalabilidad, Observabilidad y Endurecimiento SaaS Operativo. |
-| 2. Correlation ID y logs estructurados | Pendiente | Request tracing basico, header `X-Correlation-ID`, MDC/log context y sanitizacion inicial. |
+| 2. Correlation ID y logs estructurados | Completado | Request tracing basico, header `X-Correlation-ID`, MDC/log context y sanitizacion inicial. |
 | 3. Health checks operativos | Pendiente | Liveness/readiness, DB health, Flyway/schema health y documentacion de diagnostico. |
 | 4. Metricas base | Pendiente | Actuator/Micrometer expone metricas HTTP/runtime y lineamientos de cardinalidad. |
 | 5. Performance e indices criticos | Pendiente | Revision documentada de queries de capabilities, guards, auditoria y reportes; indices si corresponde. |
@@ -56,6 +56,27 @@ El Hito 1 define y aprueba la base funcional del Sprint 4:
 - Reglas iniciales para correlation ID, logs, health checks, metricas, cache y auditoria.
 
 Decision funcional: avanzar con Sprint 4 sin introducir proveedores externos obligatorios ni despliegue cloud productivo. Primero se instrumenta la aplicacion y se deja lista para integraciones futuras.
+
+## Hito 2 completado
+
+El Hito 2 implementa la primera capa operativa de trazabilidad HTTP:
+
+- Filtro transversal `CorrelationIdFilter`.
+- Header estandar `X-Correlation-ID` en request y response.
+- Reutilizacion de correlation ID valido enviado por cliente.
+- Generacion de UUID cuando falta o el valor recibido es inseguro.
+- MDC con `correlationId`, metodo HTTP, path normalizado, status y duracion.
+- Enriquecimiento del Tenant Context con `tenantId`, `userId` y `platformAdmin` en MDC.
+- Limpieza obligatoria del contexto al finalizar cada request.
+- Logs JSON con MDC habilitado mediante Logstash Encoder.
+- Documento tecnico `docs/observability/CORRELATION_AND_LOGGING.md`.
+
+Decision tecnica: el correlation ID vive en infraestructura compartida y no participa en autorizacion. El tenant sigue saliendo del principal autenticado; no se acepta `tenantId` desde headers ni parametros.
+
+Validacion:
+
+- `mvn -B '-Dtest=CorrelationIdFilterTest,TenantContextAuthenticationFilterTest' test`
+- `mvn -B test`
 
 ## Orientacion tecnica inicial
 
@@ -181,4 +202,4 @@ No implementar particionamiento sin validacion tecnica y necesidad clara.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 2: implementar Correlation ID y logs estructurados enriquecidos, con sanitizacion y pruebas.
+Avanzar al Hito 3: health checks operativos con liveness/readiness, DB health, Flyway/schema health y documentacion de diagnostico.

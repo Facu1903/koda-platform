@@ -10,10 +10,21 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 
 - Agregada y aprobada base funcional de Sprint 4 en `docs/sprints/SPRINT_4_FUNCTIONAL_BASELINE.md`.
 - Agregado plan de ejecucion de Sprint 4 en `docs/sprints/SPRINT_4_EXECUTION_PLAN.md`.
+- Agregado filtro transversal `CorrelationIdFilter` para resolver `X-Correlation-ID`, reutilizar valores validos, generar UUID cuando falte o sea inseguro y devolver el header efectivo en cada respuesta.
+- Agregado contexto MDC de observabilidad con `correlationId`, metodo HTTP, path normalizado, status, duracion, `tenantId`, `userId` y `platformAdmin` cuando correspondan.
+- Agregada documentacion tecnica de correlation ID y logs estructurados en `docs/observability/CORRELATION_AND_LOGGING.md`.
+- Agregadas pruebas unitarias de correlation ID, limpieza de MDC, evento de cierre HTTP y enriquecimiento de Tenant Context.
 
 ### Changed
 
 - Actualizado README y roadmap para iniciar Sprint 4 como Escalabilidad, Observabilidad y Endurecimiento SaaS Operativo.
+- Habilitada inclusion explicita de MDC en logs JSON de Logstash Encoder.
+- Enriquecido `TenantContextAuthenticationFilter` para publicar contexto tenant/user en MDC sin cambiar reglas de autorizacion.
+
+### Verified
+
+- `mvn -B '-Dtest=CorrelationIdFilterTest,TenantContextAuthenticationFilterTest' test` ejecutado correctamente en backend con 9 pruebas.
+- `mvn -B test` ejecutado correctamente en backend con 120 pruebas unitarias.
 
 ## [0.3.0] - 2026-07-21
 
