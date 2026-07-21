@@ -40,7 +40,7 @@ La base funcional de Sprint 4 fue aprobada por el Product Owner el 2026-07-21 y 
 | 2. Correlation ID y logs estructurados | Completado | Request tracing basico, header `X-Correlation-ID`, MDC/log context y sanitizacion inicial. |
 | 3. Health checks operativos | Completado | Liveness/readiness, DB health, Flyway/schema health y documentacion de diagnostico. |
 | 4. Metricas base | Completado | Actuator/Micrometer expone metricas HTTP/runtime y lineamientos de cardinalidad. |
-| 5. Performance e indices criticos | Pendiente | Revision documentada de queries de capabilities, guards, auditoria y reportes; indices si corresponde. |
+| 5. Performance e indices criticos | Completado | Revision documentada de queries de capabilities, guards, auditoria y reportes; indices aplicados donde corresponde. |
 | 6. Cache seguro de capabilities | Pendiente | Cache por request/tenant con invalidacion segura o decision tecnica documentada si no aplica aun. |
 | 7. Auditoria operativa | Pendiente | Estrategia inicial de retencion, crecimiento y preparacion para particionamiento futuro. |
 | 8. Hardening Sprint 4 | Pendiente | Tests, validacion completa, documentacion final, reporte de cierre y aprobacion funcional. |
@@ -117,6 +117,27 @@ Decision tecnica: no se incorporan Prometheus, Grafana ni APM comercial en este 
 Validacion:
 
 - `mvn -B "-Dtest=KodaMetricsConfigurationTest,KodaPlatformApplicationTests" test`
+- `mvn -B verify`
+
+## Hito 5 completado
+
+El Hito 5 revisa queries criticas e implementa indices respaldados por consultas existentes:
+
+- Capabilities y guards de licencia.
+- Feature flags efectivos.
+- Auditoria tenant-scoped por actor, recurso y accion.
+- Reportes comerciales de ventas/compras por rango confirmado.
+- Dashboard de ultimos movimientos de stock.
+- Listados operativos por `updated_at`.
+- Sesion de caja abierta por tenant/usuario.
+
+Se agrego la migracion `V202607211900__add_operational_performance_indexes.sql` y el documento tecnico `docs/database/PERFORMANCE_INDEX_REVIEW.md`.
+
+Decision tecnica: no se agregaron indices para cada filtro posible. Se evito indexar `outcome` de auditoria por baja cardinalidad y se pospuso particionamiento hasta el hito especifico de auditoria operativa.
+
+Validacion:
+
+- `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify`
 - `mvn -B verify`
 
 ## Orientacion tecnica inicial
@@ -243,4 +264,4 @@ No implementar particionamiento sin validacion tecnica y necesidad clara.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 5: performance e indices criticos, justificando cada indice por consulta real.
+Avanzar al Hito 6: cache seguro de capabilities con invalidacion conservadora ante cambios administrativos de licencia.

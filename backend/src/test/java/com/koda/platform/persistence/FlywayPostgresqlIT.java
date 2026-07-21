@@ -49,7 +49,7 @@ class FlywayPostgresqlIT {
     @Test
     void flywayBuildsCurrentSchemaAndSeedDataOnPostgresql17() throws SQLException {
         assertThat(queryForString("select version from flyway_schema_history where success = true order by installed_rank desc limit 1"))
-            .isEqualTo("202607201600");
+            .isEqualTo("202607211900");
         assertThat(queryForInt("select count(*) from tenants")).isEqualTo(1);
         assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(10);
         assertThat(queryForInt("select count(*) from permissions")).isEqualTo(70);
@@ -230,6 +230,22 @@ class FlywayPostgresqlIT {
         assertThat(repository.isModuleEnabled(tenantId, "KODA_ERP", "UNKNOWN", calculatedAt)).isFalse();
     }
 
+    @Test
+    void performanceMigrationAddsQueryBackedOperationalIndexes() throws SQLException {
+        assertThat(hasIndex("idx_tenant_product_subscriptions_active_validity")).isTrue();
+        assertThat(hasIndex("idx_tenant_feature_flags_effective")).isTrue();
+        assertThat(hasIndex("idx_audit_events_tenant_actor_occurred_at")).isTrue();
+        assertThat(hasIndex("idx_audit_events_tenant_resource_occurred_at")).isTrue();
+        assertThat(hasIndex("idx_audit_events_tenant_action_occurred_at")).isTrue();
+        assertThat(hasIndex("idx_sales_orders_tenant_updated_at")).isTrue();
+        assertThat(hasIndex("idx_purchase_orders_tenant_updated_at")).isTrue();
+        assertThat(hasIndex("idx_stock_balances_tenant_updated_at")).isTrue();
+        assertThat(hasIndex("idx_cash_sessions_tenant_user_open")).isTrue();
+        assertThat(indexDefinition("idx_sales_orders_tenant_confirmed_at")).contains("confirmed_at DESC", "sale_number DESC");
+        assertThat(indexDefinition("idx_purchase_orders_tenant_confirmed_at")).contains("confirmed_at DESC", "purchase_number DESC");
+        assertThat(indexDefinition("idx_stock_movements_tenant_confirmed_at")).contains("confirmed_at DESC", "id DESC");
+    }
+
     private static int queryForInt(String sql) throws SQLException {
         try (Connection connection = connection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
@@ -263,6 +279,16 @@ class FlywayPostgresqlIT {
               and indexname = '%s'
             """.formatted(indexName);
         return queryForInt(sql) == 1;
+    }
+
+    private static String indexDefinition(String indexName) throws SQLException {
+        String sql = """
+            select indexdef
+            from pg_indexes
+            where schemaname = 'public'
+              and indexname = '%s'
+            """.formatted(indexName);
+        return queryForString(sql);
     }
 
     private static DriverManagerDataSource dataSource() {

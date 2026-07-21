@@ -203,6 +203,7 @@ Lineamientos:
 - Migraciones con Flyway.
 - Claves primarias UUID o identificadores opacos.
 - Indices por `tenant_id` y campos de busqueda frecuentes.
+- Indices justificados por consultas reales, no por intuicion.
 - Constraints de unicidad compuestas por tenant cuando corresponda.
 - Soft delete solo cuando exista razon funcional o legal.
 - Campos de auditoria estandarizados.
@@ -217,6 +218,8 @@ Campos base recomendados para entidades tenant-scoped:
 - `updated_by`
 - `deleted_at` cuando aplique
 - `version` para optimistic locking cuando aplique
+
+La estrategia de indices debe cuidar el balance lectura/escritura. Tablas de crecimiento alto como `audit_events`, `sales_orders`, `purchase_orders` y `stock_movements` no deben recibir indices nuevos sin revisar la consulta, cardinalidad, ordenamiento, filtros y costo de mantenimiento.
 
 ## 9. Auditoria
 

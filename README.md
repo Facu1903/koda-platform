@@ -14,7 +14,7 @@ Sprint 2 queda cerrado y aprobado funcionalmente. La base funcional minima de op
 
 Sprint 3 queda cerrado y aprobado funcionalmente. Construyo la fundacion SaaS comercial: planes, suscripciones, entitlements efectivos, limites, capabilities y guards backend/frontend por modulo. El Hito 2 implemento el modelo persistente de licencias con plan `KODA_PILOT`, suscripcion del tenant KODA, limites, feature flags e indices para capabilities. El Hito 3 agrego el backend de capabilities tenant-scoped con endpoint `GET /api/v1/capabilities`, servicio de aplicacion, repositorio JDBC y manejo de errores para tenants inactivos o inexistentes. El Hito 4 agrego guards backend por producto/modulo para bloquear operaciones cuando el tenant no tiene habilitado el modulo, separando licenciamiento SaaS de permisos RBAC. El Hito 5 agrego administracion interna de licencias bajo `/api/v1/platform/tenants/{tenantId}/licenses`, con permisos `license_admin:*`, version optimista y auditoria de cambios. El Hito 6 agrego el shell frontend de capabilities para condicionar menus/rutas y bloquear visualmente modulos sin licencia activa. El Hito 7 completo el hardening tecnico, validacion completa y reportes de cierre.
 
-Sprint 4 queda definido y aprobado para preparar la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial. El Hito 3 agrego liveness/readiness, health de PostgreSQL y health de schema/Flyway mediante `kodaSchema`. El Hito 4 agrego metricas base con Actuator/Micrometer, endpoint protegido, histogramas HTTP y guardrails contra cardinalidad explosiva.
+Sprint 4 queda definido y aprobado para preparar la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial. El Hito 3 agrego liveness/readiness, health de PostgreSQL y health de schema/Flyway mediante `kodaSchema`. El Hito 4 agrego metricas base con Actuator/Micrometer, endpoint protegido, histogramas HTTP y guardrails contra cardinalidad explosiva. El Hito 5 agrego revision de performance e indices criticos justificados por queries reales.
 
 ## Documentos principales
 
@@ -50,6 +50,7 @@ Sprint 4 queda definido y aprobado para preparar la plataforma para operacion Sa
 - [Frontend Capability Shell](docs/licensing/FRONTEND_CAPABILITY_SHELL.md)
 - [GitHub Actions CI](docs/ci/GITHUB_ACTIONS.md)
 - [PostgreSQL Conventions](docs/database/POSTGRESQL_CONVENTIONS.md)
+- [Performance e Indices Criticos](docs/database/PERFORMANCE_INDEX_REVIEW.md)
 - [Tenant Context](docs/security/TENANT_CONTEXT.md)
 - [Authentication](docs/security/AUTHENTICATION.md)
 - [Company Settings](docs/configuration/COMPANY_SETTINGS.md)
@@ -183,13 +184,13 @@ Servicios esperados:
 
 ## Base de datos inicial
 
-Flyway deja el esquema en `v202607201600` con:
+Flyway deja el esquema en `v202607211900` con:
 
 - Tenant piloto KODA.
 - Producto `KODA_ERP`.
 - Modulos base de Sprint 1 y modulos `COMMERCIAL_PARTNERS`, `CASH`, `SALES`, `PURCHASES` y `COMMERCIAL_REPORTS`.
 - Roles y permisos iniciales aprobados.
-- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock, auditoria, terceros comerciales, caja inicial, ventas basicas, compras basicas, reportes operativos, licenciamiento SaaS, capabilities y permisos internos de administracion de licencias.
+- Tablas base de tenants, configuracion, sucursales, depositos, usuarios, RBAC, catalogos, stock, auditoria, terceros comerciales, caja inicial, ventas basicas, compras basicas, reportes operativos, licenciamiento SaaS, capabilities, permisos internos de administracion de licencias e indices operativos de performance.
 
 La matriz inicial rol-permiso ya existe para la base del Sprint 1 y se amplio con clientes/proveedores, caja, ventas, compras y reportes en Sprint 2. La creacion de usuarios reales se controla por bootstrap opt-in o por APIs futuras de administracion.
 
@@ -360,6 +361,19 @@ Reglas aprobadas: permiso `commercial_reports:read`, rango obligatorio para repo
 
 Ver detalle en `docs/reports/OPERATIONAL_REPORTS.md`.
 
+## Performance e indices
+
+Sprint 4 Hito 5 reviso queries criticas y agrego indices respaldados por consultas reales:
+
+- capabilities y guards de licencia,
+- feature flags efectivos,
+- auditoria tenant-scoped por actor, recurso y accion,
+- reportes comerciales por fecha confirmada,
+- listados operativos por tenant y fecha,
+- sesion de caja abierta por usuario.
+
+Ver detalle en `docs/database/PERFORMANCE_INDEX_REVIEW.md`.
+
 ## Stock
 
 El backend ya expone endpoints tenant-scoped bajo `/api/v1/stock` para:
@@ -408,7 +422,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 130 tests unitarios y 13 pruebas de integracion, 0 fallos en `mvn -B verify`.
+- Suite backend actual: 130 tests unitarios y 14 pruebas de integracion, 0 fallos en `mvn -B verify`.
 - Suite frontend actual: 3 tests del capability shell, 0 fallos en `npm.cmd run test`, `npm.cmd run lint` y `npm.cmd run build`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md` y `docs/sprints/SPRINT_2_HARDENING_REPORT.md`.

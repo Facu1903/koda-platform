@@ -23,6 +23,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado limite de cardinalidad para el tag `uri` de `http.server.requests`.
 - Agregada documentacion de metricas operativas en `docs/observability/METRICS.md`.
 - Agregadas pruebas de endpoint protegido de metricas y filtros de cardinalidad.
+- Agregada migracion `V202607211900__add_operational_performance_indexes.sql` con indices criticos respaldados por queries reales.
+- Agregada documentacion de performance e indices en `docs/database/PERFORMANCE_INDEX_REVIEW.md`.
+- Agregada prueba de integracion para validar indices operativos sobre PostgreSQL 17 real.
 
 ### Changed
 
@@ -33,6 +36,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Actualizada seguridad para permitir `/actuator/health/**` sin autenticacion y sin exponer detalles sensibles.
 - Expuesto `/actuator/metrics` en Actuator manteniendolo protegido por autenticacion.
 - Configurado `http.server.requests` con percentiles `p50`, `p95`, `p99` y SLO iniciales de latencia.
+- Ajustados indices de reportes de ventas, compras y stock para cubrir ordenamientos operativos por fecha y numero/id.
 
 ### Verified
 
@@ -42,6 +46,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `mvn -B verify` ejecutado correctamente en backend con 125 pruebas unitarias y 13 pruebas de integracion.
 - `mvn -B "-Dtest=KodaMetricsConfigurationTest,KodaPlatformApplicationTests" test` ejecutado correctamente en backend con 7 pruebas.
 - `mvn -B verify` ejecutado correctamente en backend con 130 pruebas unitarias y 13 pruebas de integracion.
+- `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify` ejecutado correctamente con 12 pruebas de integracion y schema `v202607211900`.
+- `mvn -B verify` ejecutado correctamente en backend con 130 pruebas unitarias y 14 pruebas de integracion.
 
 ## [0.3.0] - 2026-07-21
 

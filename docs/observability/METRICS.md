@@ -140,4 +140,4 @@ mvn -B "-Dtest=KodaMetricsConfigurationTest,KodaPlatformApplicationTests" test
 mvn -B verify
 ```
 
-Validacion completa final: 130 pruebas unitarias y 13 pruebas de integracion, 0 fallos.
+Validacion completa al cierre del Hito 4: 130 pruebas unitarias y 13 pruebas de integracion, 0 fallos.
