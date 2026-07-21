@@ -2,7 +2,7 @@
 
 ## Estado
 
-Modelo persistente implementado en Sprint 3 Hito 2. Calculo backend y API de capabilities implementados en Sprint 3 Hito 3. Guards backend por producto/modulo implementados en Sprint 3 Hito 4. Administracion interna de licencias implementada en Sprint 3 Hito 5. Shell frontend de capabilities implementado en Sprint 3 Hito 6.
+Modelo persistente implementado en Sprint 3 Hito 2. Calculo backend y API de capabilities implementados en Sprint 3 Hito 3. Guards backend por producto/modulo implementados en Sprint 3 Hito 4. Administracion interna de licencias implementada en Sprint 3 Hito 5. Shell frontend de capabilities implementado en Sprint 3 Hito 6. Hardening y cierre tecnico implementados en Sprint 3 Hito 7.
 
 ## Objetivo
 
@@ -204,4 +204,4 @@ Validado con:
 
 ## Siguiente paso
 
-Hito 7 debe cerrar hardening de Sprint 3: validacion completa, documentacion final y reporte de cierre.
+Solicitar aprobacion funcional final del Product Owner para cerrar Sprint 3. Luego definir Sprint 4 con foco recomendado en escalabilidad, observabilidad y endurecimiento SaaS operativo.

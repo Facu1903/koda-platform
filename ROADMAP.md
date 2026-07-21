@@ -135,7 +135,7 @@ La base funcional minima fue aprobada por el Product Owner el 2026-07-17.
 
 ### Estado
 
-Definido y aprobado funcionalmente por el Product Owner el 2026-07-20. Hitos 2, 3, 4, 5 y 6 completados: modelo persistente de licencias SaaS, API backend de capabilities tenant-scoped, guards backend por modulo, administracion interna de licencias con auditoria y shell frontend condicionado por capabilities. Ver `docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_3_EXECUTION_PLAN.md`, `docs/licensing/SAAS_LICENSING_MODEL.md`, `docs/licensing/TENANT_LICENSE_GUARDS.md`, `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md` y `docs/licensing/FRONTEND_CAPABILITY_SHELL.md`.
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-20. Cierre tecnico completado el 2026-07-21 y aprobacion funcional final pendiente. Hitos 2, 3, 4, 5, 6 y 7 completados: modelo persistente de licencias SaaS, API backend de capabilities tenant-scoped, guards backend por modulo, administracion interna de licencias con auditoria, shell frontend condicionado por capabilities y hardening final. Ver `docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_3_EXECUTION_PLAN.md`, `docs/sprints/SPRINT_3_HARDENING_REPORT.md`, `docs/sprints/SPRINT_3_CLOSURE_REPORT.md`, `docs/licensing/SAAS_LICENSING_MODEL.md`, `docs/licensing/TENANT_LICENSE_GUARDS.md`, `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md` y `docs/licensing/FRONTEND_CAPABILITY_SHELL.md`.
 
 ### Objetivo
 

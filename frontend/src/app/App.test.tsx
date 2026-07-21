@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { AppProviders } from './providers/AppProviders';
@@ -51,11 +51,12 @@ describe('App', () => {
       </AppProviders>,
     );
 
-    expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeInTheDocument();
+    expect(await screen.findByText('Modulos disponibles')).toBeInTheDocument();
     expect(screen.getByText('KODA PLATFORM')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Catalogos/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Ventas/i })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Compras/i })).not.toBeInTheDocument();
+    const navigation = screen.getByLabelText('Navegacion de modulos');
+    expect(within(navigation).getByText('Catalogos')).toBeInTheDocument();
+    expect(within(navigation).getByText('Ventas')).toBeInTheDocument();
+    expect(within(navigation).queryByText('Compras')).not.toBeInTheDocument();
     expect(screen.getByText('Modulos sin licencia activa')).toBeInTheDocument();
   });
 
@@ -69,9 +70,10 @@ describe('App', () => {
       </AppProviders>,
     );
 
-    expect(await screen.findByRole('heading', { name: 'Modulo no habilitado' })).toBeInTheDocument();
+    expect(await screen.findByText('Modulo no habilitado')).toBeInTheDocument();
     expect(screen.getByText('Compras no tiene licencia activa para este tenant.')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Compras/i })).not.toBeInTheDocument();
+    const navigation = screen.getByLabelText('Navegacion de modulos');
+    expect(within(navigation).queryByText('Compras')).not.toBeInTheDocument();
   });
 
   it('shows a controlled state when capabilities cannot be loaded', async () => {
@@ -92,7 +94,7 @@ describe('App', () => {
       </AppProviders>,
     );
 
-    expect(await screen.findByRole('heading', { name: 'Licencia no disponible' })).toBeInTheDocument();
+    expect(await screen.findByText('Licencia no disponible')).toBeInTheDocument();
     expect(screen.getByText('No se pudo cargar la licencia efectiva.')).toBeInTheDocument();
   });
 });

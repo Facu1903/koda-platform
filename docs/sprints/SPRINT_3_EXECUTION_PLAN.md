@@ -42,7 +42,7 @@ La base funcional de Sprint 3 fue aprobada por el Product Owner el 2026-07-20 y 
 | 4. Guards backend por modulo | Completado | Bloqueo reutilizable `PRODUCT_NOT_ENABLED` y `MODULE_NOT_ENABLED` aplicado a modulos existentes. |
 | 5. Administracion interna de licencias | Completado | APIs plataforma para consultar y modificar suscripciones/entitlements con permisos internos, version optimista y auditoria. |
 | 6. Frontend capability shell | Completado | Contexto frontend de capabilities, menus/rutas condicionados y bloqueo visual de modulos no habilitados. |
-| 7. Hardening Sprint 3 | Pendiente | Tests unitarios/integracion, validacion Flyway PostgreSQL 17, documentacion final y cierre. |
+| 7. Hardening Sprint 3 | Completado | Tests unitarios/integracion, validacion Flyway PostgreSQL 17, documentacion final y cierre tecnico. |
 
 ## Hito 2 completado
 
@@ -151,6 +151,27 @@ Validacion:
 
 Hito 6 no implementa login UI, pantallas funcionales completas por modulo, administracion visual de licencias, billing real ni cache distribuida de capabilities.
 
+## Hito 7 completado
+
+El Hito 7 cerro el hardening tecnico del Sprint 3:
+
+- Validacion completa backend con Maven, tests unitarios, integracion, ArchUnit, empaquetado y Flyway.
+- Validacion completa frontend con tests, lint y build productivo.
+- Estabilizacion de test frontend del capability shell para evitar timeout por consultas de accesibilidad demasiado pesadas sobre Material UI.
+- Reporte de hardening en `docs/sprints/SPRINT_3_HARDENING_REPORT.md`.
+- Reporte de cierre tecnico en `docs/sprints/SPRINT_3_CLOSURE_REPORT.md`.
+- README, roadmap, changelog y documentacion de licenciamiento actualizados.
+
+Validacion final:
+
+- `mvn -B verify`: 115 pruebas unitarias y 11 pruebas de integracion, 0 fallos.
+- Flyway/Testcontainers/PostgreSQL 17.10: 21 migraciones hasta `v202607201600`.
+- `npm.cmd run test`: 3 pruebas frontend, 0 fallos.
+- `npm.cmd run lint`: 0 errores.
+- `npm.cmd run build`: TypeScript y Vite correctos.
+
+Decision tecnica: Sprint 3 queda tecnicamente listo para aprobacion funcional final del Product Owner. No se crea acta de aprobacion hasta que el Product Owner la confirme explicitamente.
+
 ## Orientacion tecnica inicial
 
 ### Reutilizar lo existente
@@ -248,4 +269,4 @@ No se habilita self-service comercial en Sprint 3.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 7: hardening final de Sprint 3, validacion completa, documentacion de cierre y aprobacion funcional.
+Solicitar aprobacion funcional final del Product Owner para cerrar Sprint 3. Luego definir Sprint 4 con foco recomendado en escalabilidad, observabilidad y endurecimiento SaaS operativo.

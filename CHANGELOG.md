@@ -25,6 +25,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada documentacion de administracion interna de licencias en `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md`.
 - Agregado shell frontend de capabilities con contexto React, cliente API y navegacion/rutas condicionadas por modulos habilitados.
 - Agregada documentacion del shell frontend en `docs/licensing/FRONTEND_CAPABILITY_SHELL.md`.
+- Agregados reportes de hardening y cierre tecnico de Sprint 3 en `docs/sprints/SPRINT_3_HARDENING_REPORT.md` y `docs/sprints/SPRINT_3_CLOSURE_REPORT.md`.
 
 ### Changed
 
@@ -34,6 +35,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Aplicado control de licencia SaaS en configuracion, catalogos, stock, auditoria, clientes/proveedores, caja, ventas, compras y reportes comerciales.
 - Ajustada autenticacion para incluir roles/permisos de plataforma en el principal JWT mediante contrato de aplicacion `KodaSecurityPrincipal`.
 - Reemplazado el dashboard frontend estatico por un shell operativo que consume `GET /api/v1/capabilities`.
+- Estabilizado test frontend del capability shell para evitar timeout por consultas de rol demasiado pesadas sobre Material UI.
 
 ### Verified
 
@@ -43,6 +45,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `npm.cmd run test` ejecutado correctamente en frontend con 3 pruebas.
 - `npm.cmd run lint` ejecutado correctamente en frontend.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
+- Cierre tecnico de Sprint 3 validado con `mvn -B verify`, `npm.cmd run test`, `npm.cmd run lint` y `npm.cmd run build`.
 
 ## [0.2.0] - 2026-07-20
 

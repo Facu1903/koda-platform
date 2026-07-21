@@ -104,7 +104,8 @@ El modelo persistente ya incluye indices para estas consultas. Si en el futuro e
 
 ## Fuera de alcance
 
-- UI de capabilities.
+- UI completa de operacion por modulo; el shell de capabilities queda documentado en `docs/licensing/FRONTEND_CAPABILITY_SHELL.md`.
+- UI visual de administracion de licencias; la administracion interna disponible es API.
 - Cache distribuida de capabilities.
 - Detalle de administracion interna de licencias; ver `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md`.
 - Billing real.
