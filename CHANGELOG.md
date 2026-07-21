@@ -23,6 +23,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado repositorio JDBC de administracion para consultar suscripciones, entitlements, overrides y feature flags por tenant.
 - Agregada migracion `V202607201600__seed_license_administration_permissions.sql` con permisos `license_admin:read` y `license_admin:update` para `PLATFORM_SUPER_ADMIN`.
 - Agregada documentacion de administracion interna de licencias en `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md`.
+- Agregado shell frontend de capabilities con contexto React, cliente API y navegacion/rutas condicionadas por modulos habilitados.
+- Agregada documentacion del shell frontend en `docs/licensing/FRONTEND_CAPABILITY_SHELL.md`.
 
 ### Changed
 
@@ -31,12 +33,16 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Actualizado manejo global de excepciones para responder tenants sin capabilities disponibles.
 - Aplicado control de licencia SaaS en configuracion, catalogos, stock, auditoria, clientes/proveedores, caja, ventas, compras y reportes comerciales.
 - Ajustada autenticacion para incluir roles/permisos de plataforma en el principal JWT mediante contrato de aplicacion `KodaSecurityPrincipal`.
+- Reemplazado el dashboard frontend estatico por un shell operativo que consume `GET /api/v1/capabilities`.
 
 ### Verified
 
 - `mvn -B test` ejecutado correctamente en backend con 115 pruebas unitarias.
 - `mvn -B verify` ejecutado correctamente en backend con 115 pruebas unitarias y 11 pruebas de integracion.
 - Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201600`.
+- `npm.cmd run test` ejecutado correctamente en frontend con 3 pruebas.
+- `npm.cmd run lint` ejecutado correctamente en frontend.
+- `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 
 ## [0.2.0] - 2026-07-20
 

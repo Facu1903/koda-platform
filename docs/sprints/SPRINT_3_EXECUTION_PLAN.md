@@ -41,7 +41,7 @@ La base funcional de Sprint 3 fue aprobada por el Product Owner el 2026-07-20 y 
 | 3. Capability backend | Completado | Servicio y API `GET /api/v1/capabilities` para calcular productos, modulos, features y limites efectivos del tenant autenticado. |
 | 4. Guards backend por modulo | Completado | Bloqueo reutilizable `PRODUCT_NOT_ENABLED` y `MODULE_NOT_ENABLED` aplicado a modulos existentes. |
 | 5. Administracion interna de licencias | Completado | APIs plataforma para consultar y modificar suscripciones/entitlements con permisos internos, version optimista y auditoria. |
-| 6. Frontend capability shell | Pendiente | Contexto frontend de capabilities, menus/rutas condicionados y bloqueo visual de modulos no habilitados. |
+| 6. Frontend capability shell | Completado | Contexto frontend de capabilities, menus/rutas condicionados y bloqueo visual de modulos no habilitados. |
 | 7. Hardening Sprint 3 | Pendiente | Tests unitarios/integracion, validacion Flyway PostgreSQL 17, documentacion final y cierre. |
 
 ## Hito 2 completado
@@ -128,6 +128,28 @@ Validacion:
 - Flyway/Testcontainers/PostgreSQL 17.10: 21 migraciones hasta `v202607201600`.
 
 Hito 5 no implementa todavia UI de capabilities, cache distribuida de capabilities, billing real ni self-service comercial.
+
+## Hito 6 completado
+
+El Hito 6 implemento el shell frontend de capabilities:
+
+- Contrato TypeScript para `GET /api/v1/capabilities`.
+- Cliente HTTP `fetchTenantCapabilities`.
+- Contexto React `CapabilitiesProvider` con estados `loading`, `ready` y `unavailable`.
+- Navegacion operativa construida desde modulos habilitados.
+- Bloqueo visual de rutas directas hacia modulos sin licencia activa.
+- Dashboard de estado con modulos disponibles y modulos sin licencia activa.
+- Documentacion especifica en `docs/licensing/FRONTEND_CAPABILITY_SHELL.md`.
+
+Decision tecnica: el frontend consume capabilities para experiencia y navegacion, pero no se convierte en fuente de seguridad. El backend sigue bloqueando operaciones mediante JWT, Tenant Context, RBAC y `TenantLicenseAccessGuard`.
+
+Validacion:
+
+- `npm.cmd run test`: 3 pruebas frontend, 0 fallos.
+- `npm.cmd run lint`: 0 errores.
+- `npm.cmd run build`: TypeScript y Vite correctos.
+
+Hito 6 no implementa login UI, pantallas funcionales completas por modulo, administracion visual de licencias, billing real ni cache distribuida de capabilities.
 
 ## Orientacion tecnica inicial
 
@@ -226,4 +248,4 @@ No se habilita self-service comercial en Sprint 3.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 6: implementar frontend capability shell para condicionar menus/rutas segun capabilities, manteniendo la seguridad real en backend.
+Avanzar al Hito 7: hardening final de Sprint 3, validacion completa, documentacion de cierre y aprobacion funcional.

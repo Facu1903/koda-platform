@@ -2,7 +2,7 @@
 
 ## Estado
 
-Modelo persistente implementado en Sprint 3 Hito 2. Calculo backend y API de capabilities implementados en Sprint 3 Hito 3. Guards backend por producto/modulo implementados en Sprint 3 Hito 4. Administracion interna de licencias implementada en Sprint 3 Hito 5.
+Modelo persistente implementado en Sprint 3 Hito 2. Calculo backend y API de capabilities implementados en Sprint 3 Hito 3. Guards backend por producto/modulo implementados en Sprint 3 Hito 4. Administracion interna de licencias implementada en Sprint 3 Hito 5. Shell frontend de capabilities implementado en Sprint 3 Hito 6.
 
 ## Objetivo
 
@@ -177,6 +177,14 @@ Permisos:
 
 La administracion exige actor de plataforma y permiso explicito. No habilita self-service comercial para tenants.
 
+## Shell frontend
+
+Implementado en Hito 6 y documentado en `docs/licensing/FRONTEND_CAPABILITY_SHELL.md`.
+
+El frontend carga `GET /api/v1/capabilities`, construye navegacion a partir de modulos habilitados y bloquea visualmente rutas directas a modulos sin licencia activa.
+
+Esta capa mejora experiencia operativa, pero no reemplaza seguridad backend.
+
 ## Validacion
 
 Validado con:
@@ -184,13 +192,16 @@ Validado con:
 - `mvn -B test`: 115 tests unitarios, 0 fallos.
 - `mvn -B verify`: 115 tests unitarios y 11 tests de integracion, 0 fallos.
 - Flyway/Testcontainers/PostgreSQL 17.10: 21 migraciones hasta `v202607201600`.
+- `npm.cmd run test`: 3 tests frontend, 0 fallos.
+- `npm.cmd run lint`: 0 errores.
+- `npm.cmd run build`: TypeScript y Vite correctos.
 
 ## Fuera de alcance actual
 
-- UI de capabilities.
+- UI completa de operacion comercial.
 - Billing real.
 - Precios comerciales finales.
 
 ## Siguiente paso
 
-Hito 6 debe implementar frontend capability shell para condicionar menus/rutas segun capabilities, sin mover la seguridad real fuera del backend.
+Hito 7 debe cerrar hardening de Sprint 3: validacion completa, documentacion final y reporte de cierre.

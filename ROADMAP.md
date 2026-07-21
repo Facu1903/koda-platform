@@ -135,7 +135,7 @@ La base funcional minima fue aprobada por el Product Owner el 2026-07-17.
 
 ### Estado
 
-Definido y aprobado funcionalmente por el Product Owner el 2026-07-20. Hitos 2, 3, 4 y 5 completados: modelo persistente de licencias SaaS, API backend de capabilities tenant-scoped, guards backend por modulo y administracion interna de licencias con auditoria. Ver `docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_3_EXECUTION_PLAN.md`, `docs/licensing/SAAS_LICENSING_MODEL.md`, `docs/licensing/TENANT_LICENSE_GUARDS.md` y `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md`.
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-20. Hitos 2, 3, 4, 5 y 6 completados: modelo persistente de licencias SaaS, API backend de capabilities tenant-scoped, guards backend por modulo, administracion interna de licencias con auditoria y shell frontend condicionado por capabilities. Ver `docs/sprints/SPRINT_3_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_3_EXECUTION_PLAN.md`, `docs/licensing/SAAS_LICENSING_MODEL.md`, `docs/licensing/TENANT_LICENSE_GUARDS.md`, `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md` y `docs/licensing/FRONTEND_CAPABILITY_SHELL.md`.
 
 ### Objetivo
 
@@ -232,4 +232,3 @@ Pendientes de detalle durante Sprint 1:
 - Provincias iniciales.
 - Definicion operativa exacta de producto, marca, categoria, presentacion y unidad de medida.
 - Reglas avanzadas de stock por sucursal, deposito, permiso o excepcion comercial.
-
