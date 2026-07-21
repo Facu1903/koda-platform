@@ -2,7 +2,7 @@
 
 ## Estado
 
-Definicion funcional aprobada por el Product Owner el 2026-07-21. Sprint 4 listo para iniciar implementacion por hitos.
+Definicion funcional aprobada por el Product Owner el 2026-07-21. Sprint 4 en ejecucion por hitos.
 
 ## Objetivo
 
@@ -39,7 +39,7 @@ La base funcional de Sprint 4 fue aprobada por el Product Owner el 2026-07-21 y 
 | 1. Base funcional Sprint 4 | Completado | Foco aprobado: Escalabilidad, Observabilidad y Endurecimiento SaaS Operativo. |
 | 2. Correlation ID y logs estructurados | Completado | Request tracing basico, header `X-Correlation-ID`, MDC/log context y sanitizacion inicial. |
 | 3. Health checks operativos | Completado | Liveness/readiness, DB health, Flyway/schema health y documentacion de diagnostico. |
-| 4. Metricas base | Pendiente | Actuator/Micrometer expone metricas HTTP/runtime y lineamientos de cardinalidad. |
+| 4. Metricas base | Completado | Actuator/Micrometer expone metricas HTTP/runtime y lineamientos de cardinalidad. |
 | 5. Performance e indices criticos | Pendiente | Revision documentada de queries de capabilities, guards, auditoria y reportes; indices si corresponde. |
 | 6. Cache seguro de capabilities | Pendiente | Cache por request/tenant con invalidacion segura o decision tecnica documentada si no aplica aun. |
 | 7. Auditoria operativa | Pendiente | Estrategia inicial de retencion, crecimiento y preparacion para particionamiento futuro. |
@@ -97,6 +97,26 @@ Decision tecnica: no se expone un endpoint Actuator adicional ni se agregan dash
 Validacion:
 
 - `mvn -B '-Dtest=KodaSchemaHealthIndicatorTest,KodaPlatformApplicationTests' test`
+- `mvn -B verify`
+
+## Hito 4 completado
+
+El Hito 4 implementa metricas operativas base con Actuator/Micrometer:
+
+- `/actuator/metrics` expuesto pero protegido por autenticacion.
+- `http.server.requests` disponible para requests HTTP con URI normalizada.
+- Distribucion HTTP con histogramas, percentiles `p50`, `p95`, `p99` y buckets SLO.
+- Tag comun `application` para identificar la aplicacion.
+- Metricas JVM, proceso, sistema y datasource/pool disponibles segun runtime.
+- Filtro `KodaMetricsConfiguration` para denegar tags sensibles o de alta cardinalidad.
+- Limite de 100 valores distintos para el tag `uri` de `http.server.requests`.
+- Documento tecnico `docs/observability/METRICS.md`.
+
+Decision tecnica: no se incorporan Prometheus, Grafana ni APM comercial en este hito. Primero se deja la aplicacion correctamente instrumentada y protegida. La exportacion externa se decidira cuando exista una estrategia de despliegue.
+
+Validacion:
+
+- `mvn -B "-Dtest=KodaMetricsConfigurationTest,KodaPlatformApplicationTests" test`
 - `mvn -B verify`
 
 ## Orientacion tecnica inicial
@@ -223,4 +243,4 @@ No implementar particionamiento sin validacion tecnica y necesidad clara.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 4: metricas base con Actuator/Micrometer y lineamientos de cardinalidad.
+Avanzar al Hito 5: performance e indices criticos, justificando cada indice por consulta real.

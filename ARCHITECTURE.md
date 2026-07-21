@@ -239,11 +239,13 @@ Desde el inicio:
 - MDC/log context con `correlationId`, tenant, usuario, metodo, path normalizado, status y duracion.
 - Separacion clara entre errores esperados y fallas inesperadas.
 - Health checks separados para liveness, readiness, PostgreSQL y schema/Flyway.
-- Metricas preparadas para evolucion posterior.
+- Metricas base con Actuator/Micrometer, endpoint protegido y politica explicita de cardinalidad.
 
 El correlation ID no participa en autorizacion y no reemplaza auditoria persistente. Su funcion es diagnostico tecnico. La sanitizacion de logs es obligatoria: no se loguean tokens, passwords, secretos, cuerpos completos ni headers sensibles.
 
 Los health checks publicos no deben exponer detalles sensibles. `liveness` mide proceso vivo; `readiness` decide si la instancia puede recibir trafico e incluye PostgreSQL y schema actualizado.
+
+Las metricas operativas no son publicas. Se exponen por Actuator para usuarios autenticados y deben usar tags estables. Quedan prohibidos tags de alta cardinalidad o sensibles como `tenantId`, `userId`, `correlationId`, `requestId`, `sessionId`, emails, tokens e IDs dinamicos de recursos. Para diagnostico puntual se usan logs correlacionados; para trazabilidad funcional se usa auditoria persistente.
 
 ## 11. Frontend
 

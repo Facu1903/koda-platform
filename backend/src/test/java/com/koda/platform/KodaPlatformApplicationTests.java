@@ -1,5 +1,6 @@
 package com.koda.platform;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -121,5 +122,31 @@ class KodaPlatformApplicationTests {
             .andExpect(jsonPath("$.status").value("UP"))
             .andExpect(jsonPath("$.components.readinessState.status").value("UP"))
             .andExpect(jsonPath("$.components.readinessState.details").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("Actuator metrics are exposed only to authenticated operators")
+    void actuatorMetricsAreExposedOnlyToAuthenticatedOperators() throws Exception {
+        mockMvc.perform(get("/actuator/metrics"))
+            .andExpect(status().isUnauthorized());
+
+        mockMvc.perform(get("/actuator/metrics").with(user("ops")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.names").isArray());
+    }
+
+    @Test
+    @DisplayName("HTTP server request metrics are available with stable tags")
+    void httpServerRequestMetricsAreAvailableWithStableTags() throws Exception {
+        mockMvc.perform(get("/actuator/health/liveness"))
+            .andExpect(status().isOk());
+
+        mockMvc.perform(get("/actuator/metrics/http.server.requests").with(user("ops")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value("http.server.requests"))
+            .andExpect(jsonPath("$.availableTags[?(@.tag == 'uri')]").exists())
+            .andExpect(jsonPath("$.availableTags[?(@.tag == 'tenantId')]").doesNotExist())
+            .andExpect(jsonPath("$.availableTags[?(@.tag == 'userId')]").doesNotExist())
+            .andExpect(jsonPath("$.availableTags[?(@.tag == 'correlationId')]").doesNotExist());
     }
 }

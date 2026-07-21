@@ -18,6 +18,11 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregados endpoints operativos documentados de liveness/readiness con componentes seguros.
 - Agregada prueba de integracion `ActuatorHealthPostgresqlIT` con PostgreSQL 17 real para validar readiness con `db` y `kodaSchema`.
 - Agregada documentacion de health checks operativos en `docs/observability/HEALTH_CHECKS.md`.
+- Agregada configuracion base de metricas Actuator/Micrometer con tags comunes, histogramas HTTP y buckets SLO.
+- Agregado guardrail tecnico para bloquear tags sensibles o de alta cardinalidad en metricas.
+- Agregado limite de cardinalidad para el tag `uri` de `http.server.requests`.
+- Agregada documentacion de metricas operativas en `docs/observability/METRICS.md`.
+- Agregadas pruebas de endpoint protegido de metricas y filtros de cardinalidad.
 
 ### Changed
 
@@ -26,6 +31,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Enriquecido `TenantContextAuthenticationFilter` para publicar contexto tenant/user en MDC sin cambiar reglas de autorizacion.
 - Configurado Actuator Health con `show-details: never`, `show-components: always`, validacion estricta de miembros, grupos `liveness` y `readiness`, y readiness dependiente de PostgreSQL y schema.
 - Actualizada seguridad para permitir `/actuator/health/**` sin autenticacion y sin exponer detalles sensibles.
+- Expuesto `/actuator/metrics` en Actuator manteniendolo protegido por autenticacion.
+- Configurado `http.server.requests` con percentiles `p50`, `p95`, `p99` y SLO iniciales de latencia.
 
 ### Verified
 
@@ -33,6 +40,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `mvn -B test` ejecutado correctamente en backend con 120 pruebas unitarias.
 - `mvn -B '-Dtest=KodaSchemaHealthIndicatorTest,KodaPlatformApplicationTests' test` ejecutado correctamente en backend con 6 pruebas.
 - `mvn -B verify` ejecutado correctamente en backend con 125 pruebas unitarias y 13 pruebas de integracion.
+- `mvn -B "-Dtest=KodaMetricsConfigurationTest,KodaPlatformApplicationTests" test` ejecutado correctamente en backend con 7 pruebas.
+- `mvn -B verify` ejecutado correctamente en backend con 130 pruebas unitarias y 13 pruebas de integracion.
 
 ## [0.3.0] - 2026-07-21
 
