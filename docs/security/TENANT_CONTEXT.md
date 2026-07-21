@@ -16,12 +16,12 @@ KODA PLATFORM no acepta `tenant_id` libre desde headers, query params o bodies p
 - `TenantContext`: contiene tenant, usuario, roles, permisos y marca de platform admin para la request actual.
 - `CurrentTenantProvider`: puerto de aplicacion que los casos de uso usaran para obtener el tenant actual.
 - `TenantContextHolder`: almacenamiento por thread/request usado por infraestructura web.
-- `TenantAwarePrincipal`: contrato que debera cumplir el principal autenticado de KODA.
+- `KodaSecurityPrincipal`: contrato de aplicacion que debe cumplir el principal autenticado de KODA.
 - `TenantContextAuthenticationFilter`: traduce el principal autenticado a `TenantContext` durante la request y limpia el contexto al finalizar.
 
 ## Comportamiento actual
 
-- Rutas tenant-scoped bajo `/api/**` requieren un principal compatible con `TenantAwarePrincipal`.
+- Rutas tenant-scoped bajo `/api/**` requieren un principal compatible con `KodaSecurityPrincipal`.
 - Rutas neutrales como Actuator, OpenAPI, Swagger, `/api/v1/auth/**` y `/api/v1/platform/**` no requieren tenant.
 - Si existe autenticacion generica pero no hay tenant para una ruta tenant-scoped, el backend responde `403`.
 - Si no existe autenticacion, Spring Security mantiene el flujo normal de `401`.

@@ -19,6 +19,10 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado puerto `TenantLicenseAccessRepository` con consultas `EXISTS` para producto y modulo efectivo.
 - Agregada documentacion de guards en `docs/licensing/TENANT_LICENSE_GUARDS.md`.
 - Agregadas pruebas de bloqueo por licencia en servicios existentes y dependencias cruzadas de ventas/compras con stock/caja.
+- Agregada API interna de administracion de licencias bajo `/api/v1/platform/tenants/{tenantId}/licenses`.
+- Agregado repositorio JDBC de administracion para consultar suscripciones, entitlements, overrides y feature flags por tenant.
+- Agregada migracion `V202607201600__seed_license_administration_permissions.sql` con permisos `license_admin:read` y `license_admin:update` para `PLATFORM_SUPER_ADMIN`.
+- Agregada documentacion de administracion interna de licencias en `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md`.
 
 ### Changed
 
@@ -26,12 +30,13 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregados metadatos `core_module` y `commercially_toggleable` a `platform_modules`.
 - Actualizado manejo global de excepciones para responder tenants sin capabilities disponibles.
 - Aplicado control de licencia SaaS en configuracion, catalogos, stock, auditoria, clientes/proveedores, caja, ventas, compras y reportes comerciales.
+- Ajustada autenticacion para incluir roles/permisos de plataforma en el principal JWT mediante contrato de aplicacion `KodaSecurityPrincipal`.
 
 ### Verified
 
-- `mvn -B test` ejecutado correctamente en backend con 110 pruebas unitarias.
-- `mvn -B verify` ejecutado correctamente en backend con 110 pruebas unitarias y 9 pruebas de integracion.
-- Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201500`.
+- `mvn -B test` ejecutado correctamente en backend con 115 pruebas unitarias.
+- `mvn -B verify` ejecutado correctamente en backend con 115 pruebas unitarias y 11 pruebas de integracion.
+- Flyway validado mediante Testcontainers contra PostgreSQL 17.10 hasta `v202607201600`.
 
 ## [0.2.0] - 2026-07-20
 
@@ -121,7 +126,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregadas migraciones Flyway iniciales para extensiones PostgreSQL, nucleo SaaS, seguridad/RBAC, catalogos ERP, stock y auditoria.
 - Agregado seed inicial aprobado para tenant KODA, producto KODA ERP, modulos base, roles y permisos.
 - Agregada documentacion de convenciones PostgreSQL.
-- Agregado Tenant Context backend con `TenantId`, `TenantContext`, `CurrentTenantProvider`, `TenantAwarePrincipal` y filtro por request.
+- Agregado Tenant Context backend con `TenantId`, `TenantContext`, `CurrentTenantProvider`, `KodaSecurityPrincipal` y filtro por request.
 - Agregada documentacion de Tenant Context.
 - Agregados tests unitarios para resolucion y limpieza de Tenant Context.
 - Agregada autenticacion JWT stateless con login, refresh y logout.

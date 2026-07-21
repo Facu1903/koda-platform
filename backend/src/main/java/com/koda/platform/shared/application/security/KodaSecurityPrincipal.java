@@ -1,10 +1,10 @@
-package com.koda.platform.shared.infrastructure.security;
+package com.koda.platform.shared.application.security;
 
 import com.koda.platform.shared.domain.tenant.TenantId;
 import java.util.Set;
 import java.util.UUID;
 
-public interface TenantAwarePrincipal {
+public interface KodaSecurityPrincipal {
 
     UUID userId();
 

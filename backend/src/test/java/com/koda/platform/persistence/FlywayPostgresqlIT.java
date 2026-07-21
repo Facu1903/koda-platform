@@ -2,7 +2,9 @@ package com.koda.platform.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.koda.platform.platform.licensing.infrastructure.JdbcTenantCapabilitiesRepository;
+import com.koda.platform.platform.licensing.infrastructure.JdbcTenantLicenseAdministrationRepository;
 import com.koda.platform.shared.domain.tenant.TenantId;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -47,12 +49,12 @@ class FlywayPostgresqlIT {
     @Test
     void flywayBuildsCurrentSchemaAndSeedDataOnPostgresql17() throws SQLException {
         assertThat(queryForString("select version from flyway_schema_history where success = true order by installed_rank desc limit 1"))
-            .isEqualTo("202607201500");
+            .isEqualTo("202607201600");
         assertThat(queryForInt("select count(*) from tenants")).isEqualTo(1);
         assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(10);
-        assertThat(queryForInt("select count(*) from permissions")).isEqualTo(68);
+        assertThat(queryForInt("select count(*) from permissions")).isEqualTo(70);
         assertThat(queryForInt("select count(*) from roles")).isEqualTo(7);
-        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(187);
+        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(189);
         assertThat(queryForString("select code from warehouses where tenant_id = '00000000-0000-4000-8000-000000000001'"))
             .isEqualTo("PRINCIPAL");
         assertThat(queryForString("select code from cash_registers where tenant_id = '00000000-0000-4000-8000-000000000001'"))
@@ -166,6 +168,35 @@ class FlywayPostgresqlIT {
         assertThat(hasIndex("idx_tenant_product_subscriptions_tenant_status")).isTrue();
         assertThat(hasIndex("idx_tenant_module_entitlements_tenant_status")).isTrue();
         assertThat(hasIndex("idx_tenant_feature_flags_tenant_product_enabled")).isTrue();
+    }
+
+    @Test
+    void licenseAdministrationMigrationAddsPlatformPermissions() throws SQLException {
+        assertThat(queryForInt("select count(*) from permissions where code like 'license_admin:%'")).isEqualTo(2);
+        assertThat(queryForInt("""
+            select count(*)
+            from role_permissions rp
+            join roles r on r.id = rp.role_id
+            join permissions p on p.id = rp.permission_id
+            where r.code = 'PLATFORM_SUPER_ADMIN'
+              and r.scope = 'PLATFORM'
+              and p.code like 'license_admin:%'
+            """)).isEqualTo(2);
+    }
+
+    @Test
+    void licenseAdministrationRepositoryReadsKodaPilotLicenseState() throws SQLException {
+        JdbcTenantLicenseAdministrationRepository repository = new JdbcTenantLicenseAdministrationRepository(new JdbcTemplate(dataSource()), new ObjectMapper());
+        var tenant = repository.findTenant(TenantId.fromString(KODA_TENANT_ID)).orElseThrow();
+        var administration = repository.findAdministration(tenant);
+
+        assertThat(administration.tenant().commercialName()).isEqualTo("KODA");
+        assertThat(administration.subscriptions()).hasSize(1);
+        assertThat(administration.subscriptions().getFirst().planCode()).isEqualTo("KODA_PILOT");
+        assertThat(administration.productEntitlements()).hasSize(1);
+        assertThat(administration.moduleEntitlements()).hasSize(10);
+        assertThat(administration.limitOverrides()).isEmpty();
+        assertThat(administration.featureFlags()).isEmpty();
     }
 
     @Test

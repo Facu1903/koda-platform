@@ -2,7 +2,7 @@
 
 ## Estado
 
-Modelo persistente implementado en Sprint 3 Hito 2. Calculo backend y API de capabilities implementados en Sprint 3 Hito 3. Guards backend por producto/modulo implementados en Sprint 3 Hito 4.
+Modelo persistente implementado en Sprint 3 Hito 2. Calculo backend y API de capabilities implementados en Sprint 3 Hito 3. Guards backend por producto/modulo implementados en Sprint 3 Hito 4. Administracion interna de licencias implementada en Sprint 3 Hito 5.
 
 ## Objetivo
 
@@ -17,6 +17,7 @@ Regla central: un usuario necesita permiso y el tenant necesita derecho comercia
 Modelo creado en:
 
 - `backend/src/main/resources/db/migration/V202607201500__create_saas_licensing_model.sql`
+- `backend/src/main/resources/db/migration/V202607201600__seed_license_administration_permissions.sql`
 
 La migracion se apoya sobre tablas ya existentes:
 
@@ -158,21 +159,38 @@ Implementado en Hito 4 mediante `TenantLicenseAccessGuard` y documentado en `doc
 
 El guard bloquea operaciones cuando el tenant no tiene producto o modulo habilitado, aunque el usuario tenga permisos RBAC. Los errores API son 403 con codigo `TENANT_LICENSE_ACCESS_DENIED` y motivos `PRODUCT_NOT_ENABLED` o `MODULE_NOT_ENABLED`.
 
+## Administracion interna
+
+Implementada en Hito 5 y documentada en `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md`.
+
+Endpoints internos:
+
+- `GET /api/v1/platform/tenants/{tenantId}/licenses`
+- `PATCH /api/v1/platform/tenants/{tenantId}/licenses/subscriptions/{subscriptionId}`
+- `PATCH /api/v1/platform/tenants/{tenantId}/licenses/product-entitlements/{entitlementId}`
+- `PATCH /api/v1/platform/tenants/{tenantId}/licenses/module-entitlements/{entitlementId}`
+
+Permisos:
+
+- `license_admin:read`
+- `license_admin:update`
+
+La administracion exige actor de plataforma y permiso explicito. No habilita self-service comercial para tenants.
+
 ## Validacion
 
 Validado con:
 
-- `mvn -B test`: 110 tests unitarios, 0 fallos.
-- `mvn -B verify`: 110 tests unitarios y 9 tests de integracion, 0 fallos.
-- Flyway/Testcontainers/PostgreSQL 17.10: 20 migraciones hasta `v202607201500`.
+- `mvn -B test`: 115 tests unitarios, 0 fallos.
+- `mvn -B verify`: 115 tests unitarios y 11 tests de integracion, 0 fallos.
+- Flyway/Testcontainers/PostgreSQL 17.10: 21 migraciones hasta `v202607201600`.
 
 ## Fuera de alcance actual
 
-- Administracion interna de licencias.
 - UI de capabilities.
 - Billing real.
 - Precios comerciales finales.
 
 ## Siguiente paso
 
-Hito 5 debe implementar administracion interna de licencias protegida por permisos de plataforma, con auditoria de cambios y sin permitir self-service comercial para tenants.
+Hito 6 debe implementar frontend capability shell para condicionar menus/rutas segun capabilities, sin mover la seguridad real fuera del backend.

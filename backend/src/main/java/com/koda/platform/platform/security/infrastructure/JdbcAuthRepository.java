@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -131,14 +132,20 @@ public class JdbcAuthRepository implements AuthRepository {
                 tm.id AS membership_id,
                 t.id AS tenant_id,
                 t.commercial_name AS tenant_name,
-                COALESCE(string_agg(DISTINCT r.code, ','), '') AS roles_csv,
-                COALESCE(string_agg(DISTINCT p.code, ','), '') AS permissions_csv
+                COALESCE(string_agg(DISTINCT r.code, ',') FILTER (WHERE r.code IS NOT NULL), '') AS tenant_roles_csv,
+                COALESCE(string_agg(DISTINCT platform_role.code, ',') FILTER (WHERE platform_role.code IS NOT NULL), '') AS platform_roles_csv,
+                COALESCE(string_agg(DISTINCT p.code, ',') FILTER (WHERE p.code IS NOT NULL), '') AS tenant_permissions_csv,
+                COALESCE(string_agg(DISTINCT platform_permission.code, ',') FILTER (WHERE platform_permission.code IS NOT NULL), '') AS platform_permissions_csv
             FROM tenant_memberships tm
             JOIN tenants t ON t.id = tm.tenant_id
             LEFT JOIN tenant_membership_roles tmr ON tmr.membership_id = tm.id AND tmr.tenant_id = tm.tenant_id
             LEFT JOIN roles r ON r.id = tmr.role_id AND r.tenant_id = tm.tenant_id AND r.deleted_at IS NULL
             LEFT JOIN role_permissions rp ON rp.role_id = r.id
             LEFT JOIN permissions p ON p.id = rp.permission_id
+            LEFT JOIN platform_role_assignments pra ON pra.user_id = tm.user_id
+            LEFT JOIN roles platform_role ON platform_role.id = pra.role_id AND platform_role.scope = 'PLATFORM' AND platform_role.deleted_at IS NULL
+            LEFT JOIN role_permissions platform_rp ON platform_rp.role_id = platform_role.id
+            LEFT JOIN permissions platform_permission ON platform_permission.id = platform_rp.permission_id
             WHERE tm.status = 'ACTIVE'
               AND tm.deleted_at IS NULL
               AND t.status = 'ACTIVE'
@@ -160,14 +167,18 @@ public class JdbcAuthRepository implements AuthRepository {
     }
 
     private TenantAccess mapTenantAccess(ResultSet rs, int rowNum) throws SQLException {
-        Set<String> roles = csvToSet(rs.getString("roles_csv"));
+        Set<String> platformRoles = csvToSet(rs.getString("platform_roles_csv"));
+        Set<String> roles = new HashSet<>(csvToSet(rs.getString("tenant_roles_csv")));
+        roles.addAll(platformRoles);
+        Set<String> permissions = new HashSet<>(csvToSet(rs.getString("tenant_permissions_csv")));
+        permissions.addAll(csvToSet(rs.getString("platform_permissions_csv")));
         return new TenantAccess(
             rs.getObject("membership_id", UUID.class),
             TenantId.from(rs.getObject("tenant_id", UUID.class)),
             rs.getString("tenant_name"),
-            roles,
-            csvToSet(rs.getString("permissions_csv")),
-            roles.contains("PLATFORM_SUPER_ADMIN")
+            Set.copyOf(roles),
+            Set.copyOf(permissions),
+            platformRoles.contains("PLATFORM_SUPER_ADMIN")
         );
     }
 

@@ -11,6 +11,9 @@ import com.koda.platform.platform.commercial.application.CommercialPartnerOperat
 import com.koda.platform.platform.commercial.application.CommercialPartnerVersionConflictException;
 import com.koda.platform.platform.configuration.application.CompanySettingsNotFoundException;
 import com.koda.platform.platform.configuration.application.CompanySettingsVersionConflictException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAdminNotFoundException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAdminOperationRejectedException;
+import com.koda.platform.platform.licensing.application.TenantLicenseAdminVersionConflictException;
 import com.koda.platform.platform.licensing.application.TenantCapabilitiesUnavailableException;
 import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
 import com.koda.platform.platform.purchases.application.PurchaseNotFoundException;
@@ -365,6 +368,39 @@ public class ApiExceptionHandler {
         problem.setProperty("reasonCode", exception.reasonCode());
         problem.setProperty("productCode", exception.productCode());
         problem.setProperty("moduleCode", exception.moduleCode());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(TenantLicenseAdminNotFoundException.class)
+    ProblemDetail handleTenantLicenseAdminNotFound(TenantLicenseAdminNotFoundException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
+        problem.setTitle("Tenant license administration resource not found");
+        problem.setProperty("code", "TENANT_LICENSE_ADMIN_NOT_FOUND");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(TenantLicenseAdminVersionConflictException.class)
+    ProblemDetail handleTenantLicenseAdminVersionConflict(TenantLicenseAdminVersionConflictException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Tenant license administration version conflict");
+        problem.setProperty("code", "TENANT_LICENSE_ADMIN_VERSION_CONFLICT");
+        problem.setProperty("resource", exception.resource());
+        problem.setProperty("timestamp", Instant.now());
+        problem.setProperty("path", request.getRequestURI());
+        return problem;
+    }
+
+    @ExceptionHandler(TenantLicenseAdminOperationRejectedException.class)
+    ProblemDetail handleTenantLicenseAdminOperationRejected(TenantLicenseAdminOperationRejectedException exception, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
+        problem.setTitle("Tenant license administration operation rejected");
+        problem.setProperty("code", "TENANT_LICENSE_ADMIN_OPERATION_REJECTED");
+        problem.setProperty("reasonCode", exception.reasonCode());
         problem.setProperty("timestamp", Instant.now());
         problem.setProperty("path", request.getRequestURI());
         return problem;

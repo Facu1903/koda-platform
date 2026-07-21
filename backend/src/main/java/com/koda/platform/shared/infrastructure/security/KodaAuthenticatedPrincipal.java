@@ -1,5 +1,6 @@
 package com.koda.platform.shared.infrastructure.security;
 
+import com.koda.platform.shared.application.security.KodaSecurityPrincipal;
 import com.koda.platform.shared.domain.tenant.TenantId;
 import java.util.Objects;
 import java.util.Set;
@@ -12,7 +13,7 @@ public record KodaAuthenticatedPrincipal(
     Set<String> roles,
     Set<String> permissions,
     boolean platformAdmin
-) implements TenantAwarePrincipal {
+) implements KodaSecurityPrincipal {
 
     public KodaAuthenticatedPrincipal {
         Objects.requireNonNull(userId, "User id is required");

@@ -40,7 +40,7 @@ La base funcional de Sprint 3 fue aprobada por el Product Owner el 2026-07-20 y 
 | 2. Modelo de licencias y migraciones | Completado | Tablas para planes, suscripciones, limites, overrides, feature flags y seed `KODA_PILOT`, preservando entitlements existentes. |
 | 3. Capability backend | Completado | Servicio y API `GET /api/v1/capabilities` para calcular productos, modulos, features y limites efectivos del tenant autenticado. |
 | 4. Guards backend por modulo | Completado | Bloqueo reutilizable `PRODUCT_NOT_ENABLED` y `MODULE_NOT_ENABLED` aplicado a modulos existentes. |
-| 5. Administracion interna de licencias | Pendiente | APIs plataforma para consultar y modificar suscripciones/entitlements con auditoria. |
+| 5. Administracion interna de licencias | Completado | APIs plataforma para consultar y modificar suscripciones/entitlements con permisos internos, version optimista y auditoria. |
 | 6. Frontend capability shell | Pendiente | Contexto frontend de capabilities, menus/rutas condicionados y bloqueo visual de modulos no habilitados. |
 | 7. Hardening Sprint 3 | Pendiente | Tests unitarios/integracion, validacion Flyway PostgreSQL 17, documentacion final y cierre. |
 
@@ -104,6 +104,30 @@ Validacion:
 - `mvn -B test`: 110 pruebas unitarias, 0 fallos.
 - `mvn -B verify`: 110 pruebas unitarias y 9 pruebas de integracion, 0 fallos.
 - Flyway/Testcontainers/PostgreSQL 17.10: 20 migraciones hasta `v202607201500`.
+
+## Hito 5 completado
+
+El Hito 5 implemento administracion interna de licencias para plataforma:
+
+- API interna `GET /api/v1/platform/tenants/{tenantId}/licenses`.
+- APIs `PATCH` para suscripciones, entitlements de producto y entitlements de modulo.
+- Permisos de plataforma `license_admin:read` y `license_admin:update`.
+- Migracion `V202607201600__seed_license_administration_permissions.sql`.
+- Servicio `TenantLicenseAdministrationService` con reglas de estado, version optimista y proteccion de modulos core/no toggleables.
+- Puerto `TenantLicenseAdministrationRepository` y adaptador `JdbcTenantLicenseAdministrationRepository`.
+- Auditoria de cambios en `audit_events`.
+- Contrato `KodaSecurityPrincipal` en capa de aplicacion para evitar dependencia API -> infraestructura.
+- Documentacion especifica en `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md`.
+
+Decision tecnica: no se habilita self-service comercial. La administracion queda bajo rutas `/api/v1/platform/**`, fuera del tenant context obligatorio y protegida por permisos internos de plataforma.
+
+Validacion:
+
+- `mvn -B test`: 115 pruebas unitarias, 0 fallos.
+- `mvn -B verify`: 115 pruebas unitarias y 11 pruebas de integracion, 0 fallos.
+- Flyway/Testcontainers/PostgreSQL 17.10: 21 migraciones hasta `v202607201600`.
+
+Hito 5 no implementa todavia UI de capabilities, cache distribuida de capabilities, billing real ni self-service comercial.
 
 ## Orientacion tecnica inicial
 
@@ -202,4 +226,4 @@ No se habilita self-service comercial en Sprint 3.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 5: implementar administracion interna de licencias protegida por permisos de plataforma, con auditoria de cambios y sin habilitar self-service comercial.
+Avanzar al Hito 6: implementar frontend capability shell para condicionar menus/rutas segun capabilities, manteniendo la seguridad real en backend.

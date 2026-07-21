@@ -98,14 +98,13 @@ El modelo persistente ya incluye indices para estas consultas. Si en el futuro e
 
 ## Validacion
 
-- `mvn -B test`: 110 pruebas unitarias, 0 fallos.
-- `mvn -B verify`: 110 pruebas unitarias y 9 pruebas de integracion, 0 fallos.
-- Flyway/Testcontainers/PostgreSQL 17.10: 20 migraciones hasta `v202607201500`.
+- `mvn -B test`: 115 pruebas unitarias, 0 fallos.
+- `mvn -B verify`: 115 pruebas unitarias y 11 pruebas de integracion, 0 fallos.
+- Flyway/Testcontainers/PostgreSQL 17.10: 21 migraciones hasta `v202607201600`.
 
 ## Fuera de alcance
 
-- Administracion interna de licencias.
 - UI de capabilities.
 - Cache distribuida de capabilities.
-- Auditoria de cambios de licencia.
+- Detalle de administracion interna de licencias; ver `docs/licensing/TENANT_LICENSE_ADMINISTRATION.md`.
 - Billing real.

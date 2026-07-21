@@ -71,7 +71,7 @@ Construir el primer incremento ejecutable de KODA PLATFORM y KODA ERP con seguri
 - `TenantContext` como contexto de request con tenant, usuario, roles y permisos.
 - `CurrentTenantProvider` como puerto para casos de uso.
 - `TenantContextHolder` por thread/request en infraestructura.
-- `TenantAwarePrincipal` y `KodaAuthenticatedPrincipal` como contrato para autenticacion KODA futura.
+- `KodaSecurityPrincipal` y `KodaAuthenticatedPrincipal` como contrato para autenticacion KODA futura.
 - `TenantContextAuthenticationFilter` conectado a Spring Security.
 - Bloqueo de rutas tenant-scoped cuando existe autenticacion pero no existe contexto tenant compatible, manteniendo rutas de auth y plataforma como tenant-neutrales.
 - Error estructurado `TENANT_CONTEXT_REQUIRED` para operaciones que exijan tenant.

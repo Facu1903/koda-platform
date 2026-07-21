@@ -1,5 +1,6 @@
 package com.koda.platform.shared.infrastructure.security;
 
+import com.koda.platform.shared.application.security.KodaSecurityPrincipal;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.infrastructure.tenant.TenantContextHolder;
 import jakarta.servlet.FilterChain;
@@ -21,7 +22,7 @@ public class TenantContextAuthenticationFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (isRealAuthentication(authentication) && authentication.getPrincipal() instanceof TenantAwarePrincipal principal) {
+            if (isRealAuthentication(authentication) && authentication.getPrincipal() instanceof KodaSecurityPrincipal principal) {
                 TenantContextHolder.set(new TenantContext(
                     principal.tenantId(),
                     principal.userId(),

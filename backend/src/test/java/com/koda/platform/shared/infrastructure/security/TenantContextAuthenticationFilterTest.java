@@ -58,7 +58,7 @@ class TenantContextAuthenticationFilterTest {
     }
 
     @Test
-    void rejectsAuthenticatedTenantScopedApiRequestWithoutTenantAwarePrincipal() throws ServletException, IOException {
+    void rejectsAuthenticatedTenantScopedApiRequestWithoutKodaSecurityPrincipal() throws ServletException, IOException {
         SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken("basic-user", null, "ROLE_USER"));
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/v1/products");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -72,7 +72,7 @@ class TenantContextAuthenticationFilterTest {
     }
 
     @Test
-    void allowsTenantNeutralActuatorPathWithoutTenantAwarePrincipal() throws ServletException, IOException {
+    void allowsTenantNeutralActuatorPathWithoutKodaSecurityPrincipal() throws ServletException, IOException {
         SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken("basic-user", null, "ROLE_USER"));
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/actuator/health");
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -86,7 +86,7 @@ class TenantContextAuthenticationFilterTest {
     }
 
     @Test
-    void allowsPlatformApiPathWithoutTenantAwarePrincipal() throws ServletException, IOException {
+    void allowsPlatformApiPathWithoutKodaSecurityPrincipal() throws ServletException, IOException {
         SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken("platform-user", null, "ROLE_PLATFORM"));
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/v1/platform/tenants");
         MockHttpServletResponse response = new MockHttpServletResponse();
