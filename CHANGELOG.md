@@ -4,7 +4,7 @@ Todas las modificaciones relevantes de KODA PLATFORM se documentaran en este arc
 
 El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patch>` hasta la primera version comercial estable.
 
-## [0.3.0] - Unreleased
+## [0.3.0] - 2026-07-21
 
 ### Added
 
@@ -26,6 +26,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado shell frontend de capabilities con contexto React, cliente API y navegacion/rutas condicionadas por modulos habilitados.
 - Agregada documentacion del shell frontend en `docs/licensing/FRONTEND_CAPABILITY_SHELL.md`.
 - Agregados reportes de hardening y cierre tecnico de Sprint 3 en `docs/sprints/SPRINT_3_HARDENING_REPORT.md` y `docs/sprints/SPRINT_3_CLOSURE_REPORT.md`.
+- Agregada aprobacion funcional final del Product Owner en `docs/sprints/SPRINT_3_APPROVAL.md`.
 
 ### Changed
 
@@ -36,6 +37,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Ajustada autenticacion para incluir roles/permisos de plataforma en el principal JWT mediante contrato de aplicacion `KodaSecurityPrincipal`.
 - Reemplazado el dashboard frontend estatico por un shell operativo que consume `GET /api/v1/capabilities`.
 - Estabilizado test frontend del capability shell para evitar timeout por consultas de rol demasiado pesadas sobre Material UI.
+- Actualizado el estado de Sprint 3 a cerrado y aprobado funcionalmente por el Product Owner.
 
 ### Verified
 

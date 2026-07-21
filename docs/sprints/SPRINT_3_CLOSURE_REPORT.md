@@ -2,7 +2,7 @@
 
 ## Estado
 
-Cierre tecnico completado el 2026-07-21. Aprobacion funcional final pendiente del Product Owner.
+Cierre tecnico y aprobacion funcional final completados el 2026-07-21 por el Product Owner.
 
 ## Objetivo
 
@@ -96,12 +96,12 @@ Migraciones principales de Sprint 3:
 
 ## Aprobacion funcional final
 
-Pendiente del Product Owner.
+El Product Owner aprueba formalmente el cierre funcional del Sprint 3 el 2026-07-21. La aprobacion acepta el alcance entregado y los riesgos abiertos documentados para backlog.
 
-La aprobacion deberia aceptar el alcance entregado y los riesgos abiertos documentados para backlog.
+Ver acta en `docs/sprints/SPRINT_3_APPROVAL.md`.
 
 ## Decision de cierre
 
 Sprint 3 cumple el objetivo tecnico acordado: KODA PLATFORM queda preparada para controlar acceso por producto, modulo y tenant de forma centralizada, auditable y compatible con evolucion comercial futura.
 
-El siguiente paso recomendado, luego de la aprobacion funcional, es definir Sprint 4 con foco en escalabilidad, observabilidad y endurecimiento SaaS operativo.
+El siguiente paso recomendado es definir Sprint 4 con foco en escalabilidad, observabilidad y endurecimiento SaaS operativo.

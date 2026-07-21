@@ -204,4 +204,4 @@ Validado con:
 
 ## Siguiente paso
 
-Solicitar aprobacion funcional final del Product Owner para cerrar Sprint 3. Luego definir Sprint 4 con foco recomendado en escalabilidad, observabilidad y endurecimiento SaaS operativo.
+Definir Sprint 4 con foco recomendado en escalabilidad, observabilidad y endurecimiento SaaS operativo.

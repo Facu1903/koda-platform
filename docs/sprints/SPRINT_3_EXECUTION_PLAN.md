@@ -170,7 +170,7 @@ Validacion final:
 - `npm.cmd run lint`: 0 errores.
 - `npm.cmd run build`: TypeScript y Vite correctos.
 
-Decision tecnica: Sprint 3 queda tecnicamente listo para aprobacion funcional final del Product Owner. No se crea acta de aprobacion hasta que el Product Owner la confirme explicitamente.
+Decision funcional: Sprint 3 queda cerrado y aprobado funcionalmente por el Product Owner el 2026-07-21. Ver `docs/sprints/SPRINT_3_APPROVAL.md`.
 
 ## Orientacion tecnica inicial
 
@@ -269,4 +269,4 @@ No se habilita self-service comercial en Sprint 3.
 
 ## Siguiente paso recomendado
 
-Solicitar aprobacion funcional final del Product Owner para cerrar Sprint 3. Luego definir Sprint 4 con foco recomendado en escalabilidad, observabilidad y endurecimiento SaaS operativo.
+Definir Sprint 4 con foco recomendado en escalabilidad, observabilidad y endurecimiento SaaS operativo.
