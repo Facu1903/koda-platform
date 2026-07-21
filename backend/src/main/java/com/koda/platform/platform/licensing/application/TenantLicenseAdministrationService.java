@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 public class TenantLicenseAdministrationService {
@@ -18,9 +20,11 @@ public class TenantLicenseAdministrationService {
     private static final Set<String> ENTITLEMENT_STATUSES = Set.of("ACTIVE", "SUSPENDED", "EXPIRED");
 
     private final TenantLicenseAdministrationRepository repository;
+    private final TenantCapabilitiesCache capabilitiesCache;
 
-    public TenantLicenseAdministrationService(TenantLicenseAdministrationRepository repository) {
+    public TenantLicenseAdministrationService(TenantLicenseAdministrationRepository repository, TenantCapabilitiesCache capabilitiesCache) {
         this.repository = repository;
+        this.capabilitiesCache = capabilitiesCache;
     }
 
     @Transactional(readOnly = true)
@@ -51,6 +55,7 @@ public class TenantLicenseAdministrationService {
             .orElseThrow(() -> new TenantLicenseAdminVersionConflictException("tenant_product_subscription"));
         audit(tenantId, actor.userId(), "license.subscription.update", "tenant_product_subscription", subscriptionId, metadata,
             beforeAfterDetails(before.status(), before.validUntil(), before.version(), after.status(), after.validUntil(), after.version()));
+        evictCapabilitiesAfterCommit(tenantId);
         return findTenantLicenses(tenantId);
     }
 
@@ -70,6 +75,7 @@ public class TenantLicenseAdministrationService {
             .orElseThrow(() -> new TenantLicenseAdminVersionConflictException("tenant_product_entitlement"));
         audit(tenantId, actor.userId(), "license.product_entitlement.update", "tenant_product_entitlement", entitlementId, metadata,
             beforeAfterDetails(before.status(), before.validUntil(), before.version(), after.status(), after.validUntil(), after.version()));
+        evictCapabilitiesAfterCommit(tenantId);
         return findTenantLicenses(tenantId);
     }
 
@@ -89,6 +95,7 @@ public class TenantLicenseAdministrationService {
             .orElseThrow(() -> new TenantLicenseAdminVersionConflictException("tenant_module_entitlement"));
         audit(tenantId, actor.userId(), "license.module_entitlement.update", "tenant_module_entitlement", entitlementId, metadata,
             beforeAfterDetails(before.status(), before.validUntil(), before.version(), after.status(), after.validUntil(), after.version()));
+        evictCapabilitiesAfterCommit(tenantId);
         return findTenantLicenses(tenantId);
     }
 
@@ -147,6 +154,19 @@ public class TenantLicenseAdministrationService {
         if (validUntil != null && !validUntil.isAfter(validFrom)) {
             throw new TenantLicenseAdminOperationRejectedException("INVALID_VALIDITY_WINDOW");
         }
+    }
+
+    private void evictCapabilitiesAfterCommit(TenantId tenantId) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            capabilitiesCache.evict(tenantId);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                capabilitiesCache.evict(tenantId);
+            }
+        });
     }
 
     private void audit(

@@ -106,6 +106,8 @@ Conceptos:
 
 La activacion de modulos debe centralizarse. No se aceptan verificaciones dispersas tipo `if tenant has module` regadas por todo el codigo.
 
+La resolucion de capabilities puede cachearse con TTL corto e invalidacion explicita para reducir lecturas repetidas del shell SaaS. El cache no reemplaza la fuente de verdad ni la autorizacion backend: los guards de licencia deben mantener una verificacion autoritativa o una estrategia de invalidacion mas fuerte antes de cachearse.
+
 ## 5. Multi-tenancy
 
 ### Estrategia inicial

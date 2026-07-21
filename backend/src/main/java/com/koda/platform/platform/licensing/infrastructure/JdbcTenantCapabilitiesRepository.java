@@ -214,7 +214,9 @@ public class JdbcTenantCapabilitiesRepository implements TenantCapabilitiesRepos
                    CASE WHEN tenant_limit.id IS NULL THEN plan_limit.limit_value ELSE tenant_limit.limit_value END AS limit_value,
                    CASE WHEN tenant_limit.id IS NULL THEN plan_limit.unlimited ELSE tenant_limit.unlimited END AS unlimited,
                    CASE WHEN tenant_limit.id IS NULL THEN plan_limit.unit ELSE tenant_limit.unit END AS unit,
-                   CASE WHEN tenant_limit.id IS NULL THEN 'PLAN' ELSE 'TENANT_OVERRIDE' END AS source
+                   CASE WHEN tenant_limit.id IS NULL THEN 'PLAN' ELSE 'TENANT_OVERRIDE' END AS source,
+                   tenant_limit.valid_from,
+                   tenant_limit.valid_until
             FROM tenant_product_subscriptions s
             JOIN platform_products p ON p.id = s.product_id AND p.status = 'ACTIVE'
             JOIN product_plans plan ON plan.id = s.plan_id AND plan.product_id = s.product_id AND plan.status = 'ACTIVE'
@@ -291,7 +293,9 @@ public class JdbcTenantCapabilitiesRepository implements TenantCapabilitiesRepos
             nullableValue,
             rs.getBoolean("unlimited"),
             rs.getString("unit"),
-            rs.getString("source")
+            rs.getString("source"),
+            instant(rs, "valid_from"),
+            instant(rs, "valid_until")
         );
     }
 

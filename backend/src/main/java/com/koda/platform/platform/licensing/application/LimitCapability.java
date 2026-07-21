@@ -1,13 +1,21 @@
 package com.koda.platform.platform.licensing.application;
 
+import java.time.Instant;
+
 public record LimitCapability(
     String productCode,
     String code,
     Long value,
     boolean unlimited,
     String unit,
-    String source
+    String source,
+    Instant validFrom,
+    Instant validUntil
 ) {
+
+    public LimitCapability(String productCode, String code, Long value, boolean unlimited, String unit, String source) {
+        this(productCode, code, value, unlimited, unit, source, null, null);
+    }
 
     public LimitCapability {
         requireText(productCode, "Product code is required");

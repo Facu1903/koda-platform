@@ -7,9 +7,12 @@ import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -24,6 +27,7 @@ class TenantCapabilitiesServiceTest {
     private final UUID userId = UUID.fromString("00000000-0000-4000-8000-000000000002");
     private FakeCurrentTenantProvider currentTenantProvider;
     private FakeTenantCapabilitiesRepository repository;
+    private FakeTenantCapabilitiesCache cache;
     private TenantCapabilitiesService service;
 
     @BeforeEach
@@ -31,7 +35,14 @@ class TenantCapabilitiesServiceTest {
         currentTenantProvider = new FakeCurrentTenantProvider();
         currentTenantProvider.context = Optional.of(new TenantContext(tenantId, userId, Set.of("SALES_USER"), Set.of(), false));
         repository = new FakeTenantCapabilitiesRepository();
-        service = new TenantCapabilitiesService(repository, currentTenantProvider, Clock.fixed(FIXED_NOW, ZoneOffset.UTC));
+        cache = new FakeTenantCapabilitiesCache();
+        TenantCapabilitiesResolver resolver = new TenantCapabilitiesResolver(
+            repository,
+            cache,
+            Clock.fixed(FIXED_NOW, ZoneOffset.UTC),
+            Duration.ofSeconds(30)
+        );
+        service = new TenantCapabilitiesService(resolver, currentTenantProvider);
     }
 
     @Test
@@ -49,6 +60,26 @@ class TenantCapabilitiesServiceTest {
         assertThat(capabilities.limits()).extracting(LimitCapability::code).containsExactly("MAX_USERS");
         assertThat(capabilities.featureFlags()).extracting(FeatureFlagCapability::code).containsExactly("NEW_NAVIGATION");
         assertThat(repository.lastCalculatedAt).isEqualTo(FIXED_NOW);
+    }
+
+    @Test
+    void currentTenantCapabilitiesUsesCachedSnapshotWithinTtl() {
+        TenantCapabilities first = service.currentTenantCapabilities();
+        TenantCapabilities second = service.currentTenantCapabilities();
+
+        assertThat(second).isSameAs(first);
+        assertThat(repository.findTenantCalls).isEqualTo(1);
+        assertThat(repository.findEnabledProductsCalls).isEqualTo(1);
+        assertThat(cache.lastExpiresAt).isEqualTo(FIXED_NOW.plusSeconds(30));
+    }
+
+    @Test
+    void cacheExpirationUsesNearestCapabilityValidityWindow() {
+        repository.moduleValidUntil = FIXED_NOW.plusSeconds(5);
+
+        service.currentTenantCapabilities();
+
+        assertThat(cache.lastExpiresAt).isEqualTo(FIXED_NOW.plusSeconds(5));
     }
 
     @Test
@@ -78,17 +109,53 @@ class TenantCapabilitiesServiceTest {
         }
     }
 
+    private static class FakeTenantCapabilitiesCache implements TenantCapabilitiesCache {
+        private final Map<TenantId, CacheEntry> entries = new HashMap<>();
+        private Instant lastExpiresAt;
+
+        @Override
+        public Optional<TenantCapabilities> find(TenantId tenantId, Instant now) {
+            CacheEntry entry = entries.get(tenantId);
+            if (entry == null || !entry.expiresAt().isAfter(now)) {
+                entries.remove(tenantId);
+                return Optional.empty();
+            }
+            return Optional.of(entry.capabilities());
+        }
+
+        @Override
+        public void put(TenantCapabilities capabilities, Instant now, Instant expiresAt) {
+            lastExpiresAt = expiresAt;
+            if (expiresAt.isAfter(now)) {
+                entries.put(capabilities.tenantId(), new CacheEntry(capabilities, expiresAt));
+            }
+        }
+
+        @Override
+        public void evict(TenantId tenantId) {
+            entries.remove(tenantId);
+        }
+
+        private record CacheEntry(TenantCapabilities capabilities, Instant expiresAt) {
+        }
+    }
+
     private class FakeTenantCapabilitiesRepository implements TenantCapabilitiesRepository {
         private TenantCapabilityTenant tenant = new TenantCapabilityTenant(tenantId, "ACTIVE");
         private Instant lastCalculatedAt;
+        private Instant moduleValidUntil;
+        private int findTenantCalls;
+        private int findEnabledProductsCalls;
 
         @Override
         public Optional<TenantCapabilityTenant> findTenant(TenantId tenantId) {
+            findTenantCalls++;
             return Optional.ofNullable(tenant);
         }
 
         @Override
         public List<ProductCapability> findEnabledProducts(TenantId tenantId, Instant calculatedAt) {
+            findEnabledProductsCalls++;
             lastCalculatedAt = calculatedAt;
             return List.of(new ProductCapability(
                 UUID.fromString("10000000-0000-4000-8000-000000000001"),
@@ -112,7 +179,7 @@ class TenantCapabilitiesServiceTest {
         public List<ModuleCapability> findEnabledModules(TenantId tenantId, Instant calculatedAt) {
             return List.of(
                 new ModuleCapability(UUID.fromString("10000000-0000-4000-8000-000000000108"), "KODA_ERP", "SALES", "Sales", true, false, true,
-                    "ACTIVE", Instant.parse("2026-07-20T00:00:00Z"), null),
+                    "ACTIVE", Instant.parse("2026-07-20T00:00:00Z"), moduleValidUntil),
                 new ModuleCapability(UUID.fromString("10000000-0000-4000-8000-000000000104"), "KODA_ERP", "STOCK", "Stock", true, false, true,
                     "ACTIVE", Instant.parse("2026-07-20T00:00:00Z"), null)
             );

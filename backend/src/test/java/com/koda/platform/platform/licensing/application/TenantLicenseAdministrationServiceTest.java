@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.domain.tenant.TenantId;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,12 +23,14 @@ class TenantLicenseAdministrationServiceTest {
     private final UUID productEntitlementId = UUID.fromString("20000000-0000-4000-8000-000000000001");
     private final UUID moduleEntitlementId = UUID.fromString("20000000-0000-4000-8000-000000000108");
     private FakeTenantLicenseAdministrationRepository repository;
+    private FakeTenantCapabilitiesCache capabilitiesCache;
     private TenantLicenseAdministrationService service;
 
     @BeforeEach
     void setUp() {
         repository = new FakeTenantLicenseAdministrationRepository();
-        service = new TenantLicenseAdministrationService(repository);
+        capabilitiesCache = new FakeTenantCapabilitiesCache();
+        service = new TenantLicenseAdministrationService(repository, capabilitiesCache);
     }
 
     @Test
@@ -41,7 +44,7 @@ class TenantLicenseAdministrationServiceTest {
     }
 
     @Test
-    void updateSubscriptionNormalizesStatusUsesOptimisticVersionAndAuditsChange() {
+    void updateSubscriptionNormalizesStatusUsesOptimisticVersionAuditsAndEvictsCache() {
         PlatformLicenseAdminActor actor = platformActor(PlatformLicenseAdminPermissions.UPDATE);
         Instant validUntil = Instant.parse("2026-12-31T23:59:59Z");
 
@@ -59,10 +62,11 @@ class TenantLicenseAdministrationServiceTest {
         assertThat(repository.auditAction).isEqualTo("license.subscription.update");
         assertThat(repository.auditDetails).containsEntry("beforeStatus", "ACTIVE").containsEntry("afterStatus", "SUSPENDED");
         assertThat(administration.subscriptions()).hasSize(1);
+        assertThat(capabilitiesCache.evictedTenantIds).containsExactly(tenantId);
     }
 
     @Test
-    void staleSubscriptionVersionIsRejectedAsConflict() {
+    void staleSubscriptionVersionIsRejectedAsConflictAndDoesNotEvictCache() {
         repository.failSubscriptionUpdate = true;
 
         assertThatThrownBy(() -> service.updateSubscription(
@@ -74,6 +78,7 @@ class TenantLicenseAdministrationServiceTest {
         )).isInstanceOf(TenantLicenseAdminVersionConflictException.class)
             .satisfies(exception -> assertThat(((TenantLicenseAdminVersionConflictException) exception).resource())
                 .isEqualTo("tenant_product_subscription"));
+        assertThat(capabilitiesCache.evictedTenantIds).isEmpty();
     }
 
     @Test
@@ -104,10 +109,11 @@ class TenantLicenseAdministrationServiceTest {
         )).isInstanceOf(TenantLicenseAdminOperationRejectedException.class)
             .satisfies(exception -> assertThat(((TenantLicenseAdminOperationRejectedException) exception).reasonCode())
                 .isEqualTo("CORE_MODULE_PROTECTED"));
+        assertThat(capabilitiesCache.evictedTenantIds).isEmpty();
     }
 
     @Test
-    void productEntitlementUpdateUsesDedicatedAuditAction() {
+    void productEntitlementUpdateUsesDedicatedAuditActionAndEvictsCache() {
         service.updateProductEntitlement(
             tenantId,
             productEntitlementId,
@@ -119,10 +125,44 @@ class TenantLicenseAdministrationServiceTest {
         assertThat(repository.productEntitlement.status()).isEqualTo("EXPIRED");
         assertThat(repository.auditAction).isEqualTo("license.product_entitlement.update");
         assertThat(repository.auditResourceType).isEqualTo("tenant_product_entitlement");
+        assertThat(capabilitiesCache.evictedTenantIds).containsExactly(tenantId);
+    }
+
+    @Test
+    void moduleEntitlementUpdateEvictsCapabilitiesCache() {
+        service.updateModuleEntitlement(
+            tenantId,
+            moduleEntitlementId,
+            new UpdateTenantModuleEntitlementCommand(0, "SUSPENDED", null),
+            platformActor(PlatformLicenseAdminPermissions.UPDATE),
+            null
+        );
+
+        assertThat(repository.moduleEntitlement.status()).isEqualTo("SUSPENDED");
+        assertThat(repository.auditAction).isEqualTo("license.module_entitlement.update");
+        assertThat(capabilitiesCache.evictedTenantIds).containsExactly(tenantId);
     }
 
     private PlatformLicenseAdminActor platformActor(String permission) {
         return new PlatformLicenseAdminActor(actorUserId, Set.of(permission), true);
+    }
+
+    private static final class FakeTenantCapabilitiesCache implements TenantCapabilitiesCache {
+        private final List<TenantId> evictedTenantIds = new ArrayList<>();
+
+        @Override
+        public Optional<TenantCapabilities> find(TenantId tenantId, Instant now) {
+            return Optional.empty();
+        }
+
+        @Override
+        public void put(TenantCapabilities capabilities, Instant now, Instant expiresAt) {
+        }
+
+        @Override
+        public void evict(TenantId tenantId) {
+            evictedTenantIds.add(tenantId);
+        }
     }
 
     private final class FakeTenantLicenseAdministrationRepository implements TenantLicenseAdministrationRepository {

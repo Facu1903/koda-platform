@@ -41,7 +41,7 @@ La base funcional de Sprint 4 fue aprobada por el Product Owner el 2026-07-21 y 
 | 3. Health checks operativos | Completado | Liveness/readiness, DB health, Flyway/schema health y documentacion de diagnostico. |
 | 4. Metricas base | Completado | Actuator/Micrometer expone metricas HTTP/runtime y lineamientos de cardinalidad. |
 | 5. Performance e indices criticos | Completado | Revision documentada de queries de capabilities, guards, auditoria y reportes; indices aplicados donde corresponde. |
-| 6. Cache seguro de capabilities | Pendiente | Cache por request/tenant con invalidacion segura o decision tecnica documentada si no aplica aun. |
+| 6. Cache seguro de capabilities | Completado | Cache local por tenant con TTL conservador, invalidacion administrativa y guards backend sin cache. |
 | 7. Auditoria operativa | Pendiente | Estrategia inicial de retencion, crecimiento y preparacion para particionamiento futuro. |
 | 8. Hardening Sprint 4 | Pendiente | Tests, validacion completa, documentacion final, reporte de cierre y aprobacion funcional. |
 
@@ -138,6 +138,26 @@ Decision tecnica: no se agregaron indices para cada filtro posible. Se evito ind
 Validacion:
 
 - `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify`
+- `mvn -B verify`
+
+## Hito 6 completado
+
+El Hito 6 implementa cache seguro para la resolucion de capabilities:
+
+- Nuevo `TenantCapabilitiesResolver` para centralizar calculo y cache de capabilities.
+- Cache local en memoria por tenant mediante `TenantCapabilitiesCache`.
+- TTL configurable con default de 30 segundos.
+- Limite configurable de 10000 tenants cacheados por instancia.
+- Expiracion real acotada por el proximo `valid_until` efectivo conocido.
+- Invalidacion explicita post-commit despues de actualizaciones exitosas de suscripcion, entitlement de producto y entitlement de modulo.
+- Metrica `koda.capabilities.cache.requests` con tag estable `result`.
+- Documento tecnico `docs/licensing/CAPABILITIES_CACHE.md`.
+
+Decision tecnica: los guards backend de licencia no usan este cache en Sprint 4. Permanecen consultando la fuente autoritativa para evitar que una licencia suspendida siga permitiendo operaciones por una entrada cacheada vieja.
+
+Validacion:
+
+- `mvn -B "-Dtest=TenantCapabilitiesServiceTest,TenantLicenseAdministrationServiceTest,InMemoryTenantCapabilitiesCacheTest" test`
 - `mvn -B verify`
 
 ## Orientacion tecnica inicial
@@ -264,4 +284,4 @@ No implementar particionamiento sin validacion tecnica y necesidad clara.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 6: cache seguro de capabilities con invalidacion conservadora ante cambios administrativos de licencia.
+Avanzar al Hito 7: auditoria operativa, estrategia de retencion, crecimiento e impacto futuro de particionamiento.

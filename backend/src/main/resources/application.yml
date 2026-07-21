@@ -82,3 +82,8 @@ koda:
       owner-password: ${KODA_BOOTSTRAP_OWNER_PASSWORD:}
       owner-display-name: ${KODA_BOOTSTRAP_OWNER_DISPLAY_NAME:KODA Owner}
       tenant-id: ${KODA_BOOTSTRAP_TENANT_ID:00000000-0000-4000-8000-000000000001}
+  licensing:
+    capabilities-cache:
+      enabled: ${KODA_CAPABILITIES_CACHE_ENABLED:true}
+      ttl: ${KODA_CAPABILITIES_CACHE_TTL:30s}
+      max-size: ${KODA_CAPABILITIES_CACHE_MAX_SIZE:10000}
