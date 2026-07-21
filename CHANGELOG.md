@@ -4,6 +4,17 @@ Todas las modificaciones relevantes de KODA PLATFORM se documentaran en este arc
 
 El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patch>` hasta la primera version comercial estable.
 
+## [0.4.0] - Unreleased
+
+### Added
+
+- Agregada y aprobada base funcional de Sprint 4 en `docs/sprints/SPRINT_4_FUNCTIONAL_BASELINE.md`.
+- Agregado plan de ejecucion de Sprint 4 en `docs/sprints/SPRINT_4_EXECUTION_PLAN.md`.
+
+### Changed
+
+- Actualizado README y roadmap para iniciar Sprint 4 como Escalabilidad, Observabilidad y Endurecimiento SaaS Operativo.
+
 ## [0.3.0] - 2026-07-21
 
 ### Added

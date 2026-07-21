@@ -156,19 +156,25 @@ Implementar licencias, modulos y control de acceso por empresa para convertir la
 
 ## 6. Sprint 4 - Escalabilidad y observabilidad
 
+### Estado
+
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-21. Ver `docs/sprints/SPRINT_4_FUNCTIONAL_BASELINE.md` y `docs/sprints/SPRINT_4_EXECUTION_PLAN.md`.
+
 ### Objetivo
 
-Endurecer la plataforma para operacion SaaS real.
+Endurecer la plataforma para operacion SaaS real: observabilidad, trazabilidad, health checks, metricas, performance, cache seguro y auditoria operativa.
 
-### Alcance candidato
+### Alcance aprobado
 
+- Correlation/request ID.
 - Logs estructurados avanzados.
 - Metricas.
 - Health checks expandidos.
 - Trazabilidad.
-- Pruebas de carga iniciales.
 - Optimizacion de indices.
+- Cache tecnico seguro para capabilities.
 - Reglas de retencion de auditoria.
+- Hardening y documentacion.
 
 ## 7. Sprint 5 - Personalizacion avanzada por tenant
 

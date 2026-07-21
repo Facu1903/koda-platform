@@ -6,13 +6,15 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1 cerrado. Sprint 2 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-20. Sprint 3 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-21.
+Sprint 1 cerrado. Sprint 2 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-20. Sprint 3 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-21. Sprint 4 definido y aprobado como Escalabilidad, Observabilidad y Endurecimiento SaaS Operativo.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
 Sprint 2 queda cerrado y aprobado funcionalmente. La base funcional minima de operaciones comerciales fue aprobada por el Product Owner el 2026-07-17 y queda documentada en `docs/sprints/SPRINT_2_FUNCTIONAL_BASELINE.md`. El Hito 2 agrego CI/CD minimo en GitHub Actions y pruebas de persistencia con PostgreSQL 17 real mediante Testcontainers. El Hito 3 agrego backend tenant-scoped de clientes y proveedores sobre una base comun de terceros comerciales. El Hito 4 agrego caja inicial con apertura, cierre, movimientos manuales, permisos, auditoria y migraciones tenant-scoped. El Hito 5 agrego ventas basicas con borradores, confirmacion, anulacion, numeracion interna, impacto en stock/caja y auditoria. El Hito 6 agrego compras basicas con proveedor obligatorio, numeracion interna, ingreso de stock, pago opcional contra caja y reversas auditadas. El Hito 7 agrego reportes operativos y dashboard inicial con ventas, compras, caja y stock. El Hito 8 endurecio errores API, pruebas, documentacion y cierre tecnico del sprint.
 
 Sprint 3 queda cerrado y aprobado funcionalmente. Construyo la fundacion SaaS comercial: planes, suscripciones, entitlements efectivos, limites, capabilities y guards backend/frontend por modulo. El Hito 2 implemento el modelo persistente de licencias con plan `KODA_PILOT`, suscripcion del tenant KODA, limites, feature flags e indices para capabilities. El Hito 3 agrego el backend de capabilities tenant-scoped con endpoint `GET /api/v1/capabilities`, servicio de aplicacion, repositorio JDBC y manejo de errores para tenants inactivos o inexistentes. El Hito 4 agrego guards backend por producto/modulo para bloquear operaciones cuando el tenant no tiene habilitado el modulo, separando licenciamiento SaaS de permisos RBAC. El Hito 5 agrego administracion interna de licencias bajo `/api/v1/platform/tenants/{tenantId}/licenses`, con permisos `license_admin:*`, version optimista y auditoria de cambios. El Hito 6 agrego el shell frontend de capabilities para condicionar menus/rutas y bloquear visualmente modulos sin licencia activa. El Hito 7 completo el hardening tecnico, validacion completa y reportes de cierre.
+
+Sprint 4 queda definido y aprobado para preparar la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final.
 
 ## Documentos principales
 
@@ -37,6 +39,8 @@ Sprint 3 queda cerrado y aprobado funcionalmente. Construyo la fundacion SaaS co
 - [Sprint 3 Hardening Report](docs/sprints/SPRINT_3_HARDENING_REPORT.md)
 - [Sprint 3 Closure Report](docs/sprints/SPRINT_3_CLOSURE_REPORT.md)
 - [Sprint 3 Product Owner Approval](docs/sprints/SPRINT_3_APPROVAL.md)
+- [Sprint 4 Functional Baseline](docs/sprints/SPRINT_4_FUNCTIONAL_BASELINE.md)
+- [Sprint 4 Execution Plan](docs/sprints/SPRINT_4_EXECUTION_PLAN.md)
 - [SaaS Licensing Model](docs/licensing/SAAS_LICENSING_MODEL.md)
 - [Tenant License Guards](docs/licensing/TENANT_LICENSE_GUARDS.md)
 - [Tenant License Administration](docs/licensing/TENANT_LICENSE_ADMINISTRATION.md)
