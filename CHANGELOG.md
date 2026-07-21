@@ -14,17 +14,25 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado contexto MDC de observabilidad con `correlationId`, metodo HTTP, path normalizado, status, duracion, `tenantId`, `userId` y `platformAdmin` cuando correspondan.
 - Agregada documentacion tecnica de correlation ID y logs estructurados en `docs/observability/CORRELATION_AND_LOGGING.md`.
 - Agregadas pruebas unitarias de correlation ID, limpieza de MDC, evento de cierre HTTP y enriquecimiento de Tenant Context.
+- Agregado health indicator `kodaSchema` para verificar estado Flyway/schema sin exponer mensajes internos.
+- Agregados endpoints operativos documentados de liveness/readiness con componentes seguros.
+- Agregada prueba de integracion `ActuatorHealthPostgresqlIT` con PostgreSQL 17 real para validar readiness con `db` y `kodaSchema`.
+- Agregada documentacion de health checks operativos en `docs/observability/HEALTH_CHECKS.md`.
 
 ### Changed
 
 - Actualizado README y roadmap para iniciar Sprint 4 como Escalabilidad, Observabilidad y Endurecimiento SaaS Operativo.
 - Habilitada inclusion explicita de MDC en logs JSON de Logstash Encoder.
 - Enriquecido `TenantContextAuthenticationFilter` para publicar contexto tenant/user en MDC sin cambiar reglas de autorizacion.
+- Configurado Actuator Health con `show-details: never`, `show-components: always`, validacion estricta de miembros, grupos `liveness` y `readiness`, y readiness dependiente de PostgreSQL y schema.
+- Actualizada seguridad para permitir `/actuator/health/**` sin autenticacion y sin exponer detalles sensibles.
 
 ### Verified
 
 - `mvn -B '-Dtest=CorrelationIdFilterTest,TenantContextAuthenticationFilterTest' test` ejecutado correctamente en backend con 9 pruebas.
 - `mvn -B test` ejecutado correctamente en backend con 120 pruebas unitarias.
+- `mvn -B '-Dtest=KodaSchemaHealthIndicatorTest,KodaPlatformApplicationTests' test` ejecutado correctamente en backend con 6 pruebas.
+- `mvn -B verify` ejecutado correctamente en backend con 125 pruebas unitarias y 13 pruebas de integracion.
 
 ## [0.3.0] - 2026-07-21
 

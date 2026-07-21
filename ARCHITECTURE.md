@@ -238,10 +238,12 @@ Desde el inicio:
 - `correlationId` obligatorio por request HTTP mediante `X-Correlation-ID`.
 - MDC/log context con `correlationId`, tenant, usuario, metodo, path normalizado, status y duracion.
 - Separacion clara entre errores esperados y fallas inesperadas.
-- Health checks.
+- Health checks separados para liveness, readiness, PostgreSQL y schema/Flyway.
 - Metricas preparadas para evolucion posterior.
 
 El correlation ID no participa en autorizacion y no reemplaza auditoria persistente. Su funcion es diagnostico tecnico. La sanitizacion de logs es obligatoria: no se loguean tokens, passwords, secretos, cuerpos completos ni headers sensibles.
+
+Los health checks publicos no deben exponer detalles sensibles. `liveness` mide proceso vivo; `readiness` decide si la instancia puede recibir trafico e incluye PostgreSQL y schema actualizado.
 
 ## 11. Frontend
 

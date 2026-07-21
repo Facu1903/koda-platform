@@ -14,7 +14,7 @@ Sprint 2 queda cerrado y aprobado funcionalmente. La base funcional minima de op
 
 Sprint 3 queda cerrado y aprobado funcionalmente. Construyo la fundacion SaaS comercial: planes, suscripciones, entitlements efectivos, limites, capabilities y guards backend/frontend por modulo. El Hito 2 implemento el modelo persistente de licencias con plan `KODA_PILOT`, suscripcion del tenant KODA, limites, feature flags e indices para capabilities. El Hito 3 agrego el backend de capabilities tenant-scoped con endpoint `GET /api/v1/capabilities`, servicio de aplicacion, repositorio JDBC y manejo de errores para tenants inactivos o inexistentes. El Hito 4 agrego guards backend por producto/modulo para bloquear operaciones cuando el tenant no tiene habilitado el modulo, separando licenciamiento SaaS de permisos RBAC. El Hito 5 agrego administracion interna de licencias bajo `/api/v1/platform/tenants/{tenantId}/licenses`, con permisos `license_admin:*`, version optimista y auditoria de cambios. El Hito 6 agrego el shell frontend de capabilities para condicionar menus/rutas y bloquear visualmente modulos sin licencia activa. El Hito 7 completo el hardening tecnico, validacion completa y reportes de cierre.
 
-Sprint 4 queda definido y aprobado para preparar la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial.
+Sprint 4 queda definido y aprobado para preparar la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial. El Hito 3 agrego liveness/readiness, health de PostgreSQL y health de schema/Flyway mediante `kodaSchema`.
 
 ## Documentos principales
 
@@ -42,6 +42,7 @@ Sprint 4 queda definido y aprobado para preparar la plataforma para operacion Sa
 - [Sprint 4 Functional Baseline](docs/sprints/SPRINT_4_FUNCTIONAL_BASELINE.md)
 - [Sprint 4 Execution Plan](docs/sprints/SPRINT_4_EXECUTION_PLAN.md)
 - [Correlation ID y Logs Estructurados](docs/observability/CORRELATION_AND_LOGGING.md)
+- [Health Checks Operativos](docs/observability/HEALTH_CHECKS.md)
 - [SaaS Licensing Model](docs/licensing/SAAS_LICENSING_MODEL.md)
 - [Tenant License Guards](docs/licensing/TENANT_LICENSE_GUARDS.md)
 - [Tenant License Administration](docs/licensing/TENANT_LICENSE_ADMINISTRATION.md)
@@ -174,6 +175,8 @@ Servicios esperados:
 
 - Frontend: `http://localhost:5173`
 - Backend health: `http://localhost:8080/actuator/health`
+- Backend liveness: `http://localhost:8080/actuator/health/liveness`
+- Backend readiness: `http://localhost:8080/actuator/health/readiness`
 - PostgreSQL: `localhost:5432`
 
 ## Base de datos inicial
@@ -211,6 +214,18 @@ El backend propaga trazabilidad por request con `X-Correlation-ID`.
 - No se loguean tokens, passwords, secretos, headers sensibles ni cuerpos completos.
 
 Ver detalle en `docs/observability/CORRELATION_AND_LOGGING.md`.
+
+## Health checks
+
+El backend expone health checks operativos seguros:
+
+- `/actuator/health/liveness`: proceso vivo.
+- `/actuator/health/readiness`: instancia lista para recibir trafico.
+- Readiness incluye `readinessState`, `db` y `kodaSchema`.
+- `kodaSchema` valida estado Flyway/schema: actual, pendiente o no disponible.
+- Los endpoints publicos no exponen detalles sensibles.
+
+Ver detalle en `docs/observability/HEALTH_CHECKS.md`.
 
 ## Autenticacion JWT
 
@@ -378,7 +393,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 120 tests unitarios, 0 fallos en `mvn -B test`. Las 11 pruebas de integracion siguen cubiertas por `mvn -B verify` y CI.
+- Suite backend actual: 125 tests unitarios y 13 pruebas de integracion, 0 fallos en `mvn -B verify`.
 - Suite frontend actual: 3 tests del capability shell, 0 fallos en `npm.cmd run test`, `npm.cmd run lint` y `npm.cmd run build`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md` y `docs/sprints/SPRINT_2_HARDENING_REPORT.md`.

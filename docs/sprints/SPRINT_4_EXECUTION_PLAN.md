@@ -38,7 +38,7 @@ La base funcional de Sprint 4 fue aprobada por el Product Owner el 2026-07-21 y 
 | --- | --- | --- |
 | 1. Base funcional Sprint 4 | Completado | Foco aprobado: Escalabilidad, Observabilidad y Endurecimiento SaaS Operativo. |
 | 2. Correlation ID y logs estructurados | Completado | Request tracing basico, header `X-Correlation-ID`, MDC/log context y sanitizacion inicial. |
-| 3. Health checks operativos | Pendiente | Liveness/readiness, DB health, Flyway/schema health y documentacion de diagnostico. |
+| 3. Health checks operativos | Completado | Liveness/readiness, DB health, Flyway/schema health y documentacion de diagnostico. |
 | 4. Metricas base | Pendiente | Actuator/Micrometer expone metricas HTTP/runtime y lineamientos de cardinalidad. |
 | 5. Performance e indices criticos | Pendiente | Revision documentada de queries de capabilities, guards, auditoria y reportes; indices si corresponde. |
 | 6. Cache seguro de capabilities | Pendiente | Cache por request/tenant con invalidacion segura o decision tecnica documentada si no aplica aun. |
@@ -77,6 +77,27 @@ Validacion:
 
 - `mvn -B '-Dtest=CorrelationIdFilterTest,TenantContextAuthenticationFilterTest' test`
 - `mvn -B test`
+
+## Hito 3 completado
+
+El Hito 3 implementa health checks operativos separados:
+
+- `/actuator/health/liveness` publico y sin detalles sensibles.
+- `/actuator/health/readiness` publico y sin detalles sensibles.
+- Readiness con `readinessState`, `db` y `kodaSchema`.
+- `kodaSchema` como health indicator propio basado en Flyway.
+- Estados `UP`, `OUT_OF_SERVICE` y `DOWN` para schema actual, migraciones pendientes o schema no disponible.
+- Seguridad actualizada para permitir `/actuator/health/**` sin autenticar.
+- Detalles ocultos con `show-details: never` y componentes visibles con `show-components: always`.
+- Prueba de integracion con PostgreSQL 17 real mediante Testcontainers.
+- Documento tecnico `docs/observability/HEALTH_CHECKS.md`.
+
+Decision tecnica: no se expone un endpoint Actuator adicional ni se agregan dashboards externos. `kodaSchema` cubre la salud Flyway/schema porque Spring Boot no expone un componente health separado de Flyway en esta configuracion.
+
+Validacion:
+
+- `mvn -B '-Dtest=KodaSchemaHealthIndicatorTest,KodaPlatformApplicationTests' test`
+- `mvn -B verify`
 
 ## Orientacion tecnica inicial
 
@@ -202,4 +223,4 @@ No implementar particionamiento sin validacion tecnica y necesidad clara.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 3: health checks operativos con liveness/readiness, DB health, Flyway/schema health y documentacion de diagnostico.
+Avanzar al Hito 4: metricas base con Actuator/Micrometer y lineamientos de cardinalidad.

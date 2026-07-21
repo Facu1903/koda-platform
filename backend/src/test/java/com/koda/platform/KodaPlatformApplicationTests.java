@@ -1,5 +1,9 @@
 package com.koda.platform;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.koda.platform.platform.audit.application.AuditRepository;
 import com.koda.platform.platform.cash.application.CashRepository;
 import com.koda.platform.platform.catalog.application.CatalogRepository;
@@ -17,12 +21,18 @@ import com.koda.platform.platform.sales.application.SalesCashPort;
 import com.koda.platform.platform.sales.application.SalesRepository;
 import com.koda.platform.platform.sales.application.SalesStockPort;
 import com.koda.platform.platform.stock.application.StockRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest(properties = {
     "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration",
+    "spring.flyway.enabled=false",
+    "management.endpoint.health.validate-group-membership=false",
     "koda.security.jwt.secret=test-secret-test-secret-test-secret-32",
     "koda.security.auth.jdbc.enabled=false",
     "koda.configuration.company-settings.jdbc.enabled=false",
@@ -36,7 +46,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
     "koda.reports.jdbc.enabled=false",
     "koda.licensing.jdbc.enabled=false"
 })
+@AutoConfigureMockMvc
 class KodaPlatformApplicationTests {
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @MockitoBean
     private AuthRepository authRepository;
@@ -91,5 +105,21 @@ class KodaPlatformApplicationTests {
 
     @Test
     void contextLoads() {
+    }
+
+    @Test
+    @DisplayName("Actuator health subpaths are public and do not expose details")
+    void actuatorHealthSubpathsArePublicAndDoNotExposeDetails() throws Exception {
+        mockMvc.perform(get("/actuator/health/liveness"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("UP"))
+            .andExpect(jsonPath("$.components.livenessState.status").value("UP"))
+            .andExpect(jsonPath("$.components.livenessState.details").doesNotExist());
+
+        mockMvc.perform(get("/actuator/health/readiness"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status").value("UP"))
+            .andExpect(jsonPath("$.components.readinessState.status").value("UP"))
+            .andExpect(jsonPath("$.components.readinessState.details").doesNotExist());
     }
 }

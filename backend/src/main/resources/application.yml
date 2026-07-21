@@ -28,8 +28,27 @@ management:
         include: health,info
   endpoint:
     health:
+      show-details: never
+      show-components: always
+      validate-group-membership: true
       probes:
         enabled: true
+      group:
+        liveness:
+          include: livenessState
+          show-details: never
+          show-components: always
+        readiness:
+          include: readinessState,db,kodaSchema
+          show-details: never
+          show-components: always
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+    db:
+      enabled: true
 
 springdoc:
   api-docs:
