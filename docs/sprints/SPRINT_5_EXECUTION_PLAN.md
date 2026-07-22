@@ -38,7 +38,7 @@ Con esta aprobacion, Sprint 5 puede iniciar desarrollo por hitos sin modificar l
 | Hito | Estado | Resultado esperado |
 | --- | --- | --- |
 | 1. Base funcional Sprint 5 | Completado | Product Owner aprobo alcance, reglas y fuera de alcance. |
-| 2. Perfil runtime de empresa | Pendiente | Backend expone datos no sensibles para renderizar UI por tenant autenticado. |
+| 2. Perfil runtime de empresa | Completado | Backend expone datos no sensibles para renderizar UI por tenant autenticado. |
 | 3. Theme provider dinamico | Pendiente | Frontend genera tema MUI desde configuracion del tenant con fallbacks seguros. |
 | 4. Formato regional | Pendiente | Frontend centraliza formato de fecha, hora, numero y moneda por tenant. |
 | 5. UI administrativa de configuracion | Pendiente | Pantalla para consultar, previsualizar y editar branding/regional con version optimista. |
@@ -58,18 +58,29 @@ El Hito 1 cierra la definicion funcional:
 
 Decision funcional: avanzar con Sprint 5 manteniendo fuera de alcance upload de archivos, CDN/storage propio, custom domains, subdominios, login publico tenant-aware completo, preferencias por usuario, CSS/HTML arbitrario y white-label total.
 
-## Hito 2 - Perfil runtime de empresa
+## Hito 2 completado - Perfil runtime de empresa
 
-Crear una lectura runtime liviana para la UI:
+El Hito 2 crea una lectura runtime liviana para la UI:
 
-- Datos de tenant no sensibles: nombre comercial, pais, locale, moneda y zona horaria.
+- Endpoint `GET /api/v1/company/profile`.
+- Modelo de aplicacion `CompanyRuntimeProfile`.
+- Controlador `CompanyProfileController`.
+- Datos de tenant no sensibles: id, nombre comercial y pais.
 - Branding efectivo: logo, favicon, login image, colores y modo de tema.
-- Configuracion regional efectiva: formatos de fecha, hora, numero y moneda.
+- Configuracion regional efectiva: locale, moneda, zona horaria, formatos de fecha, hora, numero y moneda.
 - Requiere autenticacion y Tenant Context.
-- No requiere permiso administrativo.
+- Requiere modulo `CONFIGURATION` habilitado por licencia.
+- No requiere permiso administrativo `company_settings:read`.
 - No permite actualizar datos.
+- No expone razon social, version, tax identifier ni datos internos de administracion.
+- Documento tecnico `docs/configuration/COMPANY_PROFILE.md`.
 
-Decision tecnica esperada: mantener separado el endpoint runtime del endpoint administrativo `/api/v1/company/settings`.
+Decision tecnica: mantener separado el endpoint runtime `/api/v1/company/profile` del endpoint administrativo `/api/v1/company/settings`. El perfil runtime sirve para renderizar UI; settings sirve para administrar configuracion con permisos y version optimista.
+
+Validacion:
+
+- `mvn -B "-Dtest=CompanySettingsServiceTest,KodaPlatformApplicationTests" test`
+- `mvn -B test`
 
 ## Hito 3 - Theme provider dinamico
 
@@ -184,4 +195,4 @@ Cerrar Sprint 5 con:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 2: perfil runtime de empresa para branding y configuracion regional no sensible.
+Avanzar al Hito 3: theme provider dinamico basado en el perfil runtime de empresa.

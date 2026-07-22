@@ -58,6 +58,7 @@ Esta decision evita que un permiso de usuario se confunda con una licencia comer
 | Servicio | Producto | Modulo |
 | --- | --- | --- |
 | `CompanySettingsService` | `KODA_ERP` | `CONFIGURATION` |
+| `CompanyRuntimeProfile` via `CompanySettingsService` | `KODA_ERP` | `CONFIGURATION` |
 | `CatalogService` | `KODA_ERP` | `CATALOGS` |
 | `StockService` | `KODA_ERP` | `STOCK` |
 | `AuditService` | `KODA_ERP` | `AUDIT` |

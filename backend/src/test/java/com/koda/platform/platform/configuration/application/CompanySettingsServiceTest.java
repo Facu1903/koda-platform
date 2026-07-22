@@ -60,6 +60,29 @@ class CompanySettingsServiceTest {
     }
 
     @Test
+    void getCurrentTenantRuntimeProfileDoesNotRequireAdministrativeReadPermission() {
+        currentTenantProvider.context = Optional.of(new TenantContext(tenantId, userId, Set.of("SALES_USER"), Set.of(), false));
+
+        CompanyRuntimeProfile profile = service.getCurrentTenantRuntimeProfile();
+
+        assertThat(profile.tenantId()).isEqualTo(tenantId);
+        assertThat(profile.commercialName()).isEqualTo("KODA");
+        assertThat(profile.countryCode()).isEqualTo("AR");
+        assertThat(profile.primaryColor()).isEqualTo("#F6862B");
+        assertThat(profile.defaultCurrency()).isEqualTo("ARS");
+        assertThat(repository.requestedTenantId).isEqualTo(tenantId);
+    }
+
+    @Test
+    void configurationModuleDisabledBlocksRuntimeProfile() {
+        licenseAccessRepository.disableModule();
+
+        assertThatThrownBy(() -> service.getCurrentTenantRuntimeProfile())
+            .isInstanceOf(TenantLicenseAccessDeniedException.class)
+            .satisfies(exception -> assertThat(((TenantLicenseAccessDeniedException) exception).reasonCode()).isEqualTo("MODULE_NOT_ENABLED"));
+    }
+
+    @Test
     void configurationModuleDisabledBlocksSettingsEvenWithPermission() {
         licenseAccessRepository.disableModule();
 

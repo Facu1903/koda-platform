@@ -10,10 +10,20 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 
 - Agregada y aprobada base funcional de Sprint 5 en `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`.
 - Agregado plan de ejecucion aprobado de Sprint 5 en `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`.
+- Agregado perfil runtime de empresa con endpoint `GET /api/v1/company/profile`.
+- Agregado modelo de aplicacion `CompanyRuntimeProfile` para separar datos runtime no sensibles del contrato administrativo de configuracion.
+- Agregada documentacion tecnica del perfil runtime en `docs/configuration/COMPANY_PROFILE.md`.
+- Agregadas pruebas de servicio y contexto API para validar lectura runtime sin permiso administrativo y sin exponer campos administrativos.
 
 ### Changed
 
 - Actualizados README y roadmap para iniciar Sprint 5 como Personalizacion Avanzada por Tenant.
+- Actualizado plan de Sprint 5 para marcar Hito 2 como completado.
+
+### Verified
+
+- `mvn -B "-Dtest=CompanySettingsServiceTest,KodaPlatformApplicationTests" test` ejecutado correctamente en backend con 13 pruebas.
+- `mvn -B test` ejecutado correctamente en backend con 144 pruebas unitarias.
 
 ## [0.4.0] - 2026-07-22
 

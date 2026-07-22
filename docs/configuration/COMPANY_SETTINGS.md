@@ -15,6 +15,8 @@ Base path: `/api/v1/company/settings`.
 
 Ambos endpoints son tenant-scoped y requieren autenticacion.
 
+Para renderizado runtime de la UI existe `GET /api/v1/company/profile`. Ese endpoint devuelve solo datos no sensibles y no requiere permiso administrativo. Ver `docs/configuration/COMPANY_PROFILE.md`.
+
 ## Permisos
 
 - Lectura: `company_settings:read`.

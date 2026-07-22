@@ -1,14 +1,19 @@
 package com.koda.platform;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 import com.koda.platform.platform.audit.application.AuditRepository;
 import com.koda.platform.platform.cash.application.CashRepository;
 import com.koda.platform.platform.catalog.application.CatalogRepository;
 import com.koda.platform.platform.commercial.application.CommercialPartnerRepository;
+import com.koda.platform.platform.configuration.application.CompanySettings;
 import com.koda.platform.platform.configuration.application.CompanySettingsRepository;
 import com.koda.platform.platform.licensing.application.TenantCapabilitiesRepository;
 import com.koda.platform.platform.licensing.application.TenantLicenseAccessRepository;
@@ -22,11 +27,18 @@ import com.koda.platform.platform.sales.application.SalesCashPort;
 import com.koda.platform.platform.sales.application.SalesRepository;
 import com.koda.platform.platform.sales.application.SalesStockPort;
 import com.koda.platform.platform.stock.application.StockRepository;
+import com.koda.platform.shared.domain.tenant.TenantId;
+import com.koda.platform.shared.infrastructure.security.KodaAuthenticatedPrincipal;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -148,5 +160,55 @@ class KodaPlatformApplicationTests {
             .andExpect(jsonPath("$.availableTags[?(@.tag == 'tenantId')]").doesNotExist())
             .andExpect(jsonPath("$.availableTags[?(@.tag == 'userId')]").doesNotExist())
             .andExpect(jsonPath("$.availableTags[?(@.tag == 'correlationId')]").doesNotExist());
+    }
+
+    @Test
+    @DisplayName("Company runtime profile is tenant scoped and omits administrative fields")
+    void companyRuntimeProfileIsTenantScopedAndOmitsAdministrativeFields() throws Exception {
+        TenantId tenantId = TenantId.from(UUID.fromString("00000000-0000-4000-8000-000000000001"));
+        when(tenantLicenseAccessRepository.isProductEnabled(eq(tenantId), eq("KODA_ERP"), any())).thenReturn(true);
+        when(tenantLicenseAccessRepository.isModuleEnabled(eq(tenantId), eq("KODA_ERP"), eq("CONFIGURATION"), any())).thenReturn(true);
+        when(companySettingsRepository.findByTenantId(tenantId)).thenReturn(Optional.of(new CompanySettings(
+            UUID.fromString("00000000-0000-4000-8000-000000000002"),
+            tenantId,
+            "KODA",
+            "KODA Legal Name",
+            "AR",
+            "es-AR",
+            "ARS",
+            "America/Argentina/Buenos_Aires",
+            "https://cdn.koda.local/logo.png",
+            null,
+            null,
+            "#F6862B",
+            null,
+            "dark",
+            "dd/MM/yyyy",
+            "HH:mm",
+            "es-AR",
+            "symbol",
+            7L,
+            Instant.parse("2026-07-22T12:00:00Z")
+        )));
+        KodaAuthenticatedPrincipal principal = new KodaAuthenticatedPrincipal(
+            UUID.fromString("40000000-0000-4000-8000-000000000001"),
+            tenantId,
+            "sales@koda.local",
+            Set.of("SALES_USER"),
+            Set.of(),
+            false
+        );
+
+        mockMvc.perform(get("/api/v1/company/profile").with(authentication(new TestingAuthenticationToken(principal, null, "ROLE_USER"))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.tenant.id").value(tenantId.toString()))
+            .andExpect(jsonPath("$.tenant.commercialName").value("KODA"))
+            .andExpect(jsonPath("$.tenant.countryCode").value("AR"))
+            .andExpect(jsonPath("$.tenant.legalName").doesNotExist())
+            .andExpect(jsonPath("$.branding.logoUrl").value("https://cdn.koda.local/logo.png"))
+            .andExpect(jsonPath("$.branding.primaryColor").value("#F6862B"))
+            .andExpect(jsonPath("$.regional.defaultLocale").value("es-AR"))
+            .andExpect(jsonPath("$.regional.defaultCurrency").value("ARS"))
+            .andExpect(jsonPath("$.version").doesNotExist());
     }
 }

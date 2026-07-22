@@ -41,6 +41,15 @@ public class CompanySettingsService {
             .orElseThrow(CompanySettingsNotFoundException::new);
     }
 
+    @Transactional(readOnly = true)
+    public CompanyRuntimeProfile getCurrentTenantRuntimeProfile() {
+        TenantContext context = currentTenantProvider.requireContext();
+        requireRuntimeAccess(context);
+        return repository.findByTenantId(context.tenantId())
+            .map(CompanyRuntimeProfile::from)
+            .orElseThrow(CompanySettingsNotFoundException::new);
+    }
+
     @Transactional
     public CompanySettings updateCurrentTenantSettings(UpdateCompanySettingsCommand command, ClientRequestMetadata metadata) {
         TenantContext context = currentTenantProvider.requireContext();
@@ -57,11 +66,15 @@ public class CompanySettingsService {
     }
 
     private void requirePermission(TenantContext context, String permission) {
-        licenseAccessGuard.requireModuleEnabled(context, LicensedProducts.KODA_ERP, LicensedModules.CONFIGURATION);
+        requireRuntimeAccess(context);
         if (context.platformAdmin() || context.hasPermission(permission)) {
             return;
         }
         throw new PermissionDeniedException(permission);
+    }
+
+    private void requireRuntimeAccess(TenantContext context) {
+        licenseAccessGuard.requireModuleEnabled(context, LicensedProducts.KODA_ERP, LicensedModules.CONFIGURATION);
     }
 
     private UpdateCompanySettingsCommand normalizeAndValidate(UpdateCompanySettingsCommand command) {

@@ -180,7 +180,7 @@ Endurecer la plataforma para operacion SaaS real: observabilidad, trazabilidad, 
 
 ### Estado
 
-Definido y aprobado funcionalmente por el Product Owner el 2026-07-22. Hito 1 completado. Ver `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md` y `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`.
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-22. Hitos 1 y 2 completados: base funcional aprobada y perfil runtime de empresa. Ver `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_5_EXECUTION_PLAN.md` y `docs/configuration/COMPANY_PROFILE.md`.
 
 ### Objetivo
 
