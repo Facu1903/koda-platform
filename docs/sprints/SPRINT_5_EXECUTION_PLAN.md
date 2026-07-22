@@ -43,7 +43,7 @@ Con esta aprobacion, Sprint 5 puede iniciar desarrollo por hitos sin modificar l
 | 4. Formato regional | Completado | Frontend centraliza formato de fecha, hora, numero y moneda por tenant. |
 | 5. UI administrativa de configuracion | Completado | Pantalla para consultar, previsualizar y editar branding/regional con version optimista. |
 | 6. Assets visuales controlados | Completado | Logo, favicon e imagen de login por URL validada, con fallback y documentacion de riesgos. |
-| 7. Permisos, auditoria y hardening funcional | Pendiente | Matriz aprobada aplicada por migracion, auditoria verificada y errores controlados. |
+| 7. Permisos, auditoria y hardening funcional | Completado | Matriz aprobada aplicada por migracion, auditoria verificada y errores controlados. |
 | 8. Hardening Sprint 5 | Pendiente | Validacion completa backend/frontend, documentacion final y reporte de cierre tecnico. |
 
 ## Hito 1 completado
@@ -202,17 +202,26 @@ Validacion:
 - `npm.cmd run lint`: 0 errores.
 - `npm.cmd run build`: TypeScript y Vite correctos.
 
-## Hito 7 - Permisos, auditoria y hardening funcional
+## Hito 7 completado - Permisos, auditoria y hardening funcional
 
-Aplicar reglas aprobadas:
+El Hito 7 aplica reglas aprobadas sin cambiar alcance funcional:
 
-- permisos de lectura administrativa y actualizacion,
-- migracion de asignacion rol-permiso segun matriz aprobada,
-- auditoria de cambios,
-- tests de permisos,
-- tests de validacion,
-- tests de version optimista,
-- tests de aislamiento tenant.
+- Migracion `V202607221500__seed_company_settings_permissions.sql`.
+- `TENANT_OWNER` y `TENANT_ADMIN` pueden leer y actualizar configuracion administrativa.
+- `MANAGER` puede leer configuracion administrativa, pero no actualizar.
+- `SALES_USER`, `STOCK_USER` y `READ_ONLY` no acceden a configuracion administrativa.
+- El perfil runtime sigue disponible para todos los usuarios autenticados del tenant sin permiso administrativo.
+- Tests de servicio para permisos aprobados y auditoria de actualizacion exitosa.
+- Tests de errores API para permiso insuficiente, conflicto de version e invalid request.
+- Test Flyway/PostgreSQL 17 para version de schema y matriz rol-permiso.
+- Documento tecnico `docs/configuration/COMPANY_SETTINGS_PERMISSIONS_AUDIT.md`.
+
+Decision tecnica: la matriz inicial se siembra por migracion, pero la autorizacion en runtime sigue usando permisos atomicos del JWT. Los roles no son atajos de seguridad.
+
+Validacion:
+
+- `mvn -B "-Dtest=CompanySettingsServiceTest,ApiExceptionHandlerTest" test`: 18 pruebas, 0 fallos.
+- `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify`: 13 pruebas de integracion, schema `v202607221500`, 0 fallos.
 
 ## Hito 8 - Hardening Sprint 5
 
@@ -260,4 +269,4 @@ Cerrar Sprint 5 con:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 7: permisos, auditoria y hardening funcional.
+Avanzar al Hito 8: hardening final, documentacion de cierre y aprobacion funcional de Sprint 5.

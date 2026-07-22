@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-El Hito 5 expone la configuracion visual y regional de una empresa dentro de KODA PLATFORM sin permitir que el cliente decida el tenant efectivo.
+El Hito 5 expone la configuracion visual y regional de una empresa dentro de KODA PLATFORM sin permitir que el cliente decida el tenant efectivo. El Hito 7 aplica la matriz de permisos aprobada, verifica auditoria y endurece errores funcionales.
 
 El tenant se resuelve desde `TenantContext`, construido a partir del JWT emitido por backend.
 
@@ -24,7 +24,18 @@ La UI administrativa frontend para este endpoint esta documentada en `docs/confi
 - Lectura: `company_settings:read`.
 - Actualizacion: `company_settings:update`.
 
-No se agrego una matriz rol-permiso nueva en este hito. Esa asignacion es una regla funcional y requiere aprobacion del Product Owner. El backend valida permisos reales recibidos en el JWT; no usa nombres de roles como atajo.
+La matriz rol-permiso de Sprint 5 queda aplicada por la migracion `V202607221500__seed_company_settings_permissions.sql`.
+
+| Rol | Leer configuracion administrativa | Actualizar configuracion |
+| --- | --- | --- |
+| `TENANT_OWNER` | Si | Si |
+| `TENANT_ADMIN` | Si | Si |
+| `MANAGER` | Si | No |
+| `SALES_USER` | No | No |
+| `STOCK_USER` | No | No |
+| `READ_ONLY` | No | No |
+
+El backend valida permisos reales recibidos en el JWT; no usa nombres de roles como atajo. Los roles se usan solo para sembrar la matriz inicial aprobada.
 
 ## Lectura
 
@@ -104,17 +115,21 @@ Cada actualizacion exitosa registra un evento `company_settings.update` en `audi
 - recurso `company_settings`,
 - version anterior y nueva,
 - campos modificados.
+- resultado `SUCCESS`,
+- metadata segura de request cuando exista.
+
+No se registran tokens, secretos ni cuerpos completos de request. La auditoria guarda diferencias de configuracion, no un volcado ansioso de todo lo que paso por la puerta.
 
 ## Errores
 
 - `401`: falta autenticacion o token valido.
-- `403 PERMISSION_DENIED`: el JWT no contiene el permiso requerido.
+- `403 PERMISSION_DENIED`: el JWT no contiene el permiso requerido; la respuesta incluye `requiredPermission`.
 - `404 COMPANY_SETTINGS_NOT_FOUND`: no existe configuracion para el tenant autenticado.
 - `409 COMPANY_SETTINGS_VERSION_CONFLICT`: la version enviada no coincide con la version actual.
 - `400 VALIDATION_ERROR`: request invalido por Bean Validation.
 - `400 INVALID_REQUEST`: valor regional o visual invalido detectado por la capa de aplicacion.
 
-## Alcance del Hito 5
+## Alcance implementado
 
 Incluido:
 
@@ -125,11 +140,13 @@ Incluido:
 - Auditoria persistente.
 - Tests unitarios de servicio.
 - Validacion runtime de arranque y proteccion de endpoint.
+- Migracion de asignacion rol-permiso aprobada.
+- Tests de matriz Flyway/PostgreSQL 17.
+- Tests de errores `PERMISSION_DENIED`, `COMPANY_SETTINGS_VERSION_CONFLICT` e `INVALID_REQUEST`.
 
 No incluido:
 
 - CDN/storage de assets.
 - Upload de archivos de logo/favicon/imagenes.
 - Cambio de nombre comercial, razon social o pais.
-- Matriz rol-permiso aprobada para roles iniciales.
 - Preferencias por usuario individual.

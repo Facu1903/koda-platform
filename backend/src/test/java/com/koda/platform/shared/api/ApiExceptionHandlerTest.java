@@ -2,7 +2,9 @@ package com.koda.platform.shared.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.koda.platform.platform.configuration.application.CompanySettingsVersionConflictException;
 import com.koda.platform.platform.licensing.application.TenantLicenseAccessDeniedException;
+import com.koda.platform.shared.application.security.PermissionDeniedException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -69,6 +71,41 @@ class ApiExceptionHandlerTest {
         assertThat(problem.getProperties()).containsEntry("productCode", "KODA_ERP");
         assertThat(problem.getProperties()).containsEntry("moduleCode", "SALES");
         assertThat(problem.getProperties()).containsEntry("path", "/api/v1/sales");
+    }
+
+    @Test
+    void permissionDeniedReturnsRequiredPermission() {
+        MockHttpServletRequest request = request("/api/v1/company/settings");
+
+        ProblemDetail problem = handler.handlePermissionDenied(new PermissionDeniedException("company_settings:update"), request);
+
+        assertThat(problem.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(problem.getProperties()).containsEntry("code", "PERMISSION_DENIED");
+        assertThat(problem.getProperties()).containsEntry("requiredPermission", "company_settings:update");
+        assertThat(problem.getProperties()).containsEntry("path", "/api/v1/company/settings");
+    }
+
+    @Test
+    void companySettingsVersionConflictReturnsStructuredConflict() {
+        MockHttpServletRequest request = request("/api/v1/company/settings");
+
+        ProblemDetail problem = handler.handleCompanySettingsVersionConflict(new CompanySettingsVersionConflictException(), request);
+
+        assertThat(problem.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(problem.getProperties()).containsEntry("code", "COMPANY_SETTINGS_VERSION_CONFLICT");
+        assertThat(problem.getProperties()).containsEntry("path", "/api/v1/company/settings");
+    }
+
+    @Test
+    void invalidCompanySettingsRequestReturnsGenericInvalidRequestWithoutLeakingValue() {
+        MockHttpServletRequest request = request("/api/v1/company/settings");
+
+        ProblemDetail problem = handler.handleIllegalArgument(new IllegalArgumentException("Logo URL must be a valid HTTPS URL"), request);
+
+        assertThat(problem.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(problem.getDetail()).isEqualTo("Invalid request");
+        assertThat(problem.getProperties()).containsEntry("code", "INVALID_REQUEST");
+        assertThat(problem.getProperties()).containsEntry("path", "/api/v1/company/settings");
     }
 
     private MockHttpServletRequest request(String path) {

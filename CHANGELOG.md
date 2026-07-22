@@ -35,6 +35,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada preview controlada de logo, favicon e imagen de login en la UI administrativa.
 - Agregada documentacion tecnica de assets visuales por tenant en `docs/configuration/VISUAL_ASSETS.md`.
 - Agregadas pruebas backend/frontend para URLs visuales inseguras, logo y favicon runtime.
+- Agregada migracion `V202607221500__seed_company_settings_permissions.sql` con matriz rol-permiso aprobada para configuracion administrativa.
+- Agregada documentacion tecnica de permisos y auditoria de configuracion en `docs/configuration/COMPANY_SETTINGS_PERMISSIONS_AUDIT.md`.
+- Agregadas pruebas backend de matriz de permisos, auditoria de configuracion y errores API controlados.
 
 ### Changed
 
@@ -51,6 +54,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Actualizado plan de Sprint 5 para marcar Hito 5 como completado.
 - Actualizada la politica de assets visuales para exigir `https://` y rechazar `data:`, `javascript:`, URLs relativas, userinfo y fragmentos.
 - Actualizado plan de Sprint 5 para marcar Hito 6 como completado.
+- Aplicada matriz aprobada de Sprint 5 para `company_settings:read` y `company_settings:update`.
+- Actualizado plan de Sprint 5 para marcar Hito 7 como completado.
 
 ### Verified
 
@@ -60,6 +65,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `npm.cmd run test` ejecutado correctamente en frontend con 17 pruebas.
 - `npm.cmd run lint` ejecutado correctamente en frontend sin errores.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
+- `mvn -B "-Dtest=CompanySettingsServiceTest,ApiExceptionHandlerTest" test` ejecutado correctamente en backend con 18 pruebas.
+- `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify` ejecutado correctamente con 13 pruebas de integracion y schema `v202607221500`.
 
 ## [0.4.0] - 2026-07-22
 

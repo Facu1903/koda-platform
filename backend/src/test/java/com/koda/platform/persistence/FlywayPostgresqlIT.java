@@ -49,12 +49,12 @@ class FlywayPostgresqlIT {
     @Test
     void flywayBuildsCurrentSchemaAndSeedDataOnPostgresql17() throws SQLException {
         assertThat(queryForString("select version from flyway_schema_history where success = true order by installed_rank desc limit 1"))
-            .isEqualTo("202607220900");
+            .isEqualTo("202607221500");
         assertThat(queryForInt("select count(*) from tenants")).isEqualTo(1);
         assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(10);
         assertThat(queryForInt("select count(*) from permissions")).isEqualTo(70);
         assertThat(queryForInt("select count(*) from roles")).isEqualTo(7);
-        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(189);
+        assertThat(queryForInt("select count(*) from role_permissions")).isEqualTo(194);
         assertThat(queryForString("select code from warehouses where tenant_id = '00000000-0000-4000-8000-000000000001'"))
             .isEqualTo("PRINCIPAL");
         assertThat(queryForString("select code from cash_registers where tenant_id = '00000000-0000-4000-8000-000000000001'"))
@@ -216,6 +216,40 @@ class FlywayPostgresqlIT {
         assertThat(repository.findEnabledModules(tenantId, calculatedAt)).hasSize(10);
         assertThat(repository.findEffectiveLimits(tenantId, calculatedAt)).hasSize(5);
         assertThat(repository.findEffectiveFeatureFlags(tenantId, calculatedAt)).isEmpty();
+    }
+
+    @Test
+    void companySettingsPermissionsFollowApprovedSprint5Matrix() throws SQLException {
+        assertThat(queryForInt("""
+            select count(*)
+            from role_permissions rp
+            join roles r on r.id = rp.role_id
+            join permissions p on p.id = rp.permission_id
+            where r.tenant_id = '00000000-0000-4000-8000-000000000001'
+              and (
+                (r.code = 'TENANT_OWNER' and p.code in ('company_settings:read', 'company_settings:update'))
+                or (r.code = 'TENANT_ADMIN' and p.code in ('company_settings:read', 'company_settings:update'))
+                or (r.code = 'MANAGER' and p.code = 'company_settings:read')
+              )
+            """)).isEqualTo(5);
+        assertThat(queryForInt("""
+            select count(*)
+            from role_permissions rp
+            join roles r on r.id = rp.role_id
+            join permissions p on p.id = rp.permission_id
+            where r.tenant_id = '00000000-0000-4000-8000-000000000001'
+              and r.code in ('MANAGER', 'SALES_USER', 'STOCK_USER', 'READ_ONLY')
+              and p.code = 'company_settings:update'
+            """)).isZero();
+        assertThat(queryForInt("""
+            select count(*)
+            from role_permissions rp
+            join roles r on r.id = rp.role_id
+            join permissions p on p.id = rp.permission_id
+            where r.tenant_id = '00000000-0000-4000-8000-000000000001'
+              and r.code in ('SALES_USER', 'STOCK_USER', 'READ_ONLY')
+              and p.code like 'company_settings:%'
+            """)).isZero();
     }
 
     @Test

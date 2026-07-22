@@ -60,6 +60,25 @@ class CompanySettingsServiceTest {
     }
 
     @Test
+    void managerCanReadAdministrativeSettingsButCannotUpdateThem() {
+        currentTenantProvider.context = Optional.of(new TenantContext(tenantId, userId, Set.of("MANAGER"), Set.of("company_settings:read"), false));
+
+        CompanySettings settings = service.getCurrentTenantSettings();
+
+        assertThat(settings.tenantId()).isEqualTo(tenantId);
+        assertThatThrownBy(() -> service.updateCurrentTenantSettings(validCommand(0L), metadata))
+            .isInstanceOf(PermissionDeniedException.class)
+            .satisfies(exception -> assertThat(((PermissionDeniedException) exception).requiredPermission()).isEqualTo("company_settings:update"));
+    }
+
+    @Test
+    void salesStockAndReadOnlyUsersCannotReadAdministrativeSettings() {
+        assertRoleWithoutAdministrativeSettingsAccess("SALES_USER");
+        assertRoleWithoutAdministrativeSettingsAccess("STOCK_USER");
+        assertRoleWithoutAdministrativeSettingsAccess("READ_ONLY");
+    }
+
+    @Test
     void getCurrentTenantRuntimeProfileDoesNotRequireAdministrativeReadPermission() {
         currentTenantProvider.context = Optional.of(new TenantContext(tenantId, userId, Set.of("SALES_USER"), Set.of(), false));
 
@@ -122,11 +141,16 @@ class CompanySettingsServiceTest {
         assertThat(updated.numberLocale()).isEqualTo("es-AR");
         assertThat(updated.version()).isEqualTo(1);
         assertThat(repository.auditAction).isEqualTo("company_settings.update");
+        assertThat(repository.auditTenantId).isEqualTo(tenantId);
+        assertThat(repository.auditActorUserId).isEqualTo(userId);
+        assertThat(repository.auditOutcome).isEqualTo("SUCCESS");
         assertThat(repository.auditResourceId).isEqualTo(updated.id());
+        assertThat(repository.auditMetadata).isEqualTo(metadata);
         assertThat(repository.auditDetails).containsEntry("beforeVersion", 0L).containsEntry("afterVersion", 1L);
         Map<?, ?> changedFields = (Map<?, ?>) repository.auditDetails.get("changedFields");
         assertThat(changedFields.containsKey("logoUrl")).isTrue();
         assertThat(changedFields.containsKey("secondaryColor")).isTrue();
+        assertThat(changedFields.containsKey("defaultCurrency")).isFalse();
     }
 
     @Test
@@ -217,6 +241,14 @@ class CompanySettingsServiceTest {
         );
     }
 
+    private void assertRoleWithoutAdministrativeSettingsAccess(String roleCode) {
+        currentTenantProvider.context = Optional.of(new TenantContext(tenantId, userId, Set.of(roleCode), Set.of(), false));
+
+        assertThatThrownBy(() -> service.getCurrentTenantSettings())
+            .isInstanceOf(PermissionDeniedException.class)
+            .satisfies(exception -> assertThat(((PermissionDeniedException) exception).requiredPermission()).isEqualTo("company_settings:read"));
+    }
+
     private CompanySettings settings(long version, String primaryColor, String secondaryColor, String themeMode, String defaultLocale,
                                      String defaultCurrency, String timeZone) {
         return new CompanySettings(
@@ -256,7 +288,11 @@ class CompanySettingsServiceTest {
         private CompanySettings settings;
         private TenantId requestedTenantId;
         private String auditAction;
+        private UUID auditActorUserId;
         private UUID auditResourceId;
+        private TenantId auditTenantId;
+        private String auditOutcome;
+        private ClientRequestMetadata auditMetadata;
         private Map<String, Object> auditDetails;
 
         @Override
@@ -299,7 +335,11 @@ class CompanySettingsServiceTest {
         public void recordAuditEvent(TenantId tenantId, UUID actorUserId, String action, String outcome, UUID resourceId,
                                      ClientRequestMetadata metadata, Map<String, Object> details) {
             auditAction = action;
+            auditActorUserId = actorUserId;
             auditResourceId = resourceId;
+            auditTenantId = tenantId;
+            auditOutcome = outcome;
+            auditMetadata = metadata;
             auditDetails = details;
         }
     }

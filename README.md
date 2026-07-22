@@ -16,7 +16,7 @@ Sprint 3 queda cerrado y aprobado funcionalmente. Construyo la fundacion SaaS co
 
 Sprint 4 queda cerrado y aprobado funcionalmente. Preparo la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial. El Hito 3 agrego liveness/readiness, health de PostgreSQL y health de schema/Flyway mediante `kodaSchema`. El Hito 4 agrego metricas base con Actuator/Micrometer, endpoint protegido, histogramas HTTP y guardrails contra cardinalidad explosiva. El Hito 5 agrego revision de performance e indices criticos justificados por queries reales. El Hito 6 agrego cache local seguro para capabilities, TTL conservador, invalidacion post-commit ante cambios administrativos de licencia y metricas de hit/miss sin cardinalidad alta. El Hito 7 agrego controles operativos de auditoria con rango maximo configurable, paginacion keyset estable e indice tenant-scoped preparado para crecimiento. El Hito 8 resolvio el warning de Mockito/Java Agent en tests, ejecuto validacion final y agrego reportes de hardening/cierre. La aprobacion funcional final queda registrada en `docs/sprints/SPRINT_4_APPROVAL.md`.
 
-Sprint 5 queda definido y aprobado como Personalizacion Avanzada por Tenant. Busca convertir la configuracion visual/regional existente en una experiencia real de SaaS: tema dinamico por empresa, perfil runtime no sensible, formatos regionales, UI administrativa de configuracion, assets por URL validada, permisos y auditoria. El Hito 2 agrego el perfil runtime tenant-scoped `GET /api/v1/company/profile` para que la UI pueda leer branding y configuracion regional no sensible sin requerir permisos administrativos. El Hito 3 agrego el provider frontend de perfil de empresa y tema Material UI dinamico por tenant, con fallback KODA seguro. El Hito 4 agrego formateadores regionales frontend para fecha, hora, numeros y moneda segun el tenant. El Hito 5 agrego la pantalla administrativa de configuracion de empresa dentro del modulo `CONFIGURATION`, con preview, version optimista y manejo de permisos/conflictos. El Hito 6 agrego assets visuales controlados con validacion `https://`, logo runtime, favicon runtime y preview segura. La regla sana: personalizar sin fragmentar la plataforma.
+Sprint 5 queda definido y aprobado como Personalizacion Avanzada por Tenant. Busca convertir la configuracion visual/regional existente en una experiencia real de SaaS: tema dinamico por empresa, perfil runtime no sensible, formatos regionales, UI administrativa de configuracion, assets por URL validada, permisos y auditoria. El Hito 2 agrego el perfil runtime tenant-scoped `GET /api/v1/company/profile` para que la UI pueda leer branding y configuracion regional no sensible sin requerir permisos administrativos. El Hito 3 agrego el provider frontend de perfil de empresa y tema Material UI dinamico por tenant, con fallback KODA seguro. El Hito 4 agrego formateadores regionales frontend para fecha, hora, numeros y moneda segun el tenant. El Hito 5 agrego la pantalla administrativa de configuracion de empresa dentro del modulo `CONFIGURATION`, con preview, version optimista y manejo de permisos/conflictos. El Hito 6 agrego assets visuales controlados con validacion `https://`, logo runtime, favicon runtime y preview segura. El Hito 7 aplico la matriz rol-permiso aprobada para configuracion administrativa, verifico auditoria y endurecio errores funcionales. La regla sana: personalizar sin fragmentar la plataforma.
 
 ## Documentos principales
 
@@ -67,6 +67,7 @@ Sprint 5 queda definido y aprobado como Personalizacion Avanzada por Tenant. Bus
 - [Frontend Company Settings Admin](docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md)
 - [Visual Assets por Tenant](docs/configuration/VISUAL_ASSETS.md)
 - [Company Settings](docs/configuration/COMPANY_SETTINGS.md)
+- [Company Settings Permissions and Audit](docs/configuration/COMPANY_SETTINGS_PERMISSIONS_AUDIT.md)
 - [ERP Catalogs](docs/catalogs/ERP_CATALOGS.md)
 - [Commercial Partners](docs/commercial/COMMERCIAL_PARTNERS.md)
 - [Cash Sessions](docs/cash/CASH_SESSIONS.md)
@@ -352,9 +353,9 @@ El backend ya expone `/api/v1/company/settings` para consultar y actualizar conf
 - La actualizacion requiere `company_settings:update`.
 - Las actualizaciones usan version optimista y registran auditoria.
 
-La matriz rol-permiso de Sprint 5 aprueba lectura administrativa para `TENANT_OWNER`, `TENANT_ADMIN` y `MANAGER`, y actualizacion para `TENANT_OWNER` y `TENANT_ADMIN`.
+La matriz rol-permiso de Sprint 5 aprueba lectura administrativa para `TENANT_OWNER`, `TENANT_ADMIN` y `MANAGER`, y actualizacion para `TENANT_OWNER` y `TENANT_ADMIN`. Esta matriz queda aplicada por Flyway en `V202607221500__seed_company_settings_permissions.sql`; `SALES_USER`, `STOCK_USER` y `READ_ONLY` no reciben permisos administrativos de configuracion.
 
-Ver detalle en `docs/configuration/COMPANY_SETTINGS.md`.
+Ver detalle en `docs/configuration/COMPANY_SETTINGS.md` y `docs/configuration/COMPANY_SETTINGS_PERMISSIONS_AUDIT.md`.
 
 ## Catalogos ERP
 
@@ -501,7 +502,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 145 tests unitarios esperados; validacion especifica del Hito 6 con 9 pruebas de configuracion, 0 fallos.
+- Suite backend actual: 150 tests unitarios esperados; validacion especifica del Hito 7 con 18 pruebas de configuracion/errores API y 13 pruebas de integracion Flyway/PostgreSQL 17, 0 fallos.
 - Suite frontend actual: 17 tests del capability shell, tema dinamico, formato regional, UI administrativa y assets visuales, 0 fallos en `npm.cmd run test`, `npm.cmd run lint` y `npm.cmd run build`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md` y `docs/sprints/SPRINT_2_HARDENING_REPORT.md`.
