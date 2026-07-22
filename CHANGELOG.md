@@ -4,6 +4,17 @@ Todas las modificaciones relevantes de KODA PLATFORM se documentaran en este arc
 
 El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patch>` hasta la primera version comercial estable.
 
+## [0.6.0] - Unreleased
+
+### Added
+
+- Agregada y aprobada base funcional de Sprint 6 en `docs/sprints/SPRINT_6_FUNCTIONAL_BASELINE.md`.
+- Agregado plan de ejecucion aprobado de Sprint 6 en `docs/sprints/SPRINT_6_EXECUTION_PLAN.md`.
+
+### Changed
+
+- Actualizados README y roadmap para iniciar Sprint 6 como Acceso Operativo y Administracion Base del Tenant.
+
 ## [0.5.0] - 2026-07-22
 
 ### Added

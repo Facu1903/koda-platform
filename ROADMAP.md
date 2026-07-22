@@ -196,7 +196,31 @@ Permitir personalizacion visual y regional avanzada por empresa sin modificar co
 - UI administrativa para configuracion de empresa.
 - Permisos, auditoria y tests.
 
-## 8. Versionado
+## 8. Sprint 6 - Acceso operativo y administracion base del tenant
+
+### Estado
+
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-22. Ver `docs/sprints/SPRINT_6_FUNCTIONAL_BASELINE.md` y `docs/sprints/SPRINT_6_EXECUTION_PLAN.md`.
+
+### Objetivo
+
+Convertir KODA PLATFORM en una aplicacion operable por el cliente piloto mediante login frontend real, sesion controlada, rutas privadas y administracion tenant-scoped de usuarios, roles, sucursales y depositos.
+
+### Alcance aprobado
+
+- Login frontend real.
+- AuthProvider y manejo centralizado de sesion.
+- Refresh y logout frontend.
+- Proteccion de rutas privadas.
+- Manejo controlado de seleccion de tenant.
+- Administracion tenant-scoped de usuarios.
+- Consulta y asignacion controlada de roles tenant.
+- CRUD tenant-scoped de sucursales.
+- CRUD tenant-scoped de depositos.
+- Permisos, auditoria y tests.
+- Primeras pruebas smoke o E2E autenticadas.
+
+## 9. Versionado
 
 Mientras el producto no tenga clientes externos, se usara versionado `0.x.y`.
 
@@ -214,7 +238,7 @@ Cuando exista primera version comercial estable:
 
 - Adoptar SemVer: `MAJOR.MINOR.PATCH`.
 
-## 9. Estrategia de compatibilidad
+## 10. Estrategia de compatibilidad
 
 Desde la primera API:
 
@@ -224,7 +248,7 @@ Desde la primera API:
 - Documentar cambios en `CHANGELOG.md`.
 - Separar cambios tecnicos de cambios funcionales.
 
-## 10. Decisiones funcionales aprobadas
+## 11. Decisiones funcionales aprobadas
 
 El 2026-07-15 el Product Owner aprobo la base funcional minima para Sprint 1:
 
