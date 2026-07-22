@@ -178,21 +178,23 @@ Endurecer la plataforma para operacion SaaS real: observabilidad, trazabilidad, 
 
 ## 7. Sprint 5 - Personalizacion avanzada por tenant
 
+### Estado
+
+En definicion. Propuesta inicial pendiente de aprobacion funcional del Product Owner. Ver `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md` y `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`.
+
 ### Objetivo
 
-Permitir configuracion visual y regional completa por empresa.
+Permitir personalizacion visual y regional avanzada por empresa sin modificar codigo, manteniendo identidad de plataforma, seguridad, aislamiento tenant y compatibilidad futura.
 
-### Alcance candidato
+### Alcance propuesto
 
-- Logo.
-- Favicon.
-- Paleta.
-- Tema claro/oscuro.
-- Login image.
-- Moneda.
-- Fecha/hora.
-- Idioma.
-- Zona horaria.
+- Perfil runtime de empresa para branding/regional no sensible.
+- Tema dinamico por tenant.
+- Logo, favicon e imagen de login por URL validada.
+- Paleta controlada: color primario, color secundario y modo claro/oscuro/sistema.
+- Formato regional: moneda, fechas, horas, numeros, idioma, locale y zona horaria.
+- UI administrativa para configuracion de empresa.
+- Permisos, auditoria y tests.
 
 ## 8. Versionado
 

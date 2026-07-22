@@ -6,7 +6,7 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1 cerrado. Sprint 2 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-20. Sprint 3 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-21. Sprint 4 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-22.
+Sprint 1 cerrado. Sprint 2 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-20. Sprint 3 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-21. Sprint 4 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-22. Sprint 5 en definicion con propuesta inicial pendiente de aprobacion funcional.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
@@ -15,6 +15,8 @@ Sprint 2 queda cerrado y aprobado funcionalmente. La base funcional minima de op
 Sprint 3 queda cerrado y aprobado funcionalmente. Construyo la fundacion SaaS comercial: planes, suscripciones, entitlements efectivos, limites, capabilities y guards backend/frontend por modulo. El Hito 2 implemento el modelo persistente de licencias con plan `KODA_PILOT`, suscripcion del tenant KODA, limites, feature flags e indices para capabilities. El Hito 3 agrego el backend de capabilities tenant-scoped con endpoint `GET /api/v1/capabilities`, servicio de aplicacion, repositorio JDBC y manejo de errores para tenants inactivos o inexistentes. El Hito 4 agrego guards backend por producto/modulo para bloquear operaciones cuando el tenant no tiene habilitado el modulo, separando licenciamiento SaaS de permisos RBAC. El Hito 5 agrego administracion interna de licencias bajo `/api/v1/platform/tenants/{tenantId}/licenses`, con permisos `license_admin:*`, version optimista y auditoria de cambios. El Hito 6 agrego el shell frontend de capabilities para condicionar menus/rutas y bloquear visualmente modulos sin licencia activa. El Hito 7 completo el hardening tecnico, validacion completa y reportes de cierre.
 
 Sprint 4 queda cerrado y aprobado funcionalmente. Preparo la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial. El Hito 3 agrego liveness/readiness, health de PostgreSQL y health de schema/Flyway mediante `kodaSchema`. El Hito 4 agrego metricas base con Actuator/Micrometer, endpoint protegido, histogramas HTTP y guardrails contra cardinalidad explosiva. El Hito 5 agrego revision de performance e indices criticos justificados por queries reales. El Hito 6 agrego cache local seguro para capabilities, TTL conservador, invalidacion post-commit ante cambios administrativos de licencia y metricas de hit/miss sin cardinalidad alta. El Hito 7 agrego controles operativos de auditoria con rango maximo configurable, paginacion keyset estable e indice tenant-scoped preparado para crecimiento. El Hito 8 resolvio el warning de Mockito/Java Agent en tests, ejecuto validacion final y agrego reportes de hardening/cierre. La aprobacion funcional final queda registrada en `docs/sprints/SPRINT_4_APPROVAL.md`.
+
+Sprint 5 entra en definicion como Personalizacion Avanzada por Tenant. La propuesta busca convertir la configuracion visual/regional existente en una experiencia real de SaaS: tema dinamico por empresa, perfil runtime no sensible, formatos regionales, UI administrativa de configuracion, assets por URL validada, permisos y auditoria. La regla sana: personalizar sin fragmentar la plataforma.
 
 ## Documentos principales
 
@@ -44,6 +46,8 @@ Sprint 4 queda cerrado y aprobado funcionalmente. Preparo la plataforma para ope
 - [Sprint 4 Hardening Report](docs/sprints/SPRINT_4_HARDENING_REPORT.md)
 - [Sprint 4 Closure Report](docs/sprints/SPRINT_4_CLOSURE_REPORT.md)
 - [Sprint 4 Product Owner Approval](docs/sprints/SPRINT_4_APPROVAL.md)
+- [Sprint 5 Functional Baseline](docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md)
+- [Sprint 5 Execution Plan](docs/sprints/SPRINT_5_EXECUTION_PLAN.md)
 - [Correlation ID y Logs Estructurados](docs/observability/CORRELATION_AND_LOGGING.md)
 - [Health Checks Operativos](docs/observability/HEALTH_CHECKS.md)
 - [Metricas Operativas Base](docs/observability/METRICS.md)
