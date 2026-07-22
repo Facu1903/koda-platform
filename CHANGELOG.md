@@ -33,6 +33,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada estrategia operativa de auditoria en `docs/audit/OPERATIONAL_AUDIT_STRATEGY.md`.
 - Agregada migracion `V202607220900__add_audit_operational_query_index.sql` con indice tenant-scoped para paginacion estable.
 - Agregadas pruebas de politica de consulta de auditoria y SQL keyset.
+- Agregados reportes de hardening y cierre tecnico de Sprint 4 en `docs/sprints/SPRINT_4_HARDENING_REPORT.md` y `docs/sprints/SPRINT_4_CLOSURE_REPORT.md`.
 
 ### Changed
 
@@ -46,6 +47,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Ajustados indices de reportes de ventas, compras y stock para cubrir ordenamientos operativos por fecha y numero/id.
 - La resolucion de `/api/v1/capabilities` ahora pasa por `TenantCapabilitiesResolver` y cache local; los guards backend de licencia permanecen contra fuente autoritativa sin cache.
 - La consulta de `/api/v1/audit/events` ahora soporta cursor keyset con `beforeOccurredAt` y `beforeId`, y rechaza rangos temporales explicitos mayores al maximo operativo configurado.
+- Configurados Surefire y Failsafe para ejecutar tests con Mockito como Java agent explicito y evitar self-attach dinamico en JVM futuras.
 
 ### Verified
 
@@ -61,6 +63,10 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `mvn -B "-Dtest=AuditServiceTest,JdbcAuditRepositoryTest" test` ejecutado correctamente en backend con 11 pruebas.
 - `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify` ejecutado correctamente con 12 pruebas de integracion y schema `v202607220900`.
 - `mvn -B verify` ejecutado correctamente en backend con 141 pruebas unitarias y 14 pruebas de integracion.
+- `mvn -B "-Dtest=AuthServiceTest,KodaSchemaHealthIndicatorTest" test` ejecutado correctamente en backend con 8 pruebas y sin advertencia de self-attach Mockito.
+- `npm.cmd run test` ejecutado correctamente en frontend con 3 pruebas.
+- `npm.cmd run lint` ejecutado correctamente en frontend sin errores.
+- `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 
 ## [0.3.0] - 2026-07-21
 

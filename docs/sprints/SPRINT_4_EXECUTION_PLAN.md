@@ -2,7 +2,7 @@
 
 ## Estado
 
-Definicion funcional aprobada por el Product Owner el 2026-07-21. Sprint 4 en ejecucion por hitos.
+Definicion funcional aprobada por el Product Owner el 2026-07-21. Cierre tecnico completado en Hito 8; aprobacion funcional final pendiente del Product Owner.
 
 ## Objetivo
 
@@ -43,7 +43,7 @@ La base funcional de Sprint 4 fue aprobada por el Product Owner el 2026-07-21 y 
 | 5. Performance e indices criticos | Completado | Revision documentada de queries de capabilities, guards, auditoria y reportes; indices aplicados donde corresponde. |
 | 6. Cache seguro de capabilities | Completado | Cache local por tenant con TTL conservador, invalidacion administrativa y guards backend sin cache. |
 | 7. Auditoria operativa | Completado | Politica operativa de consulta, rango maximo configurable, cursor keyset, indice dedicado y estrategia documentada de retencion/particionamiento futuro. |
-| 8. Hardening Sprint 4 | Pendiente | Tests, validacion completa, documentacion final, reporte de cierre y aprobacion funcional. |
+| 8. Hardening Sprint 4 | Completado | Tests, validacion completa, documentacion final y reportes de cierre tecnico. Aprobacion funcional final pendiente del Product Owner. |
 
 ## Hito 1 completado
 
@@ -178,6 +178,28 @@ Validacion:
 - `mvn -B "-Dtest=AuditServiceTest,JdbcAuditRepositoryTest" test`
 - `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify`
 - `mvn -B verify`
+
+## Hito 8 completado
+
+El Hito 8 cierra tecnicamente Sprint 4:
+
+- Configuracion de Mockito como Java agent explicito en Surefire y Failsafe.
+- Eliminacion de la advertencia de self-attach dinamico de Mockito en tests.
+- Validacion completa backend.
+- Validacion completa frontend.
+- Reporte tecnico `docs/sprints/SPRINT_4_HARDENING_REPORT.md`.
+- Reporte de cierre `docs/sprints/SPRINT_4_CLOSURE_REPORT.md`.
+- README, roadmap y changelog actualizados.
+
+Decision tecnica: el cierre no incorpora proveedores externos de observabilidad ni pruebas de carga formales. Sprint 4 deja la aplicacion preparada e instrumentada; la exportacion externa y validacion con volumen alto quedan como decisiones de infraestructura/backlog.
+
+Validacion:
+
+- `mvn -B "-Dtest=AuthServiceTest,KodaSchemaHealthIndicatorTest" test`
+- `mvn -B verify`
+- `npm.cmd run test`
+- `npm.cmd run lint`
+- `npm.cmd run build`
 
 ## Orientacion tecnica inicial
 
