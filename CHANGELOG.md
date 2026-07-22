@@ -8,12 +8,12 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 
 ### Added
 
-- Agregada propuesta funcional de Sprint 5 en `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`.
-- Agregado plan de ejecucion propuesto de Sprint 5 en `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`.
+- Agregada y aprobada base funcional de Sprint 5 en `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`.
+- Agregado plan de ejecucion aprobado de Sprint 5 en `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`.
 
 ### Changed
 
-- Actualizados README y roadmap para iniciar la definicion de Sprint 5 como Personalizacion Avanzada por Tenant.
+- Actualizados README y roadmap para iniciar Sprint 5 como Personalizacion Avanzada por Tenant.
 
 ## [0.4.0] - 2026-07-22
 

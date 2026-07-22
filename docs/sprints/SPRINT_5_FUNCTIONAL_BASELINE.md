@@ -2,11 +2,11 @@
 
 ## Estado
 
-Propuesta inicial pendiente de aprobacion del Product Owner.
+Aprobado por Product Owner el 2026-07-22.
 
-## Decision propuesta
+## Decision aprobada
 
-Sprint 5 se propone como: **Personalizacion Avanzada por Tenant**.
+Sprint 5 se define como: **Personalizacion Avanzada por Tenant**.
 
 ## Objetivo
 
@@ -46,7 +46,7 @@ Pero la aplicacion web todavia usa un tema KODA fijo y textos regionales hardcod
 - Editar configuracion si debe requerir permisos explicitos.
 - La UI debe tener fallback seguro si la configuracion del tenant esta incompleta o temporalmente no disponible.
 
-## Alcance propuesto
+## Alcance aprobado
 
 Sprint 5 incluye:
 
@@ -64,13 +64,13 @@ Sprint 5 incluye:
 - Documentacion funcional y tecnica.
 - Tests backend/frontend correspondientes.
 
-## Reglas funcionales propuestas
+## Reglas funcionales aprobadas
 
 ### Perfil runtime de empresa
 
 La UI necesita una lectura liviana de configuracion visual/regional para todos los usuarios autenticados del tenant.
 
-Regla propuesta:
+Regla aprobada:
 
 - Crear o exponer un contrato runtime tenant-scoped con datos no sensibles de presentacion.
 - Esta lectura debe requerir autenticacion y Tenant Context valido.
@@ -81,7 +81,7 @@ El endpoint administrativo `/api/v1/company/settings` mantiene permisos especifi
 
 ### Tema visual
 
-Reglas propuestas:
+Reglas aprobadas:
 
 - `themeMode` acepta `dark`, `light` y `system`.
 - El modo por defecto sigue siendo `dark`.
@@ -93,7 +93,7 @@ Reglas propuestas:
 
 ### Assets visuales
 
-Reglas propuestas:
+Reglas aprobadas:
 
 - `logoUrl`, `faviconUrl` y `loginImageUrl` se manejan como URL externas validadas.
 - En produccion deben ser `https://`.
@@ -103,7 +103,7 @@ Reglas propuestas:
 
 ### Configuracion regional
 
-Reglas propuestas:
+Reglas aprobadas:
 
 - `defaultLocale` define idioma/formato regional principal.
 - `defaultCurrency` debe ser ISO 4217.
@@ -114,7 +114,7 @@ Reglas propuestas:
 
 ### Permisos
 
-Matriz propuesta para Sprint 5:
+Matriz aprobada para Sprint 5:
 
 | Capacidad | TENANT_OWNER | TENANT_ADMIN | MANAGER | SALES_USER | STOCK_USER | READ_ONLY |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -122,7 +122,7 @@ Matriz propuesta para Sprint 5:
 | Leer configuracion administrativa | Si | Si | Si | No | No | No |
 | Actualizar configuracion | Si | Si | No | No | No | No |
 
-Esta matriz requiere aprobacion funcional explicita antes de aplicarse por migracion.
+Esta matriz queda aprobada funcionalmente y debe aplicarse por migracion durante Sprint 5 antes de habilitar la UI administrativa de actualizacion.
 
 ### Auditoria
 
@@ -185,8 +185,8 @@ Sprint 5 se considerara aceptable si:
 - Tests relevantes pasan.
 - README, roadmap, changelog y documentacion quedan actualizados.
 
-## Decision pendiente
+## Decision
 
-Esta propuesta queda pendiente de aprobacion del Product Owner.
+Se aprueba esta base funcional para iniciar Sprint 5.
 
-Una vez aprobada, Sprint 5 puede iniciar con foco en personalizacion avanzada por tenant, manteniendo fuera de alcance uploads, CDN, custom domains y login publico tenant-aware.
+Cualquier cambio que incorpore uploads, storage/CDN, custom domains, subdominios, login publico tenant-aware completo, preferencias visuales por usuario, CSS/HTML arbitrario o altere permisos aprobados requiere aprobacion explicita del Product Owner antes de implementarse.

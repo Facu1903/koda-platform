@@ -2,7 +2,7 @@
 
 ## Estado
 
-Propuesta inicial pendiente de aprobacion funcional del Product Owner.
+Definicion funcional aprobada por el Product Owner el 2026-07-22.
 
 ## Objetivo
 
@@ -14,11 +14,11 @@ Personalizar sin fragmentar.
 
 KODA PLATFORM debe permitir identidad propia por empresa, pero no debe convertirse en un sistema de forks invisibles. La personalizacion debe ser configurable, validada, testeable y reversible.
 
-## Base funcional propuesta
+## Base funcional aprobada
 
-La propuesta funcional queda documentada en `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`.
+La base funcional de Sprint 5 fue aprobada por el Product Owner el 2026-07-22 y queda documentada en `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`.
 
-No se debe iniciar codigo de negocio del Sprint 5 hasta que el Product Owner apruebe esta base funcional.
+Con esta aprobacion, Sprint 5 puede iniciar desarrollo por hitos sin modificar las reglas funcionales aprobadas.
 
 ## Alcance del sprint
 
@@ -33,11 +33,11 @@ No se debe iniciar codigo de negocio del Sprint 5 hasta que el Product Owner apr
 - Tests backend/frontend.
 - Documentacion y cierre.
 
-## Hitos internos propuestos
+## Hitos internos aprobados
 
 | Hito | Estado | Resultado esperado |
 | --- | --- | --- |
-| 1. Base funcional Sprint 5 | Propuesto | Product Owner aprueba alcance, reglas y fuera de alcance. |
+| 1. Base funcional Sprint 5 | Completado | Product Owner aprobo alcance, reglas y fuera de alcance. |
 | 2. Perfil runtime de empresa | Pendiente | Backend expone datos no sensibles para renderizar UI por tenant autenticado. |
 | 3. Theme provider dinamico | Pendiente | Frontend genera tema MUI desde configuracion del tenant con fallbacks seguros. |
 | 4. Formato regional | Pendiente | Frontend centraliza formato de fecha, hora, numero y moneda por tenant. |
@@ -46,19 +46,19 @@ No se debe iniciar codigo de negocio del Sprint 5 hasta que el Product Owner apr
 | 7. Permisos, auditoria y hardening funcional | Pendiente | Matriz aprobada aplicada por migracion, auditoria verificada y errores controlados. |
 | 8. Hardening Sprint 5 | Pendiente | Validacion completa backend/frontend, documentacion final y reporte de cierre tecnico. |
 
-## Hito 1 propuesto
+## Hito 1 completado
 
-El Hito 1 debe cerrar la definicion funcional:
+El Hito 1 cierra la definicion funcional:
 
 - Documento `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`.
-- Foco propuesto: personalizacion avanzada por tenant.
+- Foco aprobado: personalizacion avanzada por tenant.
 - Confirmacion de que Sprint 5 no incluye upload, CDN, custom domains ni login publico tenant-aware completo.
-- Matriz de permisos propuesta para configuracion administrativa.
+- Matriz de permisos aprobada para configuracion administrativa.
 - Criterios de aceptacion funcional.
 
-Decision requerida: aprobacion del Product Owner para convertir esta propuesta en base funcional aprobada.
+Decision funcional: avanzar con Sprint 5 manteniendo fuera de alcance upload de archivos, CDN/storage propio, custom domains, subdominios, login publico tenant-aware completo, preferencias por usuario, CSS/HTML arbitrario y white-label total.
 
-## Hito 2 propuesto - Perfil runtime de empresa
+## Hito 2 - Perfil runtime de empresa
 
 Crear una lectura runtime liviana para la UI:
 
@@ -71,7 +71,7 @@ Crear una lectura runtime liviana para la UI:
 
 Decision tecnica esperada: mantener separado el endpoint runtime del endpoint administrativo `/api/v1/company/settings`.
 
-## Hito 3 propuesto - Theme provider dinamico
+## Hito 3 - Theme provider dinamico
 
 Implementar frontend de tema dinamico:
 
@@ -82,7 +82,7 @@ Implementar frontend de tema dinamico:
 - Contraste seguro para texto principal y botones.
 - Sin CSS arbitrario.
 
-## Hito 4 propuesto - Formato regional
+## Hito 4 - Formato regional
 
 Centralizar formato regional en frontend:
 
@@ -94,7 +94,7 @@ Centralizar formato regional en frontend:
 
 El frontend debe usar `Intl` donde sea suficiente y no debe duplicar reglas de negocio monetarias. Los importes persistidos siguen siendo valores numericos y codigo de moneda.
 
-## Hito 5 propuesto - UI administrativa de configuracion
+## Hito 5 - UI administrativa de configuracion
 
 Construir una pantalla operativa dentro del modulo `CONFIGURATION`:
 
@@ -109,7 +109,7 @@ Construir una pantalla operativa dentro del modulo `CONFIGURATION`:
 
 La UI no debe ser una landing page. Debe ser una herramienta de configuracion usable, densa y clara.
 
-## Hito 6 propuesto - Assets visuales controlados
+## Hito 6 - Assets visuales controlados
 
 Aplicar assets configurables:
 
@@ -126,19 +126,19 @@ Restricciones:
 - sin `javascript:`,
 - sin upload en Sprint 5.
 
-## Hito 7 propuesto - Permisos, auditoria y hardening funcional
+## Hito 7 - Permisos, auditoria y hardening funcional
 
 Aplicar reglas aprobadas:
 
 - permisos de lectura administrativa y actualizacion,
-- migracion de asignacion rol-permiso si el Product Owner aprueba matriz,
+- migracion de asignacion rol-permiso segun matriz aprobada,
 - auditoria de cambios,
 - tests de permisos,
 - tests de validacion,
 - tests de version optimista,
 - tests de aislamiento tenant.
 
-## Hito 8 propuesto - Hardening Sprint 5
+## Hito 8 - Hardening Sprint 5
 
 Cerrar Sprint 5 con:
 
@@ -184,4 +184,4 @@ Cerrar Sprint 5 con:
 
 ## Siguiente paso recomendado
 
-Revisar y aprobar o ajustar la propuesta funcional de Sprint 5.
+Avanzar al Hito 2: perfil runtime de empresa para branding y configuracion regional no sensible.

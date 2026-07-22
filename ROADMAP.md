@@ -180,13 +180,13 @@ Endurecer la plataforma para operacion SaaS real: observabilidad, trazabilidad, 
 
 ### Estado
 
-En definicion. Propuesta inicial pendiente de aprobacion funcional del Product Owner. Ver `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md` y `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`.
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-22. Hito 1 completado. Ver `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md` y `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`.
 
 ### Objetivo
 
 Permitir personalizacion visual y regional avanzada por empresa sin modificar codigo, manteniendo identidad de plataforma, seguridad, aislamiento tenant y compatibilidad futura.
 
-### Alcance propuesto
+### Alcance aprobado
 
 - Perfil runtime de empresa para branding/regional no sensible.
 - Tema dinamico por tenant.

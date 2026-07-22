@@ -6,7 +6,7 @@ El primer producto sera KODA ERP, usado inicialmente por KODA como cliente pilot
 
 ## Estado actual
 
-Sprint 1 cerrado. Sprint 2 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-20. Sprint 3 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-21. Sprint 4 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-22. Sprint 5 en definicion con propuesta inicial pendiente de aprobacion funcional.
+Sprint 1 cerrado. Sprint 2 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-20. Sprint 3 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-21. Sprint 4 cerrado y aprobado funcionalmente por el Product Owner el 2026-07-22. Sprint 5 definido y aprobado funcionalmente por el Product Owner el 2026-07-22.
 
 Sprint 1 dejo una base tecnica ejecutable con backend, frontend, PostgreSQL 17, migraciones Flyway, seed minimo aprobado, Tenant Context backend, autenticacion JWT con refresh tokens, API tenant-scoped de configuracion de empresa, CRUD backend de catalogos ERP, API tenant-scoped de stock, consulta controlada de eventos de auditoria y hardening tecnico de arquitectura, JWT y aislamiento multiempresa. La base ya camina; ahora hay que evitar que corra en ojotas.
 
@@ -16,7 +16,7 @@ Sprint 3 queda cerrado y aprobado funcionalmente. Construyo la fundacion SaaS co
 
 Sprint 4 queda cerrado y aprobado funcionalmente. Preparo la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial. El Hito 3 agrego liveness/readiness, health de PostgreSQL y health de schema/Flyway mediante `kodaSchema`. El Hito 4 agrego metricas base con Actuator/Micrometer, endpoint protegido, histogramas HTTP y guardrails contra cardinalidad explosiva. El Hito 5 agrego revision de performance e indices criticos justificados por queries reales. El Hito 6 agrego cache local seguro para capabilities, TTL conservador, invalidacion post-commit ante cambios administrativos de licencia y metricas de hit/miss sin cardinalidad alta. El Hito 7 agrego controles operativos de auditoria con rango maximo configurable, paginacion keyset estable e indice tenant-scoped preparado para crecimiento. El Hito 8 resolvio el warning de Mockito/Java Agent en tests, ejecuto validacion final y agrego reportes de hardening/cierre. La aprobacion funcional final queda registrada en `docs/sprints/SPRINT_4_APPROVAL.md`.
 
-Sprint 5 entra en definicion como Personalizacion Avanzada por Tenant. La propuesta busca convertir la configuracion visual/regional existente en una experiencia real de SaaS: tema dinamico por empresa, perfil runtime no sensible, formatos regionales, UI administrativa de configuracion, assets por URL validada, permisos y auditoria. La regla sana: personalizar sin fragmentar la plataforma.
+Sprint 5 queda definido y aprobado como Personalizacion Avanzada por Tenant. Busca convertir la configuracion visual/regional existente en una experiencia real de SaaS: tema dinamico por empresa, perfil runtime no sensible, formatos regionales, UI administrativa de configuracion, assets por URL validada, permisos y auditoria. La regla sana: personalizar sin fragmentar la plataforma.
 
 ## Documentos principales
 
@@ -297,7 +297,7 @@ El backend ya expone `/api/v1/company/settings` para consultar y actualizar conf
 - La actualizacion requiere `company_settings:update`.
 - Las actualizaciones usan version optimista y registran auditoria.
 
-La matriz rol-permiso para habilitar estos permisos en roles iniciales requiere aprobacion funcional explicita.
+La matriz rol-permiso de Sprint 5 aprueba lectura administrativa para `TENANT_OWNER`, `TENANT_ADMIN` y `MANAGER`, y actualizacion para `TENANT_OWNER` y `TENANT_ADMIN`.
 
 Ver detalle en `docs/configuration/COMPANY_SETTINGS.md`.
 
