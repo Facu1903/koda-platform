@@ -16,7 +16,7 @@ Sprint 3 queda cerrado y aprobado funcionalmente. Construyo la fundacion SaaS co
 
 Sprint 4 queda cerrado y aprobado funcionalmente. Preparo la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial. El Hito 3 agrego liveness/readiness, health de PostgreSQL y health de schema/Flyway mediante `kodaSchema`. El Hito 4 agrego metricas base con Actuator/Micrometer, endpoint protegido, histogramas HTTP y guardrails contra cardinalidad explosiva. El Hito 5 agrego revision de performance e indices criticos justificados por queries reales. El Hito 6 agrego cache local seguro para capabilities, TTL conservador, invalidacion post-commit ante cambios administrativos de licencia y metricas de hit/miss sin cardinalidad alta. El Hito 7 agrego controles operativos de auditoria con rango maximo configurable, paginacion keyset estable e indice tenant-scoped preparado para crecimiento. El Hito 8 resolvio el warning de Mockito/Java Agent en tests, ejecuto validacion final y agrego reportes de hardening/cierre. La aprobacion funcional final queda registrada en `docs/sprints/SPRINT_4_APPROVAL.md`.
 
-Sprint 5 queda definido y aprobado como Personalizacion Avanzada por Tenant. Busca convertir la configuracion visual/regional existente en una experiencia real de SaaS: tema dinamico por empresa, perfil runtime no sensible, formatos regionales, UI administrativa de configuracion, assets por URL validada, permisos y auditoria. El Hito 2 agrego el perfil runtime tenant-scoped `GET /api/v1/company/profile` para que la UI pueda leer branding y configuracion regional no sensible sin requerir permisos administrativos. La regla sana: personalizar sin fragmentar la plataforma.
+Sprint 5 queda definido y aprobado como Personalizacion Avanzada por Tenant. Busca convertir la configuracion visual/regional existente en una experiencia real de SaaS: tema dinamico por empresa, perfil runtime no sensible, formatos regionales, UI administrativa de configuracion, assets por URL validada, permisos y auditoria. El Hito 2 agrego el perfil runtime tenant-scoped `GET /api/v1/company/profile` para que la UI pueda leer branding y configuracion regional no sensible sin requerir permisos administrativos. El Hito 3 agrego el provider frontend de perfil de empresa y tema Material UI dinamico por tenant, con fallback KODA seguro. La regla sana: personalizar sin fragmentar la plataforma.
 
 ## Documentos principales
 
@@ -62,6 +62,7 @@ Sprint 5 queda definido y aprobado como Personalizacion Avanzada por Tenant. Bus
 - [Tenant Context](docs/security/TENANT_CONTEXT.md)
 - [Authentication](docs/security/AUTHENTICATION.md)
 - [Company Runtime Profile](docs/configuration/COMPANY_PROFILE.md)
+- [Frontend Tenant Theme](docs/configuration/FRONTEND_TENANT_THEME.md)
 - [Company Settings](docs/configuration/COMPANY_SETTINGS.md)
 - [ERP Catalogs](docs/catalogs/ERP_CATALOGS.md)
 - [Commercial Partners](docs/commercial/COMMERCIAL_PARTNERS.md)
@@ -300,6 +301,15 @@ El backend ya expone `/api/v1/company/profile` para que la UI obtenga perfil run
 
 Ver detalle en `docs/configuration/COMPANY_PROFILE.md`.
 
+El frontend ya consume ese perfil runtime para generar tema Material UI dinamico por tenant.
+
+- Soporta `dark`, `light` y `system`.
+- Usa fallback KODA si el perfil no esta disponible.
+- Valida colores `#RRGGBB` en frontend antes de aplicarlos al tema.
+- No permite CSS ni HTML arbitrario por tenant.
+
+Ver detalle en `docs/configuration/FRONTEND_TENANT_THEME.md`.
+
 El backend ya expone `/api/v1/company/settings` para consultar y actualizar configuracion visual/regional del tenant autenticado.
 
 - El tenant se resuelve desde JWT/Tenant Context.
@@ -457,7 +467,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
 - Suite backend actual: 144 tests unitarios, 0 fallos en `mvn -B test`; 14 pruebas de integracion existentes validadas en cierre de Sprint 4.
-- Suite frontend actual: 3 tests del capability shell, 0 fallos en `npm.cmd run test`, `npm.cmd run lint` y `npm.cmd run build`.
+- Suite frontend actual: 5 tests del capability shell y tema dinamico, 0 fallos en `npm.cmd run test`, `npm.cmd run lint` y `npm.cmd run build`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md` y `docs/sprints/SPRINT_2_HARDENING_REPORT.md`.
 

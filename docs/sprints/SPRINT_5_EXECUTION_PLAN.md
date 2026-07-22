@@ -39,7 +39,7 @@ Con esta aprobacion, Sprint 5 puede iniciar desarrollo por hitos sin modificar l
 | --- | --- | --- |
 | 1. Base funcional Sprint 5 | Completado | Product Owner aprobo alcance, reglas y fuera de alcance. |
 | 2. Perfil runtime de empresa | Completado | Backend expone datos no sensibles para renderizar UI por tenant autenticado. |
-| 3. Theme provider dinamico | Pendiente | Frontend genera tema MUI desde configuracion del tenant con fallbacks seguros. |
+| 3. Theme provider dinamico | Completado | Frontend genera tema MUI desde configuracion del tenant con fallbacks seguros. |
 | 4. Formato regional | Pendiente | Frontend centraliza formato de fecha, hora, numero y moneda por tenant. |
 | 5. UI administrativa de configuracion | Pendiente | Pantalla para consultar, previsualizar y editar branding/regional con version optimista. |
 | 6. Assets visuales controlados | Pendiente | Logo, favicon e imagen de login por URL validada, con fallback y documentacion de riesgos. |
@@ -82,16 +82,29 @@ Validacion:
 - `mvn -B "-Dtest=CompanySettingsServiceTest,KodaPlatformApplicationTests" test`
 - `mvn -B test`
 
-## Hito 3 - Theme provider dinamico
+## Hito 3 completado - Theme provider dinamico
 
-Implementar frontend de tema dinamico:
+El Hito 3 implementa frontend de tema dinamico:
 
-- `CompanyProfileProvider` o equivalente.
-- Generacion de `ThemeProvider` desde configuracion del tenant.
+- Contrato TypeScript `CompanyRuntimeProfile`.
+- Cliente HTTP `fetchCompanyProfile`.
+- `CompanyProfileProvider` con estado `loading`, `ready`, `unavailable` y fallback efectivo.
+- `CompanyThemeProvider` para aplicar el tema Material UI.
+- Fabrica `createKodaTheme` basada en branding del tenant.
 - Soporte `dark`, `light` y `system`.
 - Fallback al tema KODA si la configuracion no esta disponible.
 - Contraste seguro para texto principal y botones.
 - Sin CSS arbitrario.
+- Shell actualizado para mostrar tenant, locale y moneda efectivos.
+- Documento tecnico `docs/configuration/FRONTEND_TENANT_THEME.md`.
+
+Decision tecnica: el tema runtime no bloquea la aplicacion. Si `/api/v1/company/profile` falla, el frontend renderiza con fallback KODA y mantiene separado el estado de capabilities/licencia.
+
+Validacion:
+
+- `npm.cmd run test`
+- `npm.cmd run lint`
+- `npm.cmd run build`
 
 ## Hito 4 - Formato regional
 
@@ -195,4 +208,4 @@ Cerrar Sprint 5 con:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 3: theme provider dinamico basado en el perfil runtime de empresa.
+Avanzar al Hito 4: formato regional centralizado en frontend para fecha, hora, numeros y moneda.

@@ -1,13 +1,14 @@
-import { CssBaseline, ThemeProvider } from '@mui/material';
 import type { PropsWithChildren } from 'react';
+import { CompanyProfileProvider } from '../../platform/configuration/CompanyProfileProvider';
 import { CapabilitiesProvider } from '../../platform/licensing/CapabilitiesProvider';
-import { kodaTheme } from '../../theme/kodaTheme';
+import { CompanyThemeProvider } from '../../theme/CompanyThemeProvider';
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
-    <ThemeProvider theme={kodaTheme}>
-      <CssBaseline />
-      <CapabilitiesProvider>{children}</CapabilitiesProvider>
-    </ThemeProvider>
+    <CompanyProfileProvider>
+      <CompanyThemeProvider>
+        <CapabilitiesProvider>{children}</CapabilitiesProvider>
+      </CompanyThemeProvider>
+    </CompanyProfileProvider>
   );
 }

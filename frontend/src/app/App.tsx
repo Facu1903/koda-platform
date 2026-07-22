@@ -34,7 +34,9 @@ import {
   Typography,
 } from '@mui/material';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
+import { alpha } from '@mui/material/styles';
 import { useEffect, useMemo, useState } from 'react';
+import { useCompanyProfile } from '../platform/configuration/CompanyProfileProvider';
 import { useCapabilities } from '../platform/licensing/CapabilitiesProvider';
 import {
   disabledModuleShellItems,
@@ -114,6 +116,7 @@ function NavigationIcon({ moduleCode, ...props }: { moduleCode: ModuleCode | nul
 
 export function App() {
   const { capabilities, error, reload, status } = useCapabilities();
+  const { effectiveProfile } = useCompanyProfile();
   const [currentPath, setCurrentPath] = useState(readHashPath);
 
   useEffect(() => {
@@ -126,6 +129,9 @@ export function App() {
   }, []);
 
   const product = findProduct(capabilities, 'KODA_ERP');
+  const tenantName = effectiveProfile.tenant.commercialName;
+  const tenantLocale = effectiveProfile.regional.defaultLocale;
+  const tenantCurrency = effectiveProfile.regional.defaultCurrency;
   const enabledModules = useMemo(() => enabledModuleShellItems(capabilities), [capabilities]);
   const disabledModules = useMemo(() => disabledModuleShellItems(capabilities), [capabilities]);
   const navigationItems = useMemo<NavigationItem[]>(
@@ -157,12 +163,13 @@ export function App() {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppBar
+        color="default"
         elevation={0}
         position="fixed"
         sx={{
           borderBottom: '1px solid',
           borderColor: 'divider',
-          bgcolor: 'rgba(11,13,16,0.94)',
+          bgcolor: (theme) => alpha(theme.palette.background.default, 0.94),
           backdropFilter: 'blur(12px)',
           zIndex: (theme) => theme.zIndex.drawer + 1,
         }}
@@ -174,7 +181,7 @@ export function App() {
               KODA PLATFORM
             </Typography>
             <Typography variant="caption" color="text.secondary" noWrap component="div">
-              {product?.name ?? 'KODA ERP'} - Tenant KODA - es-AR - ARS
+              {product?.name ?? 'KODA ERP'} - {tenantName} - {tenantLocale} - {tenantCurrency}
             </Typography>
           </Box>
           <Chip
@@ -202,7 +209,7 @@ export function App() {
             boxSizing: 'border-box',
             borderRight: '1px solid',
             borderColor: 'divider',
-            bgcolor: '#0F1318',
+            bgcolor: 'background.paper',
             pt: 10,
           },
         }}
@@ -263,7 +270,12 @@ export function App() {
           ) : activeModule !== null ? (
             <ModuleWorkspace module={activeModule} />
           ) : (
-            <DashboardShell calculatedAt={capabilities?.calculatedAt ?? null} disabledModules={disabledModules} enabledModules={enabledModules} />
+            <DashboardShell
+              calculatedAt={capabilities?.calculatedAt ?? null}
+              disabledModules={disabledModules}
+              enabledModules={enabledModules}
+              tenantName={tenantName}
+            />
           )}
         </Stack>
       </Box>
@@ -318,10 +330,12 @@ function DashboardShell({
   calculatedAt,
   disabledModules,
   enabledModules,
+  tenantName,
 }: {
   calculatedAt: string | null;
   disabledModules: ModuleShellItem[];
   enabledModules: ModuleShellItem[];
+  tenantName: string;
 }) {
   const readiness = [
     { label: 'Modulos activos', value: String(enabledModules.length), progress: enabledModules.length === 0 ? 0 : 100 },
@@ -334,7 +348,7 @@ function DashboardShell({
     <Stack spacing={3}>
       <Box>
         <Typography variant="h1">Dashboard</Typography>
-        <Typography color="text.secondary">Estado operativo del tenant KODA.</Typography>
+        <Typography color="text.secondary">Estado operativo del tenant {tenantName}.</Typography>
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: 'repeat(4, 1fr)' }, gap: 2 }}>

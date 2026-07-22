@@ -14,16 +14,26 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado modelo de aplicacion `CompanyRuntimeProfile` para separar datos runtime no sensibles del contrato administrativo de configuracion.
 - Agregada documentacion tecnica del perfil runtime en `docs/configuration/COMPANY_PROFILE.md`.
 - Agregadas pruebas de servicio y contexto API para validar lectura runtime sin permiso administrativo y sin exponer campos administrativos.
+- Agregado frontend `CompanyProfileProvider` para consumir el perfil runtime del tenant.
+- Agregado `CompanyThemeProvider` para generar y aplicar tema Material UI dinamico por tenant.
+- Agregada fabrica `createKodaTheme` con soporte `dark`, `light`, `system`, fallback seguro y contraste calculado.
+- Agregada documentacion tecnica del tema frontend por tenant en `docs/configuration/FRONTEND_TENANT_THEME.md`.
+- Agregadas pruebas frontend del shell con perfil runtime y del generador de tema.
 
 ### Changed
 
 - Actualizados README y roadmap para iniciar Sprint 5 como Personalizacion Avanzada por Tenant.
 - Actualizado plan de Sprint 5 para marcar Hito 2 como completado.
+- Actualizado shell frontend para mostrar tenant, locale y moneda efectivos desde `/api/v1/company/profile`.
+- Actualizado plan de Sprint 5 para marcar Hito 3 como completado.
 
 ### Verified
 
 - `mvn -B "-Dtest=CompanySettingsServiceTest,KodaPlatformApplicationTests" test` ejecutado correctamente en backend con 13 pruebas.
 - `mvn -B test` ejecutado correctamente en backend con 144 pruebas unitarias.
+- `npm.cmd run test` ejecutado correctamente en frontend con 5 pruebas.
+- `npm.cmd run lint` ejecutado correctamente en frontend sin errores.
+- `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 
 ## [0.4.0] - 2026-07-22
 
