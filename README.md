@@ -14,7 +14,7 @@ Sprint 2 queda cerrado y aprobado funcionalmente. La base funcional minima de op
 
 Sprint 3 queda cerrado y aprobado funcionalmente. Construyo la fundacion SaaS comercial: planes, suscripciones, entitlements efectivos, limites, capabilities y guards backend/frontend por modulo. El Hito 2 implemento el modelo persistente de licencias con plan `KODA_PILOT`, suscripcion del tenant KODA, limites, feature flags e indices para capabilities. El Hito 3 agrego el backend de capabilities tenant-scoped con endpoint `GET /api/v1/capabilities`, servicio de aplicacion, repositorio JDBC y manejo de errores para tenants inactivos o inexistentes. El Hito 4 agrego guards backend por producto/modulo para bloquear operaciones cuando el tenant no tiene habilitado el modulo, separando licenciamiento SaaS de permisos RBAC. El Hito 5 agrego administracion interna de licencias bajo `/api/v1/platform/tenants/{tenantId}/licenses`, con permisos `license_admin:*`, version optimista y auditoria de cambios. El Hito 6 agrego el shell frontend de capabilities para condicionar menus/rutas y bloquear visualmente modulos sin licencia activa. El Hito 7 completo el hardening tecnico, validacion completa y reportes de cierre.
 
-Sprint 4 queda definido y aprobado para preparar la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial. El Hito 3 agrego liveness/readiness, health de PostgreSQL y health de schema/Flyway mediante `kodaSchema`. El Hito 4 agrego metricas base con Actuator/Micrometer, endpoint protegido, histogramas HTTP y guardrails contra cardinalidad explosiva. El Hito 5 agrego revision de performance e indices criticos justificados por queries reales. El Hito 6 agrego cache local seguro para capabilities, TTL conservador, invalidacion post-commit ante cambios administrativos de licencia y metricas de hit/miss sin cardinalidad alta.
+Sprint 4 queda definido y aprobado para preparar la plataforma para operacion SaaS real: correlation ID, logs estructurados enriquecidos, health checks operativos, metricas base, revision de performance/indices, cache seguro de capabilities, estrategia de auditoria operativa y hardening final. El Hito 2 agrego trazabilidad HTTP con `X-Correlation-ID`, MDC enriquecido, logs JSON con contexto operativo y sanitizacion inicial. El Hito 3 agrego liveness/readiness, health de PostgreSQL y health de schema/Flyway mediante `kodaSchema`. El Hito 4 agrego metricas base con Actuator/Micrometer, endpoint protegido, histogramas HTTP y guardrails contra cardinalidad explosiva. El Hito 5 agrego revision de performance e indices criticos justificados por queries reales. El Hito 6 agrego cache local seguro para capabilities, TTL conservador, invalidacion post-commit ante cambios administrativos de licencia y metricas de hit/miss sin cardinalidad alta. El Hito 7 agrego controles operativos de auditoria con rango maximo configurable, paginacion keyset estable e indice tenant-scoped preparado para crecimiento.
 
 ## Documentos principales
 
@@ -63,6 +63,7 @@ Sprint 4 queda definido y aprobado para preparar la plataforma para operacion Sa
 - [Reportes Operativos](docs/reports/OPERATIONAL_REPORTS.md)
 - [Stock Movements](docs/stock/STOCK_MOVEMENTS.md)
 - [Audit Events](docs/audit/AUDIT_EVENTS.md)
+- [Operational Audit Strategy](docs/audit/OPERATIONAL_AUDIT_STRATEGY.md)
 
 ## Stack obligatorio
 
@@ -410,11 +411,13 @@ El backend ya expone `/api/v1/audit/events` para consultar eventos auditables de
 - Devuelve eventos recientes primero.
 - Permite filtros por usuario actor, recurso, accion, resultado y rango de fechas.
 - El limite maximo aprobado es 500 eventos por request.
+- El rango temporal explicito no puede superar el maximo operativo configurado, por defecto 90 dias.
+- La paginacion usa cursor keyset con `beforeOccurredAt` y `beforeId`; no se usa `OFFSET`.
 - La auditoria global de plataforma queda fuera del Hito 8.
 
 La matriz aprobada habilita lectura de auditoria para `TENANT_OWNER`, `TENANT_ADMIN` y `MANAGER`. `READ_ONLY`, `SALES_USER` y `STOCK_USER` no acceden a auditoria en Sprint 1.
 
-Ver detalle en `docs/audit/AUDIT_EVENTS.md`.
+Ver detalle en `docs/audit/AUDIT_EVENTS.md` y `docs/audit/OPERATIONAL_AUDIT_STRATEGY.md`.
 
 ## CI/CD
 
@@ -436,7 +439,7 @@ El backend ya incorpora hardening tecnico de cierre de Sprint 1:
 - Validacion de issuer JWT en el decoder.
 - Puertos de aplicacion para emision de access tokens, refresh tokens y politica de tokens.
 - Pruebas de aislamiento tenant en catalogos y stock.
-- Suite backend actual: 137 tests unitarios y 14 pruebas de integracion, 0 fallos en `mvn -B verify`.
+- Suite backend actual: 141 tests unitarios y 14 pruebas de integracion, 0 fallos en `mvn -B verify`.
 - Suite frontend actual: 3 tests del capability shell, 0 fallos en `npm.cmd run test`, `npm.cmd run lint` y `npm.cmd run build`.
 
 Ver detalle en `docs/sprints/SPRINT_1_HARDENING_REPORT.md` y `docs/sprints/SPRINT_2_HARDENING_REPORT.md`.

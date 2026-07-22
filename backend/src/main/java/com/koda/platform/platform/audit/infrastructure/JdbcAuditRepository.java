@@ -56,6 +56,12 @@ public class JdbcAuditRepository implements AuditRepository {
             sql.append(" AND occurred_at <= ?");
             args.add(Timestamp.from(filter.to()));
         }
+        if (filter.beforeOccurredAt() != null && filter.beforeId() != null) {
+            sql.append(" AND (occurred_at < ? OR (occurred_at = ? AND id < ?))");
+            args.add(Timestamp.from(filter.beforeOccurredAt()));
+            args.add(Timestamp.from(filter.beforeOccurredAt()));
+            args.add(filter.beforeId());
+        }
         sql.append(" ORDER BY occurred_at DESC, id DESC LIMIT ?");
         args.add(filter.limit());
         return jdbcTemplate.query(sql.toString(), this::mapAuditEvent, args.toArray());

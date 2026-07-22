@@ -87,3 +87,6 @@ koda:
       enabled: ${KODA_CAPABILITIES_CACHE_ENABLED:true}
       ttl: ${KODA_CAPABILITIES_CACHE_TTL:30s}
       max-size: ${KODA_CAPABILITIES_CACHE_MAX_SIZE:10000}
+  audit:
+    query:
+      max-range: ${KODA_AUDIT_QUERY_MAX_RANGE:P90D}

@@ -23,6 +23,8 @@ Reglas:
 - La consulta requiere permiso `audit:read`.
 - Los eventos se ordenan por fecha descendente y luego por identificador descendente.
 - El limite maximo por request es 500 eventos.
+- Los rangos temporales explicitos no pueden superar el maximo operativo configurado.
+- La paginacion historica usa cursor keyset con `beforeOccurredAt` y `beforeId`.
 - La respuesta no expone `tenant_id`.
 
 ## Filtros
@@ -37,6 +39,8 @@ Reglas:
 | `from` | Fecha/hora minima de ocurrencia. |
 | `to` | Fecha/hora maxima de ocurrencia. |
 | `limit` | Cantidad maxima de eventos a devolver. Maximo 500. |
+| `beforeOccurredAt` | Cursor temporal para pedir eventos anteriores a la ultima fila recibida. |
+| `beforeId` | Cursor de desempate para eventos con el mismo `occurredAt`. |
 
 Validaciones:
 
@@ -44,6 +48,28 @@ Validaciones:
 - `outcome` solo acepta `SUCCESS` o `FAILURE`.
 - `limit` no puede ser menor a 1.
 - Si `limit` supera 500, el backend lo reduce a 500.
+- Si se informa `beforeOccurredAt`, tambien debe informarse `beforeId`.
+- Si se informa `beforeId`, tambien debe informarse `beforeOccurredAt`.
+- El rango `from`/`to` explicito no puede superar `koda.audit.query.max-range`, por defecto `P90D`.
+
+## Paginacion
+
+La respuesta sigue siendo una lista plana para mantener compatibilidad.
+
+Para pedir la siguiente pagina:
+
+1. Tomar el ultimo evento recibido.
+2. Enviar su `occurredAt` como `beforeOccurredAt`.
+3. Enviar su `id` como `beforeId`.
+
+El backend aplica la condicion keyset:
+
+```sql
+occurred_at < :beforeOccurredAt
+OR (occurred_at = :beforeOccurredAt AND id < :beforeId)
+```
+
+No se usa `OFFSET`, porque degrada rapido con millones de registros.
 
 ## Matriz de permisos
 
@@ -89,7 +115,6 @@ No incluye:
 - Eliminar eventos.
 - Auditoria global cross-tenant.
 - Exportacion CSV/PDF/Excel.
-- Retencion configurable.
 - Particionamiento fisico de tabla.
 - UI de auditoria.
 

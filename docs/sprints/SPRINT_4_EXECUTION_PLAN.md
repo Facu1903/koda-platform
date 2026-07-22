@@ -42,7 +42,7 @@ La base funcional de Sprint 4 fue aprobada por el Product Owner el 2026-07-21 y 
 | 4. Metricas base | Completado | Actuator/Micrometer expone metricas HTTP/runtime y lineamientos de cardinalidad. |
 | 5. Performance e indices criticos | Completado | Revision documentada de queries de capabilities, guards, auditoria y reportes; indices aplicados donde corresponde. |
 | 6. Cache seguro de capabilities | Completado | Cache local por tenant con TTL conservador, invalidacion administrativa y guards backend sin cache. |
-| 7. Auditoria operativa | Pendiente | Estrategia inicial de retencion, crecimiento y preparacion para particionamiento futuro. |
+| 7. Auditoria operativa | Completado | Politica operativa de consulta, rango maximo configurable, cursor keyset, indice dedicado y estrategia documentada de retencion/particionamiento futuro. |
 | 8. Hardening Sprint 4 | Pendiente | Tests, validacion completa, documentacion final, reporte de cierre y aprobacion funcional. |
 
 ## Hito 1 completado
@@ -158,6 +158,25 @@ Decision tecnica: los guards backend de licencia no usan este cache en Sprint 4.
 Validacion:
 
 - `mvn -B "-Dtest=TenantCapabilitiesServiceTest,TenantLicenseAdministrationServiceTest,InMemoryTenantCapabilitiesCacheTest" test`
+- `mvn -B verify`
+
+## Hito 7 completado
+
+El Hito 7 endurece la auditoria como capacidad operativa SaaS:
+
+- Rango maximo configurable para consultas explicitas de auditoria mediante `koda.audit.query.max-range`.
+- Default operativo inicial: `P90D`.
+- Paginacion keyset con `beforeOccurredAt` y `beforeId`.
+- SQL ordenado por `occurred_at DESC, id DESC` sin `OFFSET`.
+- Nuevo indice `idx_audit_events_tenant_occurred_at_id` para consultas tenant-scoped recientes y paginacion estable.
+- Documento tecnico `docs/audit/OPERATIONAL_AUDIT_STRATEGY.md`.
+
+Decision tecnica: no se implementa particionamiento fisico ni purga automatica en Sprint 4. Se deja la estrategia definida y el endpoint protegido contra consultas demasiado amplias, pero la retencion efectiva requiere politicas comerciales, legales y de exportacion antes de borrar datos.
+
+Validacion:
+
+- `mvn -B "-Dtest=AuditServiceTest,JdbcAuditRepositoryTest" test`
+- `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify`
 - `mvn -B verify`
 
 ## Orientacion tecnica inicial

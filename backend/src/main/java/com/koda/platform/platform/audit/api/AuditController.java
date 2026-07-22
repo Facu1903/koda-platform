@@ -38,9 +38,11 @@ public class AuditController {
         @RequestParam(required = false) @Pattern(regexp = "(?i)SUCCESS|FAILURE") String outcome,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to,
-        @RequestParam(defaultValue = "100") @Min(1) @Max(500) int limit
+        @RequestParam(defaultValue = "100") @Min(1) @Max(500) int limit,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant beforeOccurredAt,
+        @RequestParam(required = false) UUID beforeId
     ) {
-        AuditEventFilter filter = new AuditEventFilter(actorUserId, resourceType, resourceId, action, outcome, from, to, limit);
+        AuditEventFilter filter = new AuditEventFilter(actorUserId, resourceType, resourceId, action, outcome, from, to, limit, beforeOccurredAt, beforeId);
         return auditService.listEvents(filter).stream().map(AuditEventResponse::from).toList();
     }
 

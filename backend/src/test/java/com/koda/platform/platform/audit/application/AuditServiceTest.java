@@ -10,6 +10,7 @@ import com.koda.platform.testing.FakeTenantLicenseAccessRepository;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ class AuditServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new AuditService(repository, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository));
+        service = new AuditService(repository, currentTenantProvider, new TenantLicenseAccessGuard(licenseAccessRepository), Duration.ofDays(90));
         currentTenantProvider.context = Optional.of(new TenantContext(
             tenantId,
             userId,
@@ -98,6 +99,40 @@ class AuditServiceTest {
         assertThatThrownBy(() -> service.listEvents(new AuditEventFilter(null, null, null, null, null, from, to, 100)))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Audit from date cannot be after to date");
+    }
+
+    @Test
+    void listEventsRejectsDateRangeWiderThanOperationalPolicy() {
+        Instant from = Instant.parse("2026-01-01T00:00:00Z");
+        Instant to = Instant.parse("2026-05-01T00:00:00Z");
+
+        assertThatThrownBy(() -> service.listEvents(new AuditEventFilter(null, null, null, null, null, from, to, 100)))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Audit date range exceeds the operational maximum");
+    }
+
+    @Test
+    void listEventsRequiresCompleteCursor() {
+        Instant beforeOccurredAt = Instant.parse("2026-07-17T12:00:00Z");
+
+        assertThatThrownBy(() -> service.listEvents(new AuditEventFilter(null, null, null, null, null, null, null, 100, beforeOccurredAt, null)))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Audit cursor requires beforeOccurredAt and beforeId");
+
+        assertThatThrownBy(() -> service.listEvents(new AuditEventFilter(null, null, null, null, null, null, null, 100, null, UUID.randomUUID())))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Audit cursor requires beforeOccurredAt and beforeId");
+    }
+
+    @Test
+    void listEventsPassesStableCursorToRepository() {
+        Instant beforeOccurredAt = Instant.parse("2026-07-17T12:00:00Z");
+        UUID beforeId = UUID.fromString("10000000-0000-4000-8000-000000000001");
+
+        service.listEvents(new AuditEventFilter(null, null, null, null, null, null, null, 100, beforeOccurredAt, beforeId));
+
+        assertThat(repository.lastFilter.beforeOccurredAt()).isEqualTo(beforeOccurredAt);
+        assertThat(repository.lastFilter.beforeId()).isEqualTo(beforeId);
     }
 
     private AuditEventFilter defaultFilter() {

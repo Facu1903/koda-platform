@@ -11,6 +11,21 @@ public record AuditEventFilter(
     String outcome,
     Instant from,
     Instant to,
-    int limit
+    int limit,
+    Instant beforeOccurredAt,
+    UUID beforeId
 ) {
+
+    public AuditEventFilter(
+        UUID actorUserId,
+        String resourceType,
+        UUID resourceId,
+        String action,
+        String outcome,
+        Instant from,
+        Instant to,
+        int limit
+    ) {
+        this(actorUserId, resourceType, resourceId, action, outcome, from, to, limit, null, null);
+    }
 }

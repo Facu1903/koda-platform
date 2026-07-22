@@ -49,7 +49,7 @@ class FlywayPostgresqlIT {
     @Test
     void flywayBuildsCurrentSchemaAndSeedDataOnPostgresql17() throws SQLException {
         assertThat(queryForString("select version from flyway_schema_history where success = true order by installed_rank desc limit 1"))
-            .isEqualTo("202607211900");
+            .isEqualTo("202607220900");
         assertThat(queryForInt("select count(*) from tenants")).isEqualTo(1);
         assertThat(queryForInt("select count(*) from platform_modules")).isEqualTo(10);
         assertThat(queryForInt("select count(*) from permissions")).isEqualTo(70);
@@ -237,6 +237,7 @@ class FlywayPostgresqlIT {
         assertThat(hasIndex("idx_audit_events_tenant_actor_occurred_at")).isTrue();
         assertThat(hasIndex("idx_audit_events_tenant_resource_occurred_at")).isTrue();
         assertThat(hasIndex("idx_audit_events_tenant_action_occurred_at")).isTrue();
+        assertThat(hasIndex("idx_audit_events_tenant_occurred_at_id")).isTrue();
         assertThat(hasIndex("idx_sales_orders_tenant_updated_at")).isTrue();
         assertThat(hasIndex("idx_purchase_orders_tenant_updated_at")).isTrue();
         assertThat(hasIndex("idx_stock_balances_tenant_updated_at")).isTrue();

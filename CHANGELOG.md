@@ -30,6 +30,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada metrica `koda.capabilities.cache.requests` para hit/miss/expired/evicted/skipped con tag estable `result`.
 - Agregada documentacion de cache de capabilities en `docs/licensing/CAPABILITIES_CACHE.md`.
 - Agregadas pruebas unitarias de cache, vencimiento por `valid_until` e invalidacion administrativa.
+- Agregada estrategia operativa de auditoria en `docs/audit/OPERATIONAL_AUDIT_STRATEGY.md`.
+- Agregada migracion `V202607220900__add_audit_operational_query_index.sql` con indice tenant-scoped para paginacion estable.
+- Agregadas pruebas de politica de consulta de auditoria y SQL keyset.
 
 ### Changed
 
@@ -42,6 +45,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Configurado `http.server.requests` con percentiles `p50`, `p95`, `p99` y SLO iniciales de latencia.
 - Ajustados indices de reportes de ventas, compras y stock para cubrir ordenamientos operativos por fecha y numero/id.
 - La resolucion de `/api/v1/capabilities` ahora pasa por `TenantCapabilitiesResolver` y cache local; los guards backend de licencia permanecen contra fuente autoritativa sin cache.
+- La consulta de `/api/v1/audit/events` ahora soporta cursor keyset con `beforeOccurredAt` y `beforeId`, y rechaza rangos temporales explicitos mayores al maximo operativo configurado.
 
 ### Verified
 
@@ -54,6 +58,9 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify` ejecutado correctamente con 12 pruebas de integracion y schema `v202607211900`.
 - `mvn -B "-Dtest=TenantCapabilitiesServiceTest,TenantLicenseAdministrationServiceTest,InMemoryTenantCapabilitiesCacheTest" test` ejecutado correctamente en backend con 15 pruebas.
 - `mvn -B verify` ejecutado correctamente en backend con 137 pruebas unitarias y 14 pruebas de integracion.
+- `mvn -B "-Dtest=AuditServiceTest,JdbcAuditRepositoryTest" test` ejecutado correctamente en backend con 11 pruebas.
+- `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify` ejecutado correctamente con 12 pruebas de integracion y schema `v202607220900`.
+- `mvn -B verify` ejecutado correctamente en backend con 141 pruebas unitarias y 14 pruebas de integracion.
 
 ## [0.3.0] - 2026-07-21
 

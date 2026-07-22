@@ -235,6 +235,10 @@ La auditoria debe cubrir:
 
 La auditoria no debe depender solo de logs. Debe existir modelo persistido consultable.
 
+La consulta operativa de auditoria debe ser tenant-scoped, limitada y paginada con keyset sobre `occurred_at DESC, id DESC`. No se usa `OFFSET` para navegacion historica. El rango temporal explicito queda acotado por politica configurable y la retencion historica debe resolverse con estrategia operativa separada antes de habilitar purgas o exportaciones masivas.
+
+La tabla `audit_events` queda preparada para particionamiento futuro por rango temporal. No se particiona sin volumen medido, plan de migracion y validacion sobre PostgreSQL real.
+
 ## 10. Observabilidad
 
 Desde el inicio:
