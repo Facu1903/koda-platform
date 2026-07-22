@@ -2,7 +2,7 @@
 
 ## Estado
 
-Completado en Hito 8. Pendiente de aprobacion funcional final por el Product Owner.
+Completado en Hito 8. Aprobado funcionalmente por el Product Owner el 2026-07-22.
 
 ## Objetivo
 
@@ -99,6 +99,6 @@ Conclusion: no es una falla funcional del frontend. Es friccion de entorno local
 
 ## Decision
 
-Hito 8 deja Sprint 5 tecnicamente listo para aprobacion funcional final.
+Hito 8 deja Sprint 5 tecnicamente cerrado y aprobado funcionalmente por el Product Owner.
 
 La conclusion honesta: KODA PLATFORM ya puede comportarse como SaaS personalizable por empresa sin abrir la puerta al caos de CSS libre, assets inseguros o permisos improvisados. Todavia falta resolver identidad antes del login, storage/CDN y validacion visual avanzada, pero esas decisiones necesitan estrategia de producto e infraestructura, no impulso de teclado.

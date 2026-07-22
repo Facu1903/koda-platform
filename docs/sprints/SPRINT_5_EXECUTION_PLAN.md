@@ -241,7 +241,7 @@ Validacion:
 - `npm.cmd run lint`: 0 errores.
 - `npm.cmd run build`: TypeScript y Vite correctos.
 
-Decision tecnica: Sprint 5 queda listo para aprobacion funcional final, pero no se marca como aprobado hasta recibir aprobacion explicita del Product Owner.
+Decision tecnica: Sprint 5 quedo listo para aprobacion funcional final y fue aprobado por el Product Owner el 2026-07-22. Ver `docs/sprints/SPRINT_5_APPROVAL.md`.
 
 ## Criterios de calidad
 
@@ -277,4 +277,4 @@ Decision tecnica: Sprint 5 queda listo para aprobacion funcional final, pero no 
 
 ## Siguiente paso recomendado
 
-Solicitar aprobacion funcional final del Sprint 5 al Product Owner.
+Definir Sprint 6 con foco funcional explicito.

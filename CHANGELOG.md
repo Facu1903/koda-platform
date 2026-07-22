@@ -4,7 +4,7 @@ Todas las modificaciones relevantes de KODA PLATFORM se documentaran en este arc
 
 El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patch>` hasta la primera version comercial estable.
 
-## [0.5.0] - Unreleased
+## [0.5.0] - 2026-07-22
 
 ### Added
 
@@ -39,6 +39,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada documentacion tecnica de permisos y auditoria de configuracion en `docs/configuration/COMPANY_SETTINGS_PERMISSIONS_AUDIT.md`.
 - Agregadas pruebas backend de matriz de permisos, auditoria de configuracion y errores API controlados.
 - Agregados reportes de hardening y cierre tecnico de Sprint 5 en `docs/sprints/SPRINT_5_HARDENING_REPORT.md` y `docs/sprints/SPRINT_5_CLOSURE_REPORT.md`.
+- Agregada aprobacion funcional final del Product Owner en `docs/sprints/SPRINT_5_APPROVAL.md`.
 
 ### Changed
 
@@ -58,7 +59,8 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Aplicada matriz aprobada de Sprint 5 para `company_settings:read` y `company_settings:update`.
 - Actualizado plan de Sprint 5 para marcar Hito 7 como completado.
 - Actualizado plan de Sprint 5 para marcar Hito 8 como completado tecnicamente.
-- Actualizados README y roadmap con cierre tecnico de Sprint 5 pendiente de aprobacion funcional final.
+- Actualizados README y roadmap con cierre tecnico y aprobacion funcional final de Sprint 5.
+- Actualizado el estado de Sprint 5 a cerrado y aprobado funcionalmente por el Product Owner.
 
 ### Verified
 

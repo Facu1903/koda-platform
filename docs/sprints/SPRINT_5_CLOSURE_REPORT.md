@@ -2,7 +2,7 @@
 
 ## Estado
 
-Cierre tecnico preparado el 2026-07-22. Pendiente de aprobacion funcional final por el Product Owner.
+Cierre tecnico y aprobacion funcional final completados el 2026-07-22 por el Product Owner.
 
 ## Objetivo
 
@@ -114,6 +114,7 @@ Contratos frontend relevantes:
 - `02e8c86 feat(sprint-5): add company settings admin UI`
 - `657bec1 feat(sprint-5): add controlled visual assets`
 - `791fecd feat(sprint-5): harden company settings permissions`
+- `8a3d2db chore(sprint-5): harden and close sprint`
 
 ## Riesgos abiertos
 
@@ -127,8 +128,14 @@ Contratos frontend relevantes:
 - Validacion visual automatizada con navegador real pendiente.
 - Pruebas end-to-end autenticadas pendientes.
 
+## Aprobacion funcional final
+
+El Product Owner aprueba formalmente el cierre funcional del Sprint 5 el 2026-07-22.
+
+La aprobacion acepta el alcance entregado y los riesgos abiertos documentados para backlog. Ver acta en `docs/sprints/SPRINT_5_APPROVAL.md`.
+
 ## Decision de cierre tecnico
 
 Sprint 5 cumple el objetivo tecnico acordado: KODA PLATFORM queda preparada para personalizacion avanzada por tenant sin fragmentar el producto ni relajar seguridad.
 
-El siguiente paso recomendado es pedir aprobacion funcional final del Product Owner. Si se aprueba, corresponde crear el acta formal `SPRINT_5_APPROVAL.md` y luego subirla a GitHub.
+El siguiente paso recomendado es definir Sprint 6 sobre una decision funcional explicita, sin arrastrar pendientes de personalizacion como si fueran detalles menores.
