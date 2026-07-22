@@ -44,7 +44,7 @@ Con esta aprobacion, Sprint 5 puede iniciar desarrollo por hitos sin modificar l
 | 5. UI administrativa de configuracion | Completado | Pantalla para consultar, previsualizar y editar branding/regional con version optimista. |
 | 6. Assets visuales controlados | Completado | Logo, favicon e imagen de login por URL validada, con fallback y documentacion de riesgos. |
 | 7. Permisos, auditoria y hardening funcional | Completado | Matriz aprobada aplicada por migracion, auditoria verificada y errores controlados. |
-| 8. Hardening Sprint 5 | Pendiente | Validacion completa backend/frontend, documentacion final y reporte de cierre tecnico. |
+| 8. Hardening Sprint 5 | Completado | Validacion completa backend/frontend, documentacion final y reporte de cierre tecnico. |
 
 ## Hito 1 completado
 
@@ -223,17 +223,25 @@ Validacion:
 - `mvn -B "-Dtest=CompanySettingsServiceTest,ApiExceptionHandlerTest" test`: 18 pruebas, 0 fallos.
 - `mvn -B "-Dtest=NoUnitTests" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dit.test=FlywayPostgresqlIT" verify`: 13 pruebas de integracion, schema `v202607221500`, 0 fallos.
 
-## Hito 8 - Hardening Sprint 5
+## Hito 8 completado - Hardening Sprint 5
 
-Cerrar Sprint 5 con:
+El Hito 8 cierra tecnicamente Sprint 5 con:
 
-- `mvn -B verify`,
-- `npm.cmd run test`,
-- `npm.cmd run lint`,
-- `npm.cmd run build`,
-- reporte de hardening,
-- reporte de cierre,
-- actualizacion de README, ROADMAP y CHANGELOG.
+- Validacion backend completa con `mvn -B verify`.
+- Validacion frontend completa con `npm.cmd run test`, `npm.cmd run lint` y `npm.cmd run build`.
+- Reporte de hardening `docs/sprints/SPRINT_5_HARDENING_REPORT.md`.
+- Reporte de cierre tecnico `docs/sprints/SPRINT_5_CLOSURE_REPORT.md`.
+- Actualizacion de README, ROADMAP y CHANGELOG.
+
+Validacion:
+
+- `mvn -B verify`: 150 tests unitarios, 15 tests de integracion, 0 fallos.
+- Flyway/Testcontainers/PostgreSQL 17.10: 24 migraciones hasta `v202607221500`.
+- `npm.cmd run test`: 17 tests frontend, 0 fallos.
+- `npm.cmd run lint`: 0 errores.
+- `npm.cmd run build`: TypeScript y Vite correctos.
+
+Decision tecnica: Sprint 5 queda listo para aprobacion funcional final, pero no se marca como aprobado hasta recibir aprobacion explicita del Product Owner.
 
 ## Criterios de calidad
 
@@ -269,4 +277,4 @@ Cerrar Sprint 5 con:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 8: hardening final, documentacion de cierre y aprobacion funcional de Sprint 5.
+Solicitar aprobacion funcional final del Sprint 5 al Product Owner.

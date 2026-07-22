@@ -180,7 +180,7 @@ Endurecer la plataforma para operacion SaaS real: observabilidad, trazabilidad, 
 
 ### Estado
 
-Definido y aprobado funcionalmente por el Product Owner el 2026-07-22. Hitos 1, 2, 3, 4, 5, 6 y 7 completados: base funcional aprobada, perfil runtime de empresa, theme provider dinamico frontend, formato regional por tenant, UI administrativa de configuracion, assets visuales controlados, permisos/auditoria y hardening funcional. Ver `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`, `docs/configuration/COMPANY_PROFILE.md`, `docs/configuration/FRONTEND_TENANT_THEME.md`, `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md`, `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md`, `docs/configuration/VISUAL_ASSETS.md` y `docs/configuration/COMPANY_SETTINGS_PERMISSIONS_AUDIT.md`.
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-22. Hitos 1, 2, 3, 4, 5, 6, 7 y 8 completados tecnicamente: base funcional aprobada, perfil runtime de empresa, theme provider dinamico frontend, formato regional por tenant, UI administrativa de configuracion, assets visuales controlados, permisos/auditoria, hardening funcional y cierre tecnico. Pendiente aprobacion funcional final del Sprint 5. Ver `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`, `docs/sprints/SPRINT_5_HARDENING_REPORT.md`, `docs/sprints/SPRINT_5_CLOSURE_REPORT.md`, `docs/configuration/COMPANY_PROFILE.md`, `docs/configuration/FRONTEND_TENANT_THEME.md`, `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md`, `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md`, `docs/configuration/VISUAL_ASSETS.md` y `docs/configuration/COMPANY_SETTINGS_PERMISSIONS_AUDIT.md`.
 
 ### Objetivo
 
