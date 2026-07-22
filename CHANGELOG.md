@@ -28,6 +28,13 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada pantalla administrativa `CompanySettingsWorkspace` dentro del modulo `CONFIGURATION`.
 - Agregada documentacion tecnica de UI administrativa en `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md`.
 - Agregadas pruebas frontend de lectura, guardado, permisos insuficientes y conflicto de version en configuracion de empresa.
+- Agregada validacion backend estricta de URLs visuales para logo, favicon e imagen de login.
+- Agregada utilidad frontend `visualAssets.ts` para normalizar, validar y filtrar assets visuales.
+- Agregado logo runtime en shell principal con fallback visual.
+- Agregado favicon runtime controlado por tenant.
+- Agregada preview controlada de logo, favicon e imagen de login en la UI administrativa.
+- Agregada documentacion tecnica de assets visuales por tenant en `docs/configuration/VISUAL_ASSETS.md`.
+- Agregadas pruebas backend/frontend para URLs visuales inseguras, logo y favicon runtime.
 
 ### Changed
 
@@ -42,12 +49,15 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Actualizado shell frontend para enrutar `CONFIGURATION` hacia la UI administrativa.
 - Aplicada carga diferida de `CompanySettingsWorkspace` para mantener liviano el bundle inicial.
 - Actualizado plan de Sprint 5 para marcar Hito 5 como completado.
+- Actualizada la politica de assets visuales para exigir `https://` y rechazar `data:`, `javascript:`, URLs relativas, userinfo y fragmentos.
+- Actualizado plan de Sprint 5 para marcar Hito 6 como completado.
 
 ### Verified
 
 - `mvn -B "-Dtest=CompanySettingsServiceTest,KodaPlatformApplicationTests" test` ejecutado correctamente en backend con 13 pruebas.
 - `mvn -B test` ejecutado correctamente en backend con 144 pruebas unitarias.
-- `npm.cmd run test` ejecutado correctamente en frontend con 12 pruebas.
+- `mvn -B "-Dtest=CompanySettingsServiceTest" test` ejecutado correctamente en backend con 9 pruebas.
+- `npm.cmd run test` ejecutado correctamente en frontend con 17 pruebas.
 - `npm.cmd run lint` ejecutado correctamente en frontend sin errores.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 

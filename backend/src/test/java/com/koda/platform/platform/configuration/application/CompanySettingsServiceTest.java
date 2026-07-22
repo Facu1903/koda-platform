@@ -160,10 +160,48 @@ class CompanySettingsServiceTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    void updateCurrentTenantSettingsRejectsUnsafeVisualAssetUrls() {
+        assertThatThrownBy(() -> service.updateCurrentTenantSettings(validCommandWithLogo("http://cdn.koda.local/logo.png"), metadata))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Logo URL must be a valid HTTPS URL");
+        assertThatThrownBy(() -> service.updateCurrentTenantSettings(validCommandWithLogo("data:image/png;base64,AAAA"), metadata))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Logo URL must be a valid HTTPS URL");
+        assertThatThrownBy(() -> service.updateCurrentTenantSettings(validCommandWithLogo("javascript:alert(1)"), metadata))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Logo URL must be a valid HTTPS URL");
+        assertThatThrownBy(() -> service.updateCurrentTenantSettings(validCommandWithLogo("/assets/logo.png"), metadata))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Logo URL must be a valid HTTPS URL");
+        assertThatThrownBy(() -> service.updateCurrentTenantSettings(validCommandWithLogo("https://user:secret@cdn.koda.local/logo.png"), metadata))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("Logo URL must be a valid HTTPS URL");
+    }
+
     private UpdateCompanySettingsCommand validCommand(long version) {
         return new UpdateCompanySettingsCommand(
             version,
             null,
+            null,
+            null,
+            "#F6862B",
+            null,
+            "dark",
+            "es-AR",
+            "ARS",
+            "America/Argentina/Buenos_Aires",
+            "dd/MM/yyyy",
+            "HH:mm",
+            "es-AR",
+            "symbol"
+        );
+    }
+
+    private UpdateCompanySettingsCommand validCommandWithLogo(String logoUrl) {
+        return new UpdateCompanySettingsCommand(
+            0L,
+            logoUrl,
             null,
             null,
             "#F6862B",

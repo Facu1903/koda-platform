@@ -80,6 +80,7 @@ const companySettings: CompanySettings = {
 describe('App', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    document.querySelectorAll('link[rel="icon"]').forEach((link) => link.remove());
     window.localStorage.clear();
     window.location.hash = '';
   });
@@ -103,6 +104,27 @@ describe('App', () => {
     expect(within(navigation).getByText('Ventas')).toBeInTheDocument();
     expect(within(navigation).queryByText('Compras')).not.toBeInTheDocument();
     expect(screen.getByText('Modulos sin licencia activa')).toBeInTheDocument();
+  });
+
+  it('renders safe tenant logo and applies favicon from the runtime profile', async () => {
+    const visualProfile: CompanyRuntimeProfile = {
+      ...companyProfile,
+      branding: {
+        ...companyProfile.branding,
+        faviconUrl: 'https://cdn.example.com/favicon.ico',
+        logoUrl: 'https://cdn.example.com/logo.png',
+      },
+    };
+    mockPlatformApi({ capabilitiesResponse: capabilities, profileResponse: visualProfile });
+
+    render(
+      <AppProviders>
+        <App />
+      </AppProviders>,
+    );
+
+    expect(await screen.findByAltText('KODA Retail logo')).toHaveAttribute('src', 'https://cdn.example.com/logo.png');
+    expect(document.querySelector<HTMLLinkElement>('link[rel="icon"]')?.href).toBe('https://cdn.example.com/favicon.ico');
   });
 
   it('blocks direct navigation to a disabled module route', async () => {
@@ -219,6 +241,27 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Guardar' }));
 
     expect(await screen.findByText('Conflicto de version. Recarga la configuracion antes de guardar nuevos cambios.')).toBeInTheDocument();
+  }, 15000);
+
+  it('blocks unsafe visual asset urls in company settings', async () => {
+    window.location.hash = '#/configuracion';
+    mockPlatformApi({
+      capabilitiesResponse: capabilities,
+      profileResponse: companyProfile,
+      settingsResponse: companySettings,
+    });
+
+    render(
+      <AppProviders>
+        <App />
+      </AppProviders>,
+    );
+
+    expect(await screen.findByText('Configuracion de empresa')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Logo URL'), { target: { value: 'javascript:alert(1)' } });
+
+    expect(await screen.findByText('Usar URL https valida.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Guardar' })).toBeDisabled();
   }, 15000);
 });
 

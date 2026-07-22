@@ -42,7 +42,7 @@ Con esta aprobacion, Sprint 5 puede iniciar desarrollo por hitos sin modificar l
 | 3. Theme provider dinamico | Completado | Frontend genera tema MUI desde configuracion del tenant con fallbacks seguros. |
 | 4. Formato regional | Completado | Frontend centraliza formato de fecha, hora, numero y moneda por tenant. |
 | 5. UI administrativa de configuracion | Completado | Pantalla para consultar, previsualizar y editar branding/regional con version optimista. |
-| 6. Assets visuales controlados | Pendiente | Logo, favicon e imagen de login por URL validada, con fallback y documentacion de riesgos. |
+| 6. Assets visuales controlados | Completado | Logo, favicon e imagen de login por URL validada, con fallback y documentacion de riesgos. |
 | 7. Permisos, auditoria y hardening funcional | Pendiente | Matriz aprobada aplicada por migracion, auditoria verificada y errores controlados. |
 | 8. Hardening Sprint 5 | Pendiente | Validacion completa backend/frontend, documentacion final y reporte de cierre tecnico. |
 
@@ -164,9 +164,9 @@ Validacion:
 - `npm.cmd run lint`: 0 errores.
 - `npm.cmd run build`: TypeScript y Vite correctos; `CompanySettingsWorkspace` separado en chunk propio.
 
-## Hito 6 - Assets visuales controlados
+## Hito 6 completado - Assets visuales controlados
 
-Aplicar assets configurables:
+El Hito 6 aplica assets configurables:
 
 - logo en shell principal,
 - favicon en navegador cuando exista,
@@ -180,6 +180,27 @@ Restricciones:
 - sin `data:`,
 - sin `javascript:`,
 - sin upload en Sprint 5.
+
+Implementado:
+
+- Validacion backend de URLs visuales en `CompanySettingsService`.
+- Regla uniforme `https://` obligatorio.
+- Rechazo de URLs relativas, `data:`, `javascript:`, userinfo y fragmentos.
+- Utilidad frontend `visualAssets.ts`.
+- Logo runtime en shell principal.
+- Favicon runtime controlado.
+- Preview controlada de logo, favicon e imagen de login en la UI administrativa.
+- Fallback visual si el asset no existe, no es seguro o falla al cargar.
+- Documento tecnico `docs/configuration/VISUAL_ASSETS.md`.
+
+Decision tecnica: mantener la politica de assets estricta desde el inicio, incluso en entornos no productivos. Si mas adelante se necesita permitir assets locales, debe aprobarse una allowlist explicita, no una excepcion silenciosa.
+
+Validacion:
+
+- `mvn -B "-Dtest=CompanySettingsServiceTest" test`: 9 pruebas, 0 fallos.
+- `npm.cmd run test`: 17 pruebas, 0 fallos.
+- `npm.cmd run lint`: 0 errores.
+- `npm.cmd run build`: TypeScript y Vite correctos.
 
 ## Hito 7 - Permisos, auditoria y hardening funcional
 
@@ -239,4 +260,4 @@ Cerrar Sprint 5 con:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 6: assets visuales controlados.
+Avanzar al Hito 7: permisos, auditoria y hardening funcional.

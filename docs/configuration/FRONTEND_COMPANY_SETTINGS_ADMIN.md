@@ -26,7 +26,7 @@ La UI no decide el tenant efectivo. La API resuelve tenant desde JWT/Tenant Cont
 3. Si la lectura falla por permisos, muestra estado controlado `Acceso restringido`.
 4. El usuario edita branding y configuracion regional en un borrador local.
 5. La pantalla permite cancelar cambios locales.
-6. La pantalla muestra preview de colores, moneda y fecha/hora.
+6. La pantalla muestra preview de colores, moneda, fecha/hora y assets visuales.
 7. Al guardar, envia `PUT /api/v1/company/settings` con `version`.
 8. Si la API responde `409`, muestra conflicto de version.
 9. Si guarda correctamente, actualiza el estado local y aplica el perfil runtime al tema/formato del shell.
@@ -38,7 +38,8 @@ La UI no decide el tenant efectivo. La API resuelve tenant desde JWT/Tenant Cont
 - `secondaryColor` es opcional y, si existe, se valida como `#RRGGBB`.
 - `defaultCurrency` se normaliza a mayusculas.
 - `defaultLocale` y `numberLocale` aceptan formato operativo `es-AR`, `en-US` o equivalente con `_`.
-- URLs se tratan como texto opcional y se validan por longitud.
+- URLs visuales se tratan como texto opcional y se validan con la politica de assets visuales.
+- Logo, favicon e imagen de login tienen preview controlada.
 - Validaciones finales siguen en backend.
 - La actualizacion exitosa refresca tema y formato regional sin recargar la pagina.
 
@@ -59,7 +60,7 @@ Se agrego `platformHttp.ts` para evitar duplicar manejo de token y errores en ca
 
 La pantalla administrativa se carga con `React.lazy` desde el shell. El build separa `CompanySettingsWorkspace` en un chunk propio para no cargar formularios administrativos durante el arranque operativo general.
 
-La pantalla no implementa upload, CDN ni validacion estricta de assets. Eso queda para Hito 6, donde se debe endurecer URL, logo, favicon e imagen de login como superficie de riesgo propia.
+La pantalla no implementa upload ni CDN. La politica estricta de assets visuales queda documentada en `docs/configuration/VISUAL_ASSETS.md`.
 
 ## Alcance actual
 
@@ -70,6 +71,7 @@ Incluido:
 - version optimista,
 - cancelar cambios locales,
 - preview visual/regional,
+- preview controlada de assets visuales,
 - sincronizacion inmediata del perfil runtime,
 - manejo de `403` y `409`,
 - tests frontend.
@@ -78,13 +80,11 @@ No incluido:
 
 - upload de archivos,
 - CDN/storage,
-- sanitizacion avanzada de URL de assets,
-- favicon runtime,
 - imagen de login aplicada,
 - preferencias por usuario.
 
 ## Validacion
 
-- `npm.cmd run test`: 12 pruebas, 0 fallos.
+- `npm.cmd run test`: 17 pruebas, 0 fallos.
 - `npm.cmd run lint`: 0 errores.
 - `npm.cmd run build`: TypeScript y Vite correctos; pantalla administrativa separada en chunk propio.

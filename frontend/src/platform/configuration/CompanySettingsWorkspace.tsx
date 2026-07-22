@@ -24,6 +24,7 @@ import { CompanySettingsApiError, fetchCompanySettings, updateCompanySettings } 
 import type { ThemeMode } from './companyProfile';
 import { createRegionalFormatters } from './regionalFormatting';
 import { useRegionalFormatters } from './useRegionalFormatters';
+import { normalizeVisualAssetUrl, safeVisualAssetUrl, validateVisualAssetUrl } from './visualAssets';
 
 type CompanySettingsStatus = 'loading' | 'ready' | 'unavailable';
 type DraftField = keyof UpdateCompanySettingsRequest;
@@ -470,10 +471,80 @@ function PreviewPanel({
           <Box sx={{ bgcolor: primaryColor, borderRadius: 1, height: 36, width: 56 }} />
           <Box sx={{ bgcolor: secondaryColor, border: '1px solid', borderColor: 'divider', borderRadius: 1, height: 36, width: 56 }} />
         </Stack>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
+          <VisualAssetPreview label="Logo" url={draft.logoUrl} />
+          <VisualAssetPreview label="Favicon" compact url={draft.faviconUrl} />
+          <VisualAssetPreview label="Login" wide url={draft.loginImageUrl} />
+        </Box>
         <FieldPair label="Importe" value={previewAmount} />
         <FieldPair label="Fecha" value={previewDate} />
         <FieldPair label="Tema" value={themeModeLabel(draft.themeMode)} />
       </Stack>
+    </Paper>
+  );
+}
+
+function VisualAssetPreview({
+  compact = false,
+  label,
+  url,
+  wide = false,
+}: {
+  compact?: boolean;
+  label: string;
+  url: string | null;
+  wide?: boolean;
+}) {
+  const safeUrl = safeVisualAssetUrl(url);
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const visibleUrl = safeUrl !== null && safeUrl !== failedUrl ? safeUrl : null;
+
+  return (
+    <Paper
+      variant="outlined"
+      sx={{
+        borderColor: 'divider',
+        gridColumn: wide ? { sm: '1 / -1' } : undefined,
+        overflow: 'hidden',
+      }}
+    >
+      <Box sx={{ px: 1.25, py: 1 }}>
+        <Typography sx={{ fontWeight: 700 }} variant="body2">
+          {label}
+        </Typography>
+      </Box>
+      <Divider />
+      <Box
+        sx={{
+          alignItems: 'center',
+          bgcolor: 'background.default',
+          display: 'flex',
+          height: compact ? 72 : wide ? 132 : 96,
+          justifyContent: 'center',
+          p: 1,
+        }}
+      >
+        {visibleUrl === null ? (
+          <Typography color="text.secondary" variant="body2">
+            Sin asset seguro
+          </Typography>
+        ) : (
+          <Box
+            alt={`${label} preview`}
+            component="img"
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            src={visibleUrl}
+            sx={{
+              borderRadius: 1,
+              maxHeight: '100%',
+              maxWidth: '100%',
+              objectFit: 'contain',
+            }}
+            onError={() => setFailedUrl(visibleUrl)}
+          />
+        )}
+      </Box>
     </Paper>
   );
 }
@@ -562,9 +633,9 @@ function toRequest(draft: UpdateCompanySettingsRequest): UpdateCompanySettingsRe
     dateFormat: draft.dateFormat.trim(),
     defaultCurrency: draft.defaultCurrency.trim().toUpperCase(),
     defaultLocale: normalizeLocaleInput(draft.defaultLocale),
-    faviconUrl: trimToNull(draft.faviconUrl),
-    logoUrl: trimToNull(draft.logoUrl),
-    loginImageUrl: trimToNull(draft.loginImageUrl),
+    faviconUrl: normalizeVisualAssetUrl(draft.faviconUrl),
+    logoUrl: normalizeVisualAssetUrl(draft.logoUrl),
+    loginImageUrl: normalizeVisualAssetUrl(draft.loginImageUrl),
     numberLocale: normalizeLocaleInput(draft.numberLocale),
     primaryColor: draft.primaryColor.trim().toUpperCase(),
     secondaryColor: trimToNull(draft.secondaryColor)?.toUpperCase() ?? null,
@@ -613,16 +684,18 @@ function validateDraft(draft: UpdateCompanySettingsRequest): ValidationErrors {
     errors.currencyFormat = 'Formato invalido.';
   }
 
-  validateUrlLength(errors, 'logoUrl', draft.logoUrl);
-  validateUrlLength(errors, 'faviconUrl', draft.faviconUrl);
-  validateUrlLength(errors, 'loginImageUrl', draft.loginImageUrl);
+  validateAssetUrl(errors, 'logoUrl', draft.logoUrl);
+  validateAssetUrl(errors, 'faviconUrl', draft.faviconUrl);
+  validateAssetUrl(errors, 'loginImageUrl', draft.loginImageUrl);
 
   return errors;
 }
 
-function validateUrlLength(errors: ValidationErrors, field: DraftField, value: string | null) {
-  if (value !== null && value.length > 2048) {
-    errors[field] = 'Maximo 2048 caracteres.';
+function validateAssetUrl(errors: ValidationErrors, field: DraftField, value: string | null) {
+  const error = validateVisualAssetUrl(value);
+
+  if (error !== null) {
+    errors[field] = error;
   }
 }
 

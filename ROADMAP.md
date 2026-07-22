@@ -180,7 +180,7 @@ Endurecer la plataforma para operacion SaaS real: observabilidad, trazabilidad, 
 
 ### Estado
 
-Definido y aprobado funcionalmente por el Product Owner el 2026-07-22. Hitos 1, 2, 3, 4 y 5 completados: base funcional aprobada, perfil runtime de empresa, theme provider dinamico frontend, formato regional por tenant y UI administrativa de configuracion. Ver `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`, `docs/configuration/COMPANY_PROFILE.md`, `docs/configuration/FRONTEND_TENANT_THEME.md`, `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md` y `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md`.
+Definido y aprobado funcionalmente por el Product Owner el 2026-07-22. Hitos 1, 2, 3, 4, 5 y 6 completados: base funcional aprobada, perfil runtime de empresa, theme provider dinamico frontend, formato regional por tenant, UI administrativa de configuracion y assets visuales controlados. Ver `docs/sprints/SPRINT_5_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_5_EXECUTION_PLAN.md`, `docs/configuration/COMPANY_PROFILE.md`, `docs/configuration/FRONTEND_TENANT_THEME.md`, `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md`, `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md` y `docs/configuration/VISUAL_ASSETS.md`.
 
 ### Objetivo
 

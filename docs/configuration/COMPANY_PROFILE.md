@@ -31,6 +31,8 @@ La lectura sigue protegida por:
 - guard de licencia del modulo `CONFIGURATION`,
 - aislamiento tenant en repositorio.
 
+Los campos `logoUrl`, `faviconUrl` y `loginImageUrl` provienen de configuracion validada por la politica de assets visuales. Ver `docs/configuration/VISUAL_ASSETS.md`.
+
 ## Response
 
 ```json

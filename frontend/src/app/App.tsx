@@ -39,6 +39,7 @@ import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { useCompanyProfile } from '../platform/configuration/CompanyProfileProvider';
 import type { RegionalFormatters } from '../platform/configuration/regionalFormatting';
 import { useRegionalFormatters } from '../platform/configuration/useRegionalFormatters';
+import { safeVisualAssetUrl } from '../platform/configuration/visualAssets';
 import { useCapabilities } from '../platform/licensing/CapabilitiesProvider';
 import {
   disabledModuleShellItems,
@@ -129,6 +130,8 @@ export function App() {
   const tenantName = effectiveProfile.tenant.commercialName;
   const tenantLocale = effectiveProfile.regional.defaultLocale;
   const tenantCurrency = effectiveProfile.regional.defaultCurrency;
+  const logoUrl = safeVisualAssetUrl(effectiveProfile.branding.logoUrl);
+  const faviconUrl = safeVisualAssetUrl(effectiveProfile.branding.faviconUrl);
   const enabledModules = useMemo(() => enabledModuleShellItems(capabilities), [capabilities]);
   const disabledModules = useMemo(() => disabledModuleShellItems(capabilities), [capabilities]);
   const navigationItems = useMemo<NavigationItem[]>(
@@ -157,6 +160,8 @@ export function App() {
     setCurrentPath(path);
   };
 
+  useTenantFavicon(faviconUrl);
+
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       <AppBar
@@ -172,7 +177,7 @@ export function App() {
         }}
       >
         <Toolbar sx={{ gap: 2, minHeight: { xs: 72, md: 80 } }}>
-          <Box sx={{ width: 12, height: 30, borderRadius: 1, bgcolor: 'primary.main', flex: '0 0 auto' }} />
+          <TenantLogo logoUrl={logoUrl} tenantName={tenantName} />
           <Box sx={{ flexGrow: 1, minWidth: 0 }}>
             <Typography variant="h2" component="div" noWrap>
               KODA PLATFORM
@@ -282,6 +287,49 @@ export function App() {
         </Stack>
       </Box>
     </Box>
+  );
+}
+
+function useTenantFavicon(faviconUrl: string | null) {
+  useEffect(() => {
+    let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+
+    if (link === null) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+
+    const fallbackHref = link.dataset.kodaFallbackHref ?? link.getAttribute('href') ?? '';
+    link.dataset.kodaFallbackHref = fallbackHref;
+    link.href = faviconUrl ?? fallbackHref;
+  }, [faviconUrl]);
+}
+
+function TenantLogo({ logoUrl, tenantName }: { logoUrl: string | null; tenantName: string }) {
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const effectiveLogoUrl = logoUrl !== null && logoUrl !== failedUrl ? logoUrl : null;
+
+  if (effectiveLogoUrl === null) {
+    return <Box sx={{ width: 12, height: 30, borderRadius: 1, bgcolor: 'primary.main', flex: '0 0 auto' }} />;
+  }
+
+  return (
+    <Box
+      alt={`${tenantName} logo`}
+      component="img"
+      referrerPolicy="no-referrer"
+      src={effectiveLogoUrl}
+      sx={{
+        borderRadius: 1,
+        flex: '0 0 auto',
+        height: 40,
+        maxWidth: { xs: 96, sm: 144 },
+        objectFit: 'contain',
+        width: 'auto',
+      }}
+      onError={() => setFailedUrl(effectiveLogoUrl)}
+    />
   );
 }
 

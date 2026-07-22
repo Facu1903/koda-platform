@@ -55,18 +55,19 @@ Incluido:
 - tema MUI dinamico,
 - modo claro/oscuro/sistema,
 - fallback seguro,
+- logo runtime con fallback,
+- favicon runtime con fallback,
 - subtitulo del shell con tenant, locale y moneda efectivos,
 - tests frontend.
 
 No incluido:
 
-- aplicacion de logo en shell,
-- favicon runtime,
 - imagen de login,
 - cache persistente del perfil.
 
 El formato regional centralizado se implementa en `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md`.
 La UI administrativa de configuracion se implementa en `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md`.
+La politica de assets visuales se implementa en `docs/configuration/VISUAL_ASSETS.md`.
 
 ## Validacion
 

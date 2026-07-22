@@ -87,12 +87,13 @@ Request:
 Reglas tecnicas:
 
 - `version` es obligatoria para control optimista de concurrencia.
+- `logoUrl`, `faviconUrl` y `loginImageUrl` son opcionales; string vacio se guarda como `null`.
+- Las URLs visuales deben usar `https://`, host valido, sin userinfo, sin fragmentos, sin `data:`, sin `javascript:` y sin rutas relativas.
 - `primaryColor` y `secondaryColor` usan formato `#RRGGBB`.
 - `themeMode` acepta `light`, `dark` o `system`.
 - `defaultCurrency` debe ser ISO 4217.
 - `timeZone` debe ser un identificador valido de zona horaria.
 - `dateFormat` y `timeFormat` se validan como patrones Java `DateTimeFormatter`.
-- Campos opcionales de imagen enviados como string vacio se guardan como `null`.
 
 ## Auditoria
 
@@ -127,8 +128,8 @@ Incluido:
 
 No incluido:
 
-- Upload de archivos de logo/favicon/imagenes.
 - CDN/storage de assets.
+- Upload de archivos de logo/favicon/imagenes.
 - Cambio de nombre comercial, razon social o pais.
 - Matriz rol-permiso aprobada para roles iniciales.
 - Preferencias por usuario individual.

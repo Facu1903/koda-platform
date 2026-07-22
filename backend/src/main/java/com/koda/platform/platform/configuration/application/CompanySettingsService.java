@@ -7,6 +7,8 @@ import com.koda.platform.shared.application.security.PermissionDeniedException;
 import com.koda.platform.shared.application.tenant.CurrentTenantProvider;
 import com.koda.platform.shared.application.tenant.TenantContext;
 import com.koda.platform.shared.domain.tenant.TenantId;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Currency;
@@ -103,9 +105,9 @@ public class CompanySettingsService {
 
         return new UpdateCompanySettingsCommand(
             command.version(),
-            trimToNull(command.logoUrl()),
-            trimToNull(command.faviconUrl()),
-            trimToNull(command.loginImageUrl()),
+            normalizeAssetUrl(command.logoUrl(), "Logo URL"),
+            normalizeAssetUrl(command.faviconUrl(), "Favicon URL"),
+            normalizeAssetUrl(command.loginImageUrl(), "Login image URL"),
             primaryColor,
             secondaryColor,
             themeMode,
@@ -117,6 +119,32 @@ public class CompanySettingsService {
             numberLocale,
             currencyFormat
         );
+    }
+
+    private String normalizeAssetUrl(String value, String fieldName) {
+        String normalized = trimToNull(value);
+        if (normalized == null) {
+            return null;
+        }
+        if (normalized.length() > 2048) {
+            throw new IllegalArgumentException(fieldName + " must not exceed 2048 characters");
+        }
+
+        URI uri;
+        try {
+            uri = new URI(normalized);
+        } catch (URISyntaxException exception) {
+            throw new IllegalArgumentException(fieldName + " must be a valid HTTPS URL");
+        }
+
+        if (!"https".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null || uri.getHost().isBlank()) {
+            throw new IllegalArgumentException(fieldName + " must be a valid HTTPS URL");
+        }
+        if (uri.getUserInfo() != null || uri.getFragment() != null) {
+            throw new IllegalArgumentException(fieldName + " must be a valid HTTPS URL");
+        }
+
+        return normalized;
     }
 
     private String normalizeColor(String value, boolean required) {
