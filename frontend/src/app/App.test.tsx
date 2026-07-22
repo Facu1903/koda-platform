@@ -1,7 +1,8 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { AppProviders } from './providers/AppProviders';
+import type { CompanySettings, UpdateCompanySettingsRequest } from '../platform/configuration/companySettings';
 import type { CompanyRuntimeProfile } from '../platform/configuration/companyProfile';
 import type { TenantCapabilities } from '../platform/licensing/capabilities';
 
@@ -62,6 +63,20 @@ const companyProfile: CompanyRuntimeProfile = {
   updatedAt: '2026-07-22T12:00:00Z',
 };
 
+const companySettings: CompanySettings = {
+  id: '30000000-0000-4000-8000-000000000001',
+  tenant: {
+    id: '00000000-0000-4000-8000-000000000001',
+    commercialName: 'KODA Retail',
+    legalName: 'KODA Retail SA',
+    countryCode: 'UY',
+  },
+  branding: companyProfile.branding,
+  regional: companyProfile.regional,
+  updatedAt: '2026-07-22T12:00:00Z',
+  version: 1,
+};
+
 describe('App', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -118,6 +133,93 @@ describe('App', () => {
     expect(await screen.findByText('Licencia no disponible')).toBeInTheDocument();
     expect(screen.getByText('No se pudo cargar la licencia efectiva.')).toBeInTheDocument();
   });
+
+  it('allows updating company settings from the configuration module', async () => {
+    window.location.hash = '#/configuracion';
+    const updatedSettings: CompanySettings = {
+      ...companySettings,
+      branding: {
+        ...companySettings.branding,
+        primaryColor: '#F6862B',
+      },
+      regional: {
+        ...companySettings.regional,
+        defaultCurrency: 'USD',
+        defaultLocale: 'en-US',
+        numberLocale: 'en-US',
+      },
+      updatedAt: '2026-07-22T13:00:00Z',
+      version: 2,
+    };
+    const api = mockPlatformApi({
+      capabilitiesResponse: capabilities,
+      profileResponse: companyProfile,
+      settingsResponse: companySettings,
+      updateSettingsResponse: updatedSettings,
+    });
+
+    render(
+      <AppProviders>
+        <App />
+      </AppProviders>,
+    );
+
+    expect(await screen.findByText('Configuracion de empresa')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Color primario'), { target: { value: '#F6862B' } });
+    fireEvent.change(screen.getByLabelText('Locale'), { target: { value: 'en-US' } });
+    fireEvent.change(screen.getByLabelText('Locale numerico'), { target: { value: 'en-US' } });
+    fireEvent.change(screen.getByLabelText('Moneda'), { target: { value: 'USD' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    await waitFor(() => expect(api.latestSettingsRequest?.primaryColor).toBe('#F6862B'));
+    expect(api.latestSettingsRequest?.defaultLocale).toBe('en-US');
+    expect(api.latestSettingsRequest?.defaultCurrency).toBe('USD');
+    expect(await screen.findByText('Configuracion guardada.')).toBeInTheDocument();
+    expect(screen.getByText('Version 2')).toBeInTheDocument();
+    expect(screen.getByText('KODA ERP - KODA Retail - en-US - USD')).toBeInTheDocument();
+  }, 15000);
+
+  it('shows a restricted state when company settings cannot be read', async () => {
+    window.location.hash = '#/configuracion';
+    mockPlatformApi({
+      capabilitiesResponse: capabilities,
+      profileResponse: companyProfile,
+      settingsStatus: 403,
+      settingsProblem: { detail: 'No tenes permiso para leer la configuracion.' },
+    });
+
+    render(
+      <AppProviders>
+        <App />
+      </AppProviders>,
+    );
+
+    expect(await screen.findByText('Acceso restringido')).toBeInTheDocument();
+    expect(screen.getByText('No tenes permiso para leer la configuracion.')).toBeInTheDocument();
+  }, 15000);
+
+  it('shows a clear conflict when company settings were changed elsewhere', async () => {
+    window.location.hash = '#/configuracion';
+    mockPlatformApi({
+      capabilitiesResponse: capabilities,
+      profileResponse: companyProfile,
+      settingsResponse: companySettings,
+      updateSettingsStatus: 409,
+      updateSettingsProblem: { detail: 'La configuracion fue modificada por otra sesion.' },
+    });
+
+    render(
+      <AppProviders>
+        <App />
+      </AppProviders>,
+    );
+
+    expect(await screen.findByText('Configuracion de empresa')).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Color primario'), { target: { value: '#F6862B' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+
+    expect(await screen.findByText('Conflicto de version. Recarga la configuracion antes de guardar nuevos cambios.')).toBeInTheDocument();
+  }, 15000);
 });
 
 function enabledModule(code: string, name: string) {
@@ -148,44 +250,75 @@ function mockPlatformApi({
   capabilitiesStatus = 200,
   profileResponse,
   profileStatus = 200,
+  settingsProblem,
+  settingsResponse,
+  settingsStatus = 200,
+  updateSettingsProblem,
+  updateSettingsResponse,
+  updateSettingsStatus = 200,
 }: {
   capabilitiesResponse?: TenantCapabilities;
   capabilitiesStatus?: number;
   profileResponse?: CompanyRuntimeProfile;
   profileStatus?: number;
+  settingsProblem?: { detail?: string; title?: string; code?: string };
+  settingsResponse?: CompanySettings;
+  settingsStatus?: number;
+  updateSettingsProblem?: { detail?: string; title?: string; code?: string };
+  updateSettingsResponse?: CompanySettings;
+  updateSettingsStatus?: number;
 }) {
+  const controls = {
+    latestSettingsRequest: null as UpdateCompanySettingsRequest | null,
+  };
+
   vi.stubGlobal(
     'fetch',
-    vi.fn((input: RequestInfo | URL) => {
+    vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = typeof input === 'string' ? input : 'url' in input ? input.url : input.toString();
+      const method = init?.method ?? 'GET';
 
-      if (url.endsWith('/api/v1/company/profile')) {
-        return Promise.resolve({
-          ok: profileStatus >= 200 && profileStatus < 300,
-          status: profileStatus,
-          json: () =>
-            Promise.resolve(
-              profileStatus >= 200 && profileStatus < 300
-                ? profileResponse
-                : { detail: 'No se pudo cargar el perfil de empresa.' },
-            ),
-        });
+      if (url.endsWith('/api/v1/company/profile') && method === 'GET') {
+        return Promise.resolve(jsonResponse(profileStatus, profileResponse, { detail: 'No se pudo cargar el perfil de empresa.' }));
       }
 
-      if (url.endsWith('/api/v1/capabilities')) {
-        return Promise.resolve({
-          ok: capabilitiesStatus >= 200 && capabilitiesStatus < 300,
-          status: capabilitiesStatus,
-          json: () =>
-            Promise.resolve(
-              capabilitiesStatus >= 200 && capabilitiesStatus < 300
-                ? capabilitiesResponse
-                : { detail: 'No se pudo cargar la licencia efectiva.' },
-            ),
-        });
+      if (url.endsWith('/api/v1/capabilities') && method === 'GET') {
+        return Promise.resolve(
+          jsonResponse(capabilitiesStatus, capabilitiesResponse, { detail: 'No se pudo cargar la licencia efectiva.' }),
+        );
+      }
+
+      if (url.endsWith('/api/v1/company/settings') && method === 'GET') {
+        return Promise.resolve(
+          jsonResponse(settingsStatus, settingsResponse, settingsProblem ?? { detail: 'No se pudo cargar la configuracion.' }),
+        );
+      }
+
+      if (url.endsWith('/api/v1/company/settings') && method === 'PUT') {
+        if (typeof init?.body === 'string') {
+          controls.latestSettingsRequest = JSON.parse(init.body) as UpdateCompanySettingsRequest;
+        }
+
+        return Promise.resolve(
+          jsonResponse(
+            updateSettingsStatus,
+            updateSettingsResponse ?? settingsResponse,
+            updateSettingsProblem ?? { detail: 'No se pudo actualizar la configuracion.' },
+          ),
+        );
       }
 
       return Promise.reject(new Error(`Unexpected fetch URL: ${url}`));
     }) as unknown as typeof fetch,
   );
+
+  return controls;
+}
+
+function jsonResponse(status: number, data: unknown, problem: unknown) {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: () => Promise.resolve(status >= 200 && status < 300 ? data : problem),
+  };
 }

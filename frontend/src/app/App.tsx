@@ -35,7 +35,7 @@ import {
 } from '@mui/material';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 import { alpha } from '@mui/material/styles';
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { useCompanyProfile } from '../platform/configuration/CompanyProfileProvider';
 import type { RegionalFormatters } from '../platform/configuration/regionalFormatting';
 import { useRegionalFormatters } from '../platform/configuration/useRegionalFormatters';
@@ -53,6 +53,11 @@ import type { ModuleCode, ModuleShellItem } from '../platform/licensing/capabili
 
 const drawerWidth = 280;
 const dashboardPath = '/dashboard';
+const CompanySettingsWorkspace = lazy(() =>
+  import('../platform/configuration/CompanySettingsWorkspace').then((module) => ({
+    default: module.CompanySettingsWorkspace,
+  })),
+);
 
 interface NavigationItem {
   label: string;
@@ -259,6 +264,10 @@ export function App() {
             <UnavailableShell error={error} onRetry={reload} />
           ) : routeBlocked && requestedModule !== null ? (
             <BlockedModuleShell module={requestedModule} />
+          ) : activeModule?.code === 'CONFIGURATION' ? (
+            <Suspense fallback={<LoadingShell />}>
+              <CompanySettingsWorkspace />
+            </Suspense>
           ) : activeModule !== null ? (
             <ModuleWorkspace formatDateTime={regionalFormatters.formatDateTime} module={activeModule} />
           ) : (

@@ -63,10 +63,10 @@ No incluido:
 - aplicacion de logo en shell,
 - favicon runtime,
 - imagen de login,
-- UI administrativa de configuracion,
 - cache persistente del perfil.
 
 El formato regional centralizado se implementa en `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md`.
+La UI administrativa de configuracion se implementa en `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md`.
 
 ## Validacion
 

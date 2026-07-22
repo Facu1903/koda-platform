@@ -23,6 +23,11 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregado hook `useRegionalFormatters` conectado al perfil runtime de empresa.
 - Agregada documentacion tecnica del formato regional frontend en `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md`.
 - Agregadas pruebas frontend de formato regional y fallback seguro ante configuracion invalida.
+- Agregado cliente HTTP frontend compartido `platformHttp` para token, JSON y errores API controlados.
+- Agregado contrato frontend `CompanySettings` y cliente administrativo de `GET`/`PUT /api/v1/company/settings`.
+- Agregada pantalla administrativa `CompanySettingsWorkspace` dentro del modulo `CONFIGURATION`.
+- Agregada documentacion tecnica de UI administrativa en `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md`.
+- Agregadas pruebas frontend de lectura, guardado, permisos insuficientes y conflicto de version en configuracion de empresa.
 
 ### Changed
 
@@ -32,12 +37,17 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Actualizado plan de Sprint 5 para marcar Hito 3 como completado.
 - Actualizado shell frontend para usar formato regional tenant-aware en dashboard y vigencia de modulos.
 - Actualizado plan de Sprint 5 para marcar Hito 4 como completado.
+- Actualizados clientes de capabilities y perfil runtime para usar el cliente HTTP compartido.
+- Actualizado `CompanyProfileProvider` para aplicar un perfil runtime actualizado despues de guardar configuracion.
+- Actualizado shell frontend para enrutar `CONFIGURATION` hacia la UI administrativa.
+- Aplicada carga diferida de `CompanySettingsWorkspace` para mantener liviano el bundle inicial.
+- Actualizado plan de Sprint 5 para marcar Hito 5 como completado.
 
 ### Verified
 
 - `mvn -B "-Dtest=CompanySettingsServiceTest,KodaPlatformApplicationTests" test` ejecutado correctamente en backend con 13 pruebas.
 - `mvn -B test` ejecutado correctamente en backend con 144 pruebas unitarias.
-- `npm.cmd run test` ejecutado correctamente en frontend con 9 pruebas.
+- `npm.cmd run test` ejecutado correctamente en frontend con 12 pruebas.
 - `npm.cmd run lint` ejecutado correctamente en frontend sin errores.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 

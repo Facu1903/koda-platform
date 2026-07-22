@@ -7,6 +7,7 @@ import { fetchCompanyProfile } from './companyProfileClient';
 type CompanyProfileStatus = 'loading' | 'ready' | 'unavailable';
 
 interface CompanyProfileContextValue {
+  applyProfile: (updatedProfile: CompanyRuntimeProfile) => void;
   effectiveProfile: CompanyRuntimeProfile;
   error: string | null;
   profile: CompanyRuntimeProfile | null;
@@ -27,6 +28,12 @@ export function CompanyProfileProvider({ children }: PropsWithChildren) {
     setProfile(null);
     setStatus('loading');
     setReloadKey((current) => current + 1);
+  }, []);
+
+  const applyProfile = useCallback((updatedProfile: CompanyRuntimeProfile) => {
+    setError(null);
+    setProfile(updatedProfile);
+    setStatus('ready');
   }, []);
 
   useEffect(() => {
@@ -53,13 +60,14 @@ export function CompanyProfileProvider({ children }: PropsWithChildren) {
 
   const value = useMemo<CompanyProfileContextValue>(
     () => ({
+      applyProfile,
       effectiveProfile: effectiveCompanyProfile(profile),
       error,
       profile,
       reload,
       status,
     }),
-    [error, profile, reload, status],
+    [applyProfile, error, profile, reload, status],
   );
 
   return <CompanyProfileContext.Provider value={value}>{children}</CompanyProfileContext.Provider>;

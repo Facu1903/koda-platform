@@ -41,7 +41,7 @@ Con esta aprobacion, Sprint 5 puede iniciar desarrollo por hitos sin modificar l
 | 2. Perfil runtime de empresa | Completado | Backend expone datos no sensibles para renderizar UI por tenant autenticado. |
 | 3. Theme provider dinamico | Completado | Frontend genera tema MUI desde configuracion del tenant con fallbacks seguros. |
 | 4. Formato regional | Completado | Frontend centraliza formato de fecha, hora, numero y moneda por tenant. |
-| 5. UI administrativa de configuracion | Pendiente | Pantalla para consultar, previsualizar y editar branding/regional con version optimista. |
+| 5. UI administrativa de configuracion | Completado | Pantalla para consultar, previsualizar y editar branding/regional con version optimista. |
 | 6. Assets visuales controlados | Pendiente | Logo, favicon e imagen de login por URL validada, con fallback y documentacion de riesgos. |
 | 7. Permisos, auditoria y hardening funcional | Pendiente | Matriz aprobada aplicada por migracion, auditoria verificada y errores controlados. |
 | 8. Hardening Sprint 5 | Pendiente | Validacion completa backend/frontend, documentacion final y reporte de cierre tecnico. |
@@ -134,9 +134,9 @@ Validacion:
 - `npm.cmd run lint`
 - `npm.cmd run build`
 
-## Hito 5 - UI administrativa de configuracion
+## Hito 5 completado - UI administrativa de configuracion
 
-Construir una pantalla operativa dentro del modulo `CONFIGURATION`:
+El Hito 5 construye una pantalla operativa dentro del modulo `CONFIGURATION`:
 
 - lectura de configuracion actual,
 - formulario de branding,
@@ -147,7 +147,22 @@ Construir una pantalla operativa dentro del modulo `CONFIGURATION`:
 - estados de carga/error,
 - conflicto de version con mensaje claro.
 
-La UI no debe ser una landing page. Debe ser una herramienta de configuracion usable, densa y clara.
+- Cliente HTTP comun `platformHttp`.
+- Contrato frontend `CompanySettings`.
+- Cliente `GET` y `PUT /api/v1/company/settings`.
+- Pantalla `CompanySettingsWorkspace`.
+- Integracion con `CompanyProfileProvider` para aplicar el perfil runtime actualizado despues de guardar.
+- Manejo controlado de permisos insuficientes y conflicto `409`.
+- Carga diferida de la pantalla administrativa para mantener liviano el bundle inicial.
+- Documento tecnico `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md`.
+
+Decision tecnica: centralizar lectura de token y parseo de errores API en `platformHttp` antes de agregar nuevos clientes. Mantener la autoridad de validacion en backend y usar validaciones frontend solo para UX basica.
+
+Validacion:
+
+- `npm.cmd run test`: 12 pruebas, 0 fallos.
+- `npm.cmd run lint`: 0 errores.
+- `npm.cmd run build`: TypeScript y Vite correctos; `CompanySettingsWorkspace` separado en chunk propio.
 
 ## Hito 6 - Assets visuales controlados
 
@@ -224,4 +239,4 @@ Cerrar Sprint 5 con:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 5: UI administrativa de configuracion de empresa.
+Avanzar al Hito 6: assets visuales controlados.

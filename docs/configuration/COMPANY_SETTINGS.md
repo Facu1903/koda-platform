@@ -17,6 +17,8 @@ Ambos endpoints son tenant-scoped y requieren autenticacion.
 
 Para renderizado runtime de la UI existe `GET /api/v1/company/profile`. Ese endpoint devuelve solo datos no sensibles y no requiere permiso administrativo. Ver `docs/configuration/COMPANY_PROFILE.md`.
 
+La UI administrativa frontend para este endpoint esta documentada en `docs/configuration/FRONTEND_COMPANY_SETTINGS_ADMIN.md`.
+
 ## Permisos
 
 - Lectura: `company_settings:read`.
@@ -127,7 +129,6 @@ No incluido:
 
 - Upload de archivos de logo/favicon/imagenes.
 - CDN/storage de assets.
-- UI de configuracion.
 - Cambio de nombre comercial, razon social o pais.
 - Matriz rol-permiso aprobada para roles iniciales.
 - Preferencias por usuario individual.
