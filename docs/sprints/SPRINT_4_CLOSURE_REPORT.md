@@ -2,7 +2,7 @@
 
 ## Estado
 
-Cierre tecnico completado en Hito 8. Aprobacion funcional final pendiente del Product Owner.
+Cierre tecnico y aprobacion funcional final completados el 2026-07-22 por el Product Owner.
 
 ## Objetivo
 
@@ -85,6 +85,7 @@ Migraciones principales de Sprint 4:
 - `ab6ce9c perf(sprint-4): add critical operational indexes`
 - `01f4a7c feat(sprint-4): add capabilities cache`
 - `12bddf0 feat(sprint-4): harden operational audit queries`
+- `12419db chore(sprint-4): harden and close sprint`
 
 ## Riesgos abiertos
 
@@ -99,9 +100,9 @@ Migraciones principales de Sprint 4:
 
 ## Aprobacion funcional final
 
-Pendiente de aprobacion explicita del Product Owner.
+El Product Owner aprueba formalmente el cierre funcional del Sprint 4 el 2026-07-22.
 
-Cuando el Product Owner apruebe este cierre, se debera crear el acta `docs/sprints/SPRINT_4_APPROVAL.md` y actualizar el estado de Sprint 4 a cerrado/aprobado.
+La aprobacion acepta el alcance entregado y los riesgos abiertos documentados para backlog. Ver acta en `docs/sprints/SPRINT_4_APPROVAL.md`.
 
 ## Decision de cierre tecnico
 

@@ -4,7 +4,7 @@ Todas las modificaciones relevantes de KODA PLATFORM se documentaran en este arc
 
 El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patch>` hasta la primera version comercial estable.
 
-## [0.4.0] - Unreleased
+## [0.4.0] - 2026-07-22
 
 ### Added
 
@@ -34,6 +34,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada migracion `V202607220900__add_audit_operational_query_index.sql` con indice tenant-scoped para paginacion estable.
 - Agregadas pruebas de politica de consulta de auditoria y SQL keyset.
 - Agregados reportes de hardening y cierre tecnico de Sprint 4 en `docs/sprints/SPRINT_4_HARDENING_REPORT.md` y `docs/sprints/SPRINT_4_CLOSURE_REPORT.md`.
+- Agregada aprobacion funcional final del Product Owner en `docs/sprints/SPRINT_4_APPROVAL.md`.
 
 ### Changed
 
@@ -48,6 +49,7 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - La resolucion de `/api/v1/capabilities` ahora pasa por `TenantCapabilitiesResolver` y cache local; los guards backend de licencia permanecen contra fuente autoritativa sin cache.
 - La consulta de `/api/v1/audit/events` ahora soporta cursor keyset con `beforeOccurredAt` y `beforeId`, y rechaza rangos temporales explicitos mayores al maximo operativo configurado.
 - Configurados Surefire y Failsafe para ejecutar tests con Mockito como Java agent explicito y evitar self-attach dinamico en JVM futuras.
+- Actualizado el estado de Sprint 4 a cerrado y aprobado funcionalmente por el Product Owner.
 
 ### Verified
 

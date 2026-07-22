@@ -2,7 +2,7 @@
 
 ## Estado
 
-Completado en Hito 8. Pendiente de aprobacion funcional final por el Product Owner.
+Completado en Hito 8. Aprobado funcionalmente por el Product Owner el 2026-07-22.
 
 ## Objetivo
 
@@ -84,6 +84,6 @@ Tambien se actualizan README, roadmap, changelog y plan de ejecucion del Sprint 
 
 ## Decision
 
-Hito 8 deja Sprint 4 tecnicamente listo para aprobacion funcional final del Product Owner.
+Hito 8 deja Sprint 4 tecnicamente cerrado y aprobado funcionalmente por el Product Owner.
 
 La conclusion honesta: KODA PLATFORM ya no solo ejecuta operaciones SaaS; ahora empieza a poder explicar que pasa cuando algo falla, medir su comportamiento basico y proteger consultas que creceran con el uso real. Todavia no tiene observabilidad externa completa ni pruebas de carga, pero ya no opera a ciegas.

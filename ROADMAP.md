@@ -158,7 +158,7 @@ Implementar licencias, modulos y control de acceso por empresa para convertir la
 
 ### Estado
 
-Cierre tecnico completado en Hito 8. Aprobacion funcional final pendiente del Product Owner. Ver `docs/sprints/SPRINT_4_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_4_EXECUTION_PLAN.md`, `docs/sprints/SPRINT_4_HARDENING_REPORT.md` y `docs/sprints/SPRINT_4_CLOSURE_REPORT.md`.
+Cerrado y aprobado funcionalmente por el Product Owner el 2026-07-22. Ver `docs/sprints/SPRINT_4_FUNCTIONAL_BASELINE.md`, `docs/sprints/SPRINT_4_EXECUTION_PLAN.md`, `docs/sprints/SPRINT_4_HARDENING_REPORT.md`, `docs/sprints/SPRINT_4_CLOSURE_REPORT.md` y `docs/sprints/SPRINT_4_APPROVAL.md`.
 
 ### Objetivo
 

@@ -2,7 +2,7 @@
 
 ## Estado
 
-Definicion funcional aprobada por el Product Owner el 2026-07-21. Cierre tecnico completado en Hito 8; aprobacion funcional final pendiente del Product Owner.
+Definicion funcional aprobada por el Product Owner el 2026-07-21. Cierre tecnico y aprobacion funcional final completados el 2026-07-22 por el Product Owner.
 
 ## Objetivo
 
@@ -43,7 +43,7 @@ La base funcional de Sprint 4 fue aprobada por el Product Owner el 2026-07-21 y 
 | 5. Performance e indices criticos | Completado | Revision documentada de queries de capabilities, guards, auditoria y reportes; indices aplicados donde corresponde. |
 | 6. Cache seguro de capabilities | Completado | Cache local por tenant con TTL conservador, invalidacion administrativa y guards backend sin cache. |
 | 7. Auditoria operativa | Completado | Politica operativa de consulta, rango maximo configurable, cursor keyset, indice dedicado y estrategia documentada de retencion/particionamiento futuro. |
-| 8. Hardening Sprint 4 | Completado | Tests, validacion completa, documentacion final y reportes de cierre tecnico. Aprobacion funcional final pendiente del Product Owner. |
+| 8. Hardening Sprint 4 | Completado | Tests, validacion completa, documentacion final, reportes de cierre tecnico y aprobacion funcional final del Product Owner. |
 
 ## Hito 1 completado
 
@@ -189,6 +189,7 @@ El Hito 8 cierra tecnicamente Sprint 4:
 - Validacion completa frontend.
 - Reporte tecnico `docs/sprints/SPRINT_4_HARDENING_REPORT.md`.
 - Reporte de cierre `docs/sprints/SPRINT_4_CLOSURE_REPORT.md`.
+- Acta de aprobacion funcional `docs/sprints/SPRINT_4_APPROVAL.md`.
 - README, roadmap y changelog actualizados.
 
 Decision tecnica: el cierre no incorpora proveedores externos de observabilidad ni pruebas de carga formales. Sprint 4 deja la aplicacion preparada e instrumentada; la exportacion externa y validacion con volumen alto quedan como decisiones de infraestructura/backlog.
@@ -325,4 +326,4 @@ No implementar particionamiento sin validacion tecnica y necesidad clara.
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 7: auditoria operativa, estrategia de retencion, crecimiento e impacto futuro de particionamiento.
+Definir Sprint 5 con foco en personalizacion avanzada por tenant.
