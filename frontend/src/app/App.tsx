@@ -37,6 +37,8 @@ import type { SvgIconProps } from '@mui/material/SvgIcon';
 import { alpha } from '@mui/material/styles';
 import { useEffect, useMemo, useState } from 'react';
 import { useCompanyProfile } from '../platform/configuration/CompanyProfileProvider';
+import type { RegionalFormatters } from '../platform/configuration/regionalFormatting';
+import { useRegionalFormatters } from '../platform/configuration/useRegionalFormatters';
 import { useCapabilities } from '../platform/licensing/CapabilitiesProvider';
 import {
   disabledModuleShellItems,
@@ -70,17 +72,6 @@ function readHashPath(): string {
 
 function writeHashPath(path: string) {
   window.location.hash = path;
-}
-
-function formatDateTime(value: string | null): string {
-  if (value === null) {
-    return 'Sin vencimiento';
-  }
-
-  return new Intl.DateTimeFormat('es-AR', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value));
 }
 
 function ModuleShellIcon({ moduleCode, ...props }: { moduleCode: ModuleCode } & SvgIconProps) {
@@ -117,6 +108,7 @@ function NavigationIcon({ moduleCode, ...props }: { moduleCode: ModuleCode | nul
 export function App() {
   const { capabilities, error, reload, status } = useCapabilities();
   const { effectiveProfile } = useCompanyProfile();
+  const regionalFormatters = useRegionalFormatters();
   const [currentPath, setCurrentPath] = useState(readHashPath);
 
   useEffect(() => {
@@ -268,12 +260,13 @@ export function App() {
           ) : routeBlocked && requestedModule !== null ? (
             <BlockedModuleShell module={requestedModule} />
           ) : activeModule !== null ? (
-            <ModuleWorkspace module={activeModule} />
+            <ModuleWorkspace formatDateTime={regionalFormatters.formatDateTime} module={activeModule} />
           ) : (
             <DashboardShell
               calculatedAt={capabilities?.calculatedAt ?? null}
               disabledModules={disabledModules}
               enabledModules={enabledModules}
+              formatDateTime={regionalFormatters.formatDateTime}
               tenantName={tenantName}
             />
           )}
@@ -330,18 +323,20 @@ function DashboardShell({
   calculatedAt,
   disabledModules,
   enabledModules,
+  formatDateTime,
   tenantName,
 }: {
   calculatedAt: string | null;
   disabledModules: ModuleShellItem[];
   enabledModules: ModuleShellItem[];
+  formatDateTime: RegionalFormatters['formatDateTime'];
   tenantName: string;
 }) {
   const readiness = [
     { label: 'Modulos activos', value: String(enabledModules.length), progress: enabledModules.length === 0 ? 0 : 100 },
     { label: 'Modulos bloqueados', value: String(disabledModules.length), progress: disabledModules.length === 0 ? 100 : 35 },
     { label: 'Producto', value: 'KODA ERP', progress: 100 },
-    { label: 'Calculado', value: calculatedAt === null ? 'Pendiente' : formatDateTime(calculatedAt), progress: 100 },
+    { label: 'Calculado', value: formatDateTime(calculatedAt, { emptyLabel: 'Pendiente' }), progress: 100 },
   ];
 
   return (
@@ -434,7 +429,13 @@ function DashboardShell({
   );
 }
 
-function ModuleWorkspace({ module }: { module: ModuleShellItem }) {
+function ModuleWorkspace({
+  formatDateTime,
+  module,
+}: {
+  formatDateTime: RegionalFormatters['formatDateTime'];
+  module: ModuleShellItem;
+}) {
   const { capabilities } = useCapabilities();
   const capability = findModule(capabilities, module.code);
 
@@ -450,7 +451,11 @@ function ModuleWorkspace({ module }: { module: ModuleShellItem }) {
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} sx={{ alignItems: { sm: 'center' } }}>
             <Chip color="primary" label={capability?.entitlementStatus ?? 'ACTIVE'} size="small" />
             <Chip label={capability?.coreModule ? 'Modulo core' : 'Modulo comercial'} size="small" variant="outlined" />
-            <Chip label={`Vigencia: ${formatDateTime(capability?.validUntil ?? null)}`} size="small" variant="outlined" />
+            <Chip
+              label={`Vigencia: ${formatDateTime(capability?.validUntil ?? null, { emptyLabel: 'Sin vencimiento' })}`}
+              size="small"
+              variant="outlined"
+            />
           </Stack>
           <Divider />
           <Typography color="text.secondary">

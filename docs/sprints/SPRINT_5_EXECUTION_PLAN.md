@@ -40,7 +40,7 @@ Con esta aprobacion, Sprint 5 puede iniciar desarrollo por hitos sin modificar l
 | 1. Base funcional Sprint 5 | Completado | Product Owner aprobo alcance, reglas y fuera de alcance. |
 | 2. Perfil runtime de empresa | Completado | Backend expone datos no sensibles para renderizar UI por tenant autenticado. |
 | 3. Theme provider dinamico | Completado | Frontend genera tema MUI desde configuracion del tenant con fallbacks seguros. |
-| 4. Formato regional | Pendiente | Frontend centraliza formato de fecha, hora, numero y moneda por tenant. |
+| 4. Formato regional | Completado | Frontend centraliza formato de fecha, hora, numero y moneda por tenant. |
 | 5. UI administrativa de configuracion | Pendiente | Pantalla para consultar, previsualizar y editar branding/regional con version optimista. |
 | 6. Assets visuales controlados | Pendiente | Logo, favicon e imagen de login por URL validada, con fallback y documentacion de riesgos. |
 | 7. Permisos, auditoria y hardening funcional | Pendiente | Matriz aprobada aplicada por migracion, auditoria verificada y errores controlados. |
@@ -102,13 +102,13 @@ Decision tecnica: el tema runtime no bloquea la aplicacion. Si `/api/v1/company/
 
 Validacion:
 
-- `npm.cmd run test`
-- `npm.cmd run lint`
-- `npm.cmd run build`
+- `npm.cmd run test`: 9 pruebas, 0 fallos.
+- `npm.cmd run lint`: 0 errores.
+- `npm.cmd run build`: TypeScript y Vite correctos.
 
-## Hito 4 - Formato regional
+## Hito 4 completado - Formato regional
 
-Centralizar formato regional en frontend:
+El Hito 4 centraliza formato regional en frontend:
 
 - fecha,
 - fecha/hora,
@@ -116,7 +116,23 @@ Centralizar formato regional en frontend:
 - numeros,
 - moneda.
 
-El frontend debe usar `Intl` donde sea suficiente y no debe duplicar reglas de negocio monetarias. Los importes persistidos siguen siendo valores numericos y codigo de moneda.
+- Fabrica pura `createRegionalFormatters`.
+- Hook `useRegionalFormatters` conectado al perfil runtime del tenant.
+- Formato de fecha/hora con zona horaria del tenant.
+- Formato de numero con `numberLocale`.
+- Formato monetario con `defaultCurrency` y `currencyFormat`.
+- Soporte controlado de patrones operativos `dateFormat` y `timeFormat`.
+- Fallback a KODA o `Intl` cuando la configuracion no es aplicable en frontend.
+- Shell actualizado para mostrar calculo de capabilities y vigencia de modulos con formato regional.
+- Documento tecnico `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md`.
+
+Decision tecnica: usar `Intl` como base y soportar un subconjunto seguro de patrones Java `DateTimeFormatter` en frontend. No se replica todo el motor de formato Java porque seria fragil y costoso; si una empresa usa un patron fuera del subconjunto operativo, el frontend cae a `Intl` sin romper la UI.
+
+Validacion:
+
+- `npm.cmd run test`
+- `npm.cmd run lint`
+- `npm.cmd run build`
 
 ## Hito 5 - UI administrativa de configuracion
 
@@ -208,4 +224,4 @@ Cerrar Sprint 5 con:
 
 ## Siguiente paso recomendado
 
-Avanzar al Hito 4: formato regional centralizado en frontend para fecha, hora, numeros y moneda.
+Avanzar al Hito 5: UI administrativa de configuracion de empresa.

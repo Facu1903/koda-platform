@@ -64,8 +64,9 @@ No incluido:
 - favicon runtime,
 - imagen de login,
 - UI administrativa de configuracion,
-- formato regional profundo de fechas, numeros y moneda,
 - cache persistente del perfil.
+
+El formato regional centralizado se implementa en `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md`.
 
 ## Validacion
 

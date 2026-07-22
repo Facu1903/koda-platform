@@ -19,6 +19,10 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Agregada fabrica `createKodaTheme` con soporte `dark`, `light`, `system`, fallback seguro y contraste calculado.
 - Agregada documentacion tecnica del tema frontend por tenant en `docs/configuration/FRONTEND_TENANT_THEME.md`.
 - Agregadas pruebas frontend del shell con perfil runtime y del generador de tema.
+- Agregada fabrica frontend `createRegionalFormatters` para fecha, fecha/hora, hora, numeros y moneda por tenant.
+- Agregado hook `useRegionalFormatters` conectado al perfil runtime de empresa.
+- Agregada documentacion tecnica del formato regional frontend en `docs/configuration/FRONTEND_REGIONAL_FORMATTING.md`.
+- Agregadas pruebas frontend de formato regional y fallback seguro ante configuracion invalida.
 
 ### Changed
 
@@ -26,12 +30,14 @@ El formato se basa en Keep a Changelog y el versionado seguira `0.<sprint>.<patc
 - Actualizado plan de Sprint 5 para marcar Hito 2 como completado.
 - Actualizado shell frontend para mostrar tenant, locale y moneda efectivos desde `/api/v1/company/profile`.
 - Actualizado plan de Sprint 5 para marcar Hito 3 como completado.
+- Actualizado shell frontend para usar formato regional tenant-aware en dashboard y vigencia de modulos.
+- Actualizado plan de Sprint 5 para marcar Hito 4 como completado.
 
 ### Verified
 
 - `mvn -B "-Dtest=CompanySettingsServiceTest,KodaPlatformApplicationTests" test` ejecutado correctamente en backend con 13 pruebas.
 - `mvn -B test` ejecutado correctamente en backend con 144 pruebas unitarias.
-- `npm.cmd run test` ejecutado correctamente en frontend con 5 pruebas.
+- `npm.cmd run test` ejecutado correctamente en frontend con 9 pruebas.
 - `npm.cmd run lint` ejecutado correctamente en frontend sin errores.
 - `npm.cmd run build` ejecutado correctamente en frontend con TypeScript y Vite.
 

@@ -82,6 +82,7 @@ describe('App', () => {
     expect(screen.getByText('KODA PLATFORM')).toBeInTheDocument();
     expect(screen.getByText('KODA ERP - KODA Retail - es-UY - UYU')).toBeInTheDocument();
     expect(screen.getByText('Estado operativo del tenant KODA Retail.')).toBeInTheDocument();
+    expect(screen.getByText('21/07/2026 09:00')).toBeInTheDocument();
     const navigation = screen.getByLabelText('Navegacion de modulos');
     expect(within(navigation).getByText('Catalogos')).toBeInTheDocument();
     expect(within(navigation).getByText('Ventas')).toBeInTheDocument();
